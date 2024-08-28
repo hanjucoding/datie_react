@@ -7,8 +7,9 @@ import axios from 'axios';
 
 const LoginForm = () => {
     const navigate = useNavigate(); // useNavigate 훅 사용
-    const [id, setId] = useState(''); // 아이디 상태 관리
+    const [id, setId] = useState(localStorage.getItem('savedId') || ''); // 아이디 상태 관리
     const [pw, setPw] = useState(''); // 비밀번호 상태 관리
+    const [rememberMe, setRememberMe] = useState(false);
 
     const handlesignupclick = () => {
         navigate('/verify'); // /verify 페이지로 이동
@@ -32,6 +33,12 @@ const LoginForm = () => {
                 console.log(response.headers.authorization);
                 const token = response.headers.authorization;
                 localStorage.setItem('jwt', token); // 로컬 스토리지에 저장
+
+                if (rememberMe) {
+                    localStorage.setItem('savedId', id); // 체크박스가 체크된 경우 아이디 저장
+                } else {
+                    localStorage.removeItem('savedId'); // 체크박스가 체크되지 않은 경우 아이디 삭제
+                }
 
                 // 로그인 성공 시 경로 이동
                 navigate('/'); // IndexMain 컴포넌트가 렌더링되는 경로
@@ -83,6 +90,8 @@ const LoginForm = () => {
                         type="checkbox"
                         id="remember"
                         className="remember-checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
                     />
                     <label htmlFor="remember">아이디 저장</label>
                 </div>

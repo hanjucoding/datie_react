@@ -1,83 +1,90 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+// import './PayInfo.css'; // CSS 파일을 import 합니다.z
+import backgroundImage from '../../assets/datie_highfive2.png';
 import styled from 'styled-components';
 import { TextField as MuiTextField, Button as MuiButton } from '@mui/material';
-import axios from 'axios';
-import Swal from 'sweetalert2'; // Swal import
-import backgroundImage from '../../assets/datie_highfive2.png';
-
 function PayInfo() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [companyno, setCompanyno] = useState(0);
+
+    // 상태 변수 선언
     const [companyName, setCompanyName] = useState('');
-    const [amount, setAmount] = useState(0);
     const [peramount, setPerAmount] = useState(0);
     const [bonus, setBonus] = useState(0);
+    const [userno, setUserNo] = useState(null); // userno 상태 변수 추가
+
+    const { id, companyno, amount } = location.state || {};
+    console.log('Received from location.state:', id, companyno, amount);
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const companynoFromUrl = parseInt(params.get('companyno'), 10) || 0;
-        setCompanyno(companynoFromUrl);
-        const amountFromUrl = parseInt(params.get('amount'), 10) || 0;
+        if (companyno && amount) {
+            // 회사 이름 가져오기
+            axios
+                .get(`http://localhost:8090/api/company?companyno=${companyno}`)
+                .then((response) => {
+                    setCompanyName(response.data.companyname);
+                })
+                .catch((error) => {
+                    console.error('Error fetching company data', error);
+                });
 
-        // 회사 이름 가져오기
-        axios
-            .get(
-                `http://localhost:8090/api/company?companyno=${companynoFromUrl}`,
-            )
-            .then((response) => {
-                setCompanyName(response.data.companyname);
-            })
-            .catch((error) => {
-                console.error('Error fetching company data', error);
-            });
+            axios
+                .get(`http://localhost:8090/api/id?id=${id}`)
+                .then((response) => {
+                    setUserNo(response.data.userno);
+                })
+                .catch((error) => {
+                    console.error('userno찾기에러', error);
+                });
 
-        setAmount(amountFromUrl);
+            // amount의 1의 자리 구하기
+            const lastDigit = amount % 10;
 
-        // perAmount와 bonus 계산
-        const calculatedBonus = amountFromUrl % 10; // 1의 자리수를 bonus로 설정
-        const calculatedPerAmount = (amountFromUrl - calculatedBonus) / 2; // 나머지 금액의 절반을 perAmount로 설정
+            // 보너스: amount의 1의 자리
+            const bonus = lastDigit;
 
-        setPerAmount(calculatedPerAmount);
-        setBonus(calculatedBonus);
+            // 나머지 금액을 절반으로 나누기
+            const remainingAmount = amount - lastDigit;
+            const peramount = remainingAmount / 2;
 
-        // bonus가 0보다 클 때 Swal.fire 호출
-        if (calculatedBonus > 0) {
-            Swal.fire({
-                html: `
-                    <div style="font-size: 24px;">
-                        ${calculatedBonus}원은 데이티가 쏘니까<br>
-                        걱정 말라구!
-                    </div>
-                `,
-                width: 900,
-                padding: '3em',
-                color: '#716add',
-                backdrop: `
-                    rgba(0,0,123,0.4)
-                    left top
-                    no-repeat
-                `,
-            });
-        }
-    }, [location.search]);
+            setPerAmount(peramount);
+            setBonus(bonus);
 
-    // 로그인 상태 확인 함수
-    const checkLoginStatus = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:8090/api/check-login',
+            // 보너스 알림
+            if (bonus > 0) {
+                Swal.fire({
+                    html: `
+                        <div style="font-size: 24px;">
+                            ${bonus}원은 데이티가 쏘니까<br>
+                            걱정 말라구!
+                        </div>
+                    `,
+                    width: 900,
+                    padding: '3em',
+                    color: '#716add',
+                    backdrop: `
+                        rgba(0,0,123,0.4)
+                        left top
+                        no-repeat
+                    `,
+                });
+            }
+            console.log(
+                'After calculation:',
+                companyno,
+                companyName,
+                amount,
+                peramount,
+                bonus,
+                userno,
             );
-            return response.data.loggedIn; // 로그인 상태 여부 반환
-        } catch (error) {
-            console.error('Error checking login status', error);
-            return false; // 로그인 상태 확인 중 에러 발생 시 로그인 안 된 것으로 간주
         }
-    };
+    }, [companyno, amount, id, userno]);
 
     const handlePayment = async () => {
-        const loggedIn = await checkLoginStatus();
         navigate('/pay/Paypassword', {
             state: {
                 companyno,
@@ -85,29 +92,18 @@ function PayInfo() {
                 amount,
                 peramount,
                 bonus,
+                userno, // userno를 함께 전달
             },
         });
-        // if (loggedIn) {
-        //     navigate('/pay/Paypassword', {
-        //         state: {
-        //             companyName,
-        //             amount,
-        //             peramount,
-        //             bonus,
-        //         },
-        //     });
-        // } else {
-        //     navigate('/login');
-        // }
     };
 
-    // 숫자에 쉼표를 붙이는 함수
     const formatNumberWithCommas = (number) => {
         return new Intl.NumberFormat().format(number);
     };
 
     return (
-        <PayDesign
+        <main
+            className="pay-design"
             style={{
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
@@ -124,55 +120,54 @@ function PayInfo() {
             }}
         >
             <div>
-                <Title>결제정보</Title>
-                <TextContainer>
-                    <StyledTextField
+                <h1 className="title">결제정보</h1>
+                <div className="text-container">
+                    <input
+                        className="styled-text-field read-only"
                         id="companyname"
-                        variant="outlined"
+                        type="text"
                         value={companyName}
-                        InputProps={{ readOnly: true }}
+                        readOnly
                     />
-                    <StyledTextField
+                    <div className="styled-label" htmlFor="amount">
+                        총 금액
+                    </div>
+                    <input
+                        className="styled-text-field no-border"
                         id="amount"
-                        variant="outlined"
-                        label="총 금액"
+                        type="text"
                         value={`${formatNumberWithCommas(amount)}원`}
-                        InputProps={{ readOnly: true }}
+                        readOnly
                     />
-                    <AmountContainer>
-                        <StyledTextField
+                    <div className="amount-container">
+                        <input
+                            className="styled-text-field custom-bg-color-1"
                             id="peramount1"
-                            variant="outlined"
+                            type="text"
                             value={`${formatNumberWithCommas(peramount)}원`}
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#C3FBFF" // 첫 번째 박스 색상
+                            readOnly
                         />
-                        <StyledTextField
+                        <input
+                            className="styled-text-field custom-bg-color-2"
                             id="peramount2"
-                            variant="outlined"
+                            type="text"
                             value={`${formatNumberWithCommas(peramount)}원`}
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#FFCEF6" // 두 번째 박스 색상
+                            readOnly
                         />
-                    </AmountContainer>
-                </TextContainer>
+                    </div>
+                </div>
             </div>
-            <ButtonContainer>
-                <StyledButton
-                    variant="contained"
-                    color="primary"
+            <div className="button-container">
+                <button
+                    className="styled-button styled-button-primary"
                     onClick={handlePayment}
                 >
                     결제하기
-                </StyledButton>
-                <StyledButton variant="contained" color="secondary">
-                    취소
-                </StyledButton>
-            </ButtonContainer>
-        </PayDesign>
+                </button>
+            </div>
+        </main>
     );
 }
-
 const PayDesign = styled.main`
     background-color: #fff;
     display: flex;
@@ -269,5 +264,4 @@ const StyledTextField = styled(MuiTextField)`
         border-radius: 20px; /* 테두리를 둥글게 설정 */
     }
 `;
-
 export default PayInfo;

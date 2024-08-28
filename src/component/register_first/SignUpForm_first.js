@@ -57,7 +57,7 @@ function SignUpComponent() {
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
-                        <div className="form-row">
+                        {/* <div className="form-row">
                             <label htmlFor="id-number">
                                 주민등록번호
                                 <br />
@@ -90,7 +90,7 @@ function SignUpComponent() {
                                     required
                                 />
                             </div>
-                        </div>
+                        </div> */}
                     </VerificationForm>
                 </VerificationSection>
                 <ActionButtons handleNext={handleNext} />

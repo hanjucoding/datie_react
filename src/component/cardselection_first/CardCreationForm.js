@@ -42,9 +42,22 @@ const CardCreationForm = () => {
                 'http://localhost:8090/api/lovercheck',
                 requestBody,
             );
-            // 성공적으로 요청이 완료되면
             console.log(response.data);
-            if (response.data != 'fail') {
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            console.log(response.data);
+            if (response.data == '회원의 카드가 이미 존재 합니다.') {
+                setErrorMessage('회원의 카드가 이미 존재 합니다.');
+            } else if (response.data == '회원정보가 일치 하지 않습니다.') {
+                setErrorMessage('회원정보가 일치 하지 않습니다.');
+            } else {
                 // 서버에서 반환하는 성공 여부에 따라 조건 수정
                 navigate(
                     '/card_selection?userno1=' +
@@ -52,8 +65,6 @@ const CardCreationForm = () => {
                         '&userno2=' +
                         response.data,
                 );
-            } else {
-                setErrorMessage('아이디 또는 비밀번호가 일치하지 않습니다.');
             }
         } catch (error) {
             console.error('서버 요청 중 오류 발생:', error);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
+import { jwtDecode } from 'jwt-decode';
 
 import axios from 'axios'; // axios 임포트
 
@@ -13,11 +14,24 @@ import DiaryList from '../components/DiaryList';
 function DiaryDetail() {
     const { date } = useParams(); // URL에서 date 파라미터를 가져옴
     const formattedDate = moment(date, 'YYYY-MM-DD');
-    const userNo = 62;
     const [locations, setLocations] = useState([]);
     const [data, setData] = useState([]);
+    let token;
+    let userNo = 0;
 
     useEffect(() => {
+        // 로컬 스토리지에서 토큰 가져오기
+        const storedToken = localStorage.getItem('jwt'); // 'token'은 실제 저장한 키로 변경할 수 있습니다.
+        if (storedToken) {
+            token = storedToken;
+        }
+        if (token) {
+            const decoded = jwtDecode(token); // 수정된 호출
+            console.log(decoded); // 디코딩된 정보 출력
+            userNo = decoded.userno;
+        }
+        console.log(userNo);
+
         const fetchDiaryDetail = async () => {
             try {
                 const response = await axios.get(

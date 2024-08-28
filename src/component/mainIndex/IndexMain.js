@@ -55,10 +55,10 @@ function IndexMain() {
         className="inner_wrapper"
         style={{
           backgroundImage: `url(${background})`,
-          backgroundSize: "cover",
+          backgroundSize: "auto",
           backgroundPosition: "center",
-          width: "1024px",
-          height: "1792px",
+          width: "600px",
+          height: "100vh", 
           borderRadius: "8px",
           position: "relative",
         }}
