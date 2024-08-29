@@ -9,7 +9,22 @@ import InitialInput from './InitialInput';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'; // UTC 플러그인
+import timezone from 'dayjs/plugin/timezone'; // 타임존 플러그인
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 function CardInfoInput() {
+    // 플러그인 사용
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
+    // 서울 시간대 설정
+    dayjs.tz.setDefault('Asia/Seoul');
+
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const userno1 = queryParams.get('userno1');
@@ -49,6 +64,10 @@ function CardInfoInput() {
     const [password2, setPassword2] = useState('');
     const [confirmPassword2, setConfirmPassword2] = useState('');
     const [isMatch2, setIsMatch2] = useState(false);
+
+    const [dateValue, setDateValue] = React.useState(
+        dayjs.tz('2000-01-01', 'Asia/Seoul'),
+    );
 
     const handlePasswordChange1 = (e) => {
         setPassword1(e.target.value);
@@ -107,6 +126,9 @@ function CardInfoInput() {
         user1Data.cardtypeno = userno1Type;
         user1Data.titleHolder = selectedNameId;
         user1Data.initial = initial;
+        user1Data.initialDate = dateValue
+            .add(9, 'hour')
+            .format('YYYY-MM-DD HH:mm:ss');
 
         // user2에 대한 데이터 준비
         let user2Data = {};
@@ -117,10 +139,13 @@ function CardInfoInput() {
         user2Data.cardtypeno = userno2Type;
         user2Data.titleHolder = selectedNameId;
         user2Data.initial = initial;
+        user2Data.initialDate = dateValue
+            .add(9, 'hour')
+            .format('YYYY-MM-DD HH:mm:ss');
         let param = [user1Data, user2Data];
 
-        console.log(param);
-        // POST 요청
+        console.log(dateValue.add(9, 'hour').format('YYYY-MM-DD HH:mm:ss'));
+        //POST 요청
         axios
             .post('http://localhost:8090/api/creationCard', param)
             .then((response) => {
@@ -247,6 +272,21 @@ function CardInfoInput() {
                             ))}
                         </NameList>
                     </section>
+                    <section>
+                        <NameSelectionTitle>연애 시작 날짜</NameSelectionTitle>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker
+                                    label="연애 시작 날짜"
+                                    value={dateValue}
+                                    onChange={(newValue) => {
+                                        setDateValue(newValue);
+                                    }}
+                                    sx={{ width: '90%' }} // 너비를 80%로 줄임
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    </section>
                     <InitialInput setInitialOut={setInitial} />{' '}
                     {/* onSave prop 전달 */}
                 </MidContent>
@@ -276,20 +316,6 @@ function CardInfoInput() {
                         }}
                     >
                         선택하기
-                    </MuiButton>
-                    <MuiButton
-                        variant="contained"
-                        sx={{
-                            backgroundColor: 'rgb(148, 160, 227)',
-                            '&:hover': {
-                                backgroundColor: 'rgb(120, 140, 200)',
-                            },
-                            width: '100px',
-                            fontFamily: '"Gamja Flower", cursive',
-                        }}
-                        onClick={handlePreview} // 미리보기 버튼 클릭 시 호출
-                    >
-                        미리보기
                     </MuiButton>
                 </ButtonContainer>
             </CardInfoContainer>

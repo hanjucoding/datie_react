@@ -1,0 +1,40 @@
+.BoardItem {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e2e2;
+    display: flex;
+    justify-content: space-between;
+}
+
+.BoardItem .info_section {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.BoardItem .info_section .title_wrapper {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+.BoardItem .info_section .content_wrapper {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.BoardItem .info_section .info_row {
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: gray;
+}
+
+.BoardItem .info_section .comment-count {
+    margin-left: auto; /* Push the comment count to the right */
+}
+.BoardItem .info_section .comment-count .icon {
+    font-size: 12px; /* Adjust the icon size as needed */
+    margin-right: 3px; /* Optional: add some space between the icon and the number */
+    margin-left: 5px;
+}

@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import InputField from './InputField';
-import EmailInput from './EmailInput';
 import AddressInput from './AddressInput';
 import ResponsiveAppBar from '../RealHeader';
 import Footer from '../Footer';
 import Header from '../Header';
-import { Button as MuiButton } from '@mui/material';
+import { Button as MuiButton, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Email } from '@mui/icons-material';
 
 const SignUpForm = () => {
     const navigate = useNavigate();
@@ -19,7 +17,7 @@ const SignUpForm = () => {
     const [passwordMessage, setPasswordMessage] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
-    const [idnumber, setIdnumber] = useState('');
+    // const [idnumber, setIdnumber] = useState('');
     const [hp, setHp] = useState('');
     const [accountno, setAccountno] = useState(''); // 계좌 인증 받는 4자리 숫자변수
     const [accountcheck, setAccountcheck] = useState('');
@@ -28,6 +26,7 @@ const SignUpForm = () => {
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
+    const [selectedBank, setSelectedBank] = React.useState('');
 
     const [idCheckMessage, setIdCheckMessage] = useState(''); //아이디 중복상태저장용
     const [idCheckColor, setIdCheckColor] = useState('');
@@ -36,13 +35,14 @@ const SignUpForm = () => {
         e.preventDefault(); // 기본 제출 동작 방지
         console.log('주소:', address);
         console.log('상세주소:', detailAddress);
+
         try {
             console.log(accountno);
             const response = await axios.post('http://localhost:8090/signup', {
                 id,
                 pw,
                 name,
-                idnumber,
+                // idnumber,
                 email,
 
                 sex,
@@ -51,6 +51,7 @@ const SignUpForm = () => {
                 addr1: address,
                 addr2: detailAddress,
                 accountno,
+                bank: selectedBank,
             });
 
             // 성공적으로 가입된 경우
@@ -170,6 +171,9 @@ const SignUpForm = () => {
         setConfirmPassword(confirmPasswordValue);
         validatePasswords(pw, confirmPasswordValue);
     };
+    const handleBankChange = (event) => {
+        setSelectedBank(event.target.value); // 은행 선택 시 상태 업데이트
+    };
 
     return (
         <div>
@@ -238,13 +242,13 @@ const SignUpForm = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    <Component>주민등록번호</Component>
+                    {/* <Component>주민등록번호</Component>
                     <InputField
                         placeholder="-를제외한 주민등록번호 13자리를 기입해주세요"
                         value={idnumber}
                         type="idnumber"
                         onChange={(e) => setIdnumber(e.target.value)}
-                    />
+                    /> */}
                     <GenderContainer>
                         <label>성별 : </label>
                         <label>
@@ -275,26 +279,49 @@ const SignUpForm = () => {
                         />
                     </GenderContainer>
                     <Component>계좌</Component>
-                    <Middiv>
-                        <InputField
-                            placeholder="(-)를 제외한 계좌번호를 입력해주세요"
-                            value={accountno} // 계좌
-                            onChange={(e) => setAccountno(e.target.value)}
-                        />
-                        <MuiButton
-                            variant="contained"
-                            sx={{
-                                backgroundColor: 'rgb(148, 160, 227)',
-                                '&:hover': {
-                                    backgroundColor: 'rgb(120, 140, 200)',
-                                },
-                                width: '100px',
-                                fontFamily: '"Gamja Flower", cursive',
-                            }}
-                            onClick={handleAccountno} // 여기에 메서드 추가
-                        >
-                            인증요청
-                        </MuiButton>
+                    <Middiv style={{ marginTop: '10px' }}>
+                        <BankContainer>
+                            <Select
+                                value={selectedBank}
+                                onChange={handleBankChange}
+                                displayEmpty
+                                sx={{
+                                    width: '100%',
+                                    height: '35px',
+                                }} // 스타일 추가
+                            >
+                                <MenuItem value="" disabled>
+                                    은행 선택
+                                </MenuItem>
+                                <MenuItem value="신한">신한</MenuItem>
+                                <MenuItem value="국민">국민</MenuItem>
+                                <MenuItem value="기업">기업</MenuItem>
+                                <MenuItem value="우리">우리</MenuItem>
+                                {/* 추가 은행 항목을 여기에 추가 */}
+                            </Select>
+                        </BankContainer>
+
+                        <Middiv>
+                            <InputField
+                                placeholder="(-)를 제외한 계좌번호를 입력해주세요"
+                                value={accountno} // 계좌
+                                onChange={(e) => setAccountno(e.target.value)}
+                            />
+                            <MuiButton
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: 'rgb(148, 160, 227)',
+                                    '&:hover': {
+                                        backgroundColor: 'rgb(120, 140, 200)',
+                                    },
+                                    width: '100px',
+                                    fontFamily: '"Gamja Flower", cursive',
+                                }}
+                                onClick={handleAccountno} // 여기에 메서드 추가
+                            >
+                                인증요청
+                            </MuiButton>
+                        </Middiv>
                     </Middiv>
                     <Middiv style={{ marginTop: '10px' }}>
                         <InputField
@@ -440,5 +467,7 @@ const GenderContainer = styled.div`
     margin-top: 15px;
     font-size: 16px;
 `;
+
+const BankContainer = styled.div``;
 
 export default SignUpForm;

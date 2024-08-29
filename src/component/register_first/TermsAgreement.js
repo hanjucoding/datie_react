@@ -57,8 +57,8 @@ const CheckboxContainer = styled.div`
 `;
 
 const AgreeText = styled.span`
-    margin-right: 5px; /* 체크박스와 텍스트 사이의 간격 */
-    font-size: 12px; /* 텍스트 크기 조정 */
+    margin-right: 20px; /* 체크박스와 텍스트 사이의 간격 */
+    font-size: 20px; /* 텍스트 크기 조정 */
 `;
 
 export default TermsAgreement;

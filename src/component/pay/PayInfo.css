@@ -1,0 +1,103 @@
+.pay-design {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    text-align: center;
+}
+
+.title {
+    font-size: 40px;
+    color: black;
+    margin-bottom: 30px;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.amount-container {
+    display: flex;
+    gap: 90px;
+    width: 95%;
+    justify-content: center;
+    margin-top: 80px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 70px;
+}
+
+.styled-button {
+    width: 350px;
+    height: 50px;
+    font-family: 'Gamja Flower', cursive;
+    font-size: 18px;
+}
+
+.styled-button-primary {
+    background-color: rgb(148, 160, 227);
+}
+
+.styled-button-primary:hover {
+    background-color: rgb(120, 140, 200);
+}
+
+.styled-button-secondary {
+    background-color: #46484b;
+}
+
+.styled-button-secondary:hover {
+    background-color: #3a3d40;
+}
+
+.styled-text-field {
+    margin-top: 0px !important;
+    margin-bottom: 40px !important;
+    width: 70%;
+    max-width: 600px;
+    min-width: 300px;
+    position: relative;
+}
+
+.styled-text-field.read-only {
+    border-color: rgb(148, 160, 227);
+    border-width: 4px;
+}
+
+.styled-text-field.no-border {
+    border-width: 0px;
+    font-size: 48px;
+}
+
+.styled-text-field.custom-bg-color-1 {
+    background-color: #c3fbff;
+}
+
+.styled-text-field.custom-bg-color-2 {
+    background-color: #ffcef6;
+}
+
+.styled-label {
+    font-family: 'Gamja Flower', cursive;
+    font-size: 24px;
+    color: black;
+    margin-bottom: -20px;
+    text-align: center;
+    position: relative;
+    top: 0;
+    transform: translateX(0);
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

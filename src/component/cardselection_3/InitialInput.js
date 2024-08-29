@@ -12,10 +12,11 @@ function InitialInput({ setInitialOut }) {
 
     // 입력값 검증 및 저장 호출
     const validateAndSave = (string) => {
-        if (string.length >= 10 || /[^a-zA-Z0-9]/.test(string)) {
-            alert(
-                '이니셜은 최대 9자까지 입력 가능하며, 특수문자는 사용할 수 없습니다.',
-            );
+        if (
+            string.length >= 11 ||
+            /[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ♡♥_-]/.test(string)
+        ) {
+            alert('이니셜은 최대 10자까지 특수문자 ♡ ♥ _ -만 입력 가능합니다.');
             setInitial('');
             setInitialOut('');
             return;
@@ -31,7 +32,7 @@ function InitialInput({ setInitialOut }) {
                 onChange={handleInputChange}
             />
             <InitialGuideline>
-                (이니셜은 최대 9자까지 특수문자를 제외하고 입력 가능합니다.)
+                (이니셜은 최대 10자까지 특수문자 ♡ ♥ _ -만 입력 가능합니다.)
             </InitialGuideline>
         </section>
     );

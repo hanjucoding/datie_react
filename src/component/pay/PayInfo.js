@@ -9,75 +9,82 @@ import backgroundImage from '../../assets/datie_highfive2.png';
 function PayInfo() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [companyno, setCompanyno] = useState(0);
+
+    // 상태 변수 선언
     const [companyName, setCompanyName] = useState('');
-    const [amount, setAmount] = useState(0);
     const [peramount, setPerAmount] = useState(0);
     const [bonus, setBonus] = useState(0);
+    const [userno, setUserNo] = useState(null); // userno 상태 변수 추가
+
+    const { id, companyno, amount } = location.state || {};
+    console.log('Received from location.state:', id, companyno, amount);
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const companynoFromUrl = parseInt(params.get('companyno'), 10) || 0;
-        setCompanyno(companynoFromUrl);
-        const amountFromUrl = parseInt(params.get('amount'), 10) || 0;
+        if (companyno && amount) {
+            // 회사 이름 가져오기
+            axios
+                .get(`http://localhost:8090/api/company?companyno=${companyno}`)
+                .then((response) => {
+                    setCompanyName(response.data.companyname);
+                })
+                .catch((error) => {
+                    console.error('Error fetching company data', error);
+                });
 
-        // 회사 이름 가져오기
-        axios
-            .get(
-                `http://localhost:8090/api/company?companyno=${companynoFromUrl}`,
-            )
-            .then((response) => {
-                setCompanyName(response.data.companyname);
-            })
-            .catch((error) => {
-                console.error('Error fetching company data', error);
-            });
+            axios
+                .get(`http://localhost:8090/api/id?id=${id}`)
+                .then((response) => {
+                    setUserNo(response.data.userno);
+                })
+                .catch((error) => {
+                    console.error('userno찾기에러', error);
+                });
 
-        setAmount(amountFromUrl);
+            // amount의 1의 자리 구하기
+            const lastDigit = amount % 10;
 
-        // perAmount와 bonus 계산
-        const calculatedBonus = amountFromUrl % 10; // 1의 자리수를 bonus로 설정
-        const calculatedPerAmount = (amountFromUrl - calculatedBonus) / 2; // 나머지 금액의 절반을 perAmount로 설정
+            // 보너스: amount의 1의 자리
+            const bonus = lastDigit;
 
-        setPerAmount(calculatedPerAmount);
-        setBonus(calculatedBonus);
+            // 나머지 금액을 절반으로 나누기
+            const remainingAmount = amount - lastDigit;
+            const peramount = remainingAmount / 2;
 
-        // bonus가 0보다 클 때 Swal.fire 호출
-        if (calculatedBonus > 0) {
-            Swal.fire({
-                html: `
-                    <div style="font-size: 24px;">
-                        ${calculatedBonus}원은 데이티가 쏘니까<br>
-                        걱정 말라구!
-                    </div>
-                `,
-                width: 900,
-                padding: '3em',
-                color: '#716add',
-                backdrop: `
-                    rgba(0,0,123,0.4)
-                    left top
-                    no-repeat
-                `,
-            });
-        }
-    }, [location.search]);
+            setPerAmount(peramount);
+            setBonus(bonus);
 
-    // 로그인 상태 확인 함수
-    const checkLoginStatus = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:8090/api/check-login',
+            // 보너스 알림
+            if (bonus > 0) {
+                Swal.fire({
+                    html: `
+                        <div style="font-size: 24px;">
+                            ${bonus}원은 데이티가 쏘니까<br>
+                            걱정 말라구!
+                        </div>
+                    `,
+                    width: 900,
+                    padding: '3em',
+                    color: '#716add',
+                    backdrop: `
+                        rgba(0,0,123,0.4)
+                        left top
+                        no-repeat
+                    `,
+                });
+            }
+            console.log(
+                'After calculation:',
+                companyno,
+                companyName,
+                amount,
+                peramount,
+                bonus,
+                userno,
             );
-            return response.data.loggedIn; // 로그인 상태 여부 반환
-        } catch (error) {
-            console.error('Error checking login status', error);
-            return false; // 로그인 상태 확인 중 에러 발생 시 로그인 안 된 것으로 간주
         }
-    };
+    }, [companyno, amount, id, userno]);
 
     const handlePayment = async () => {
-        const loggedIn = await checkLoginStatus();
         navigate('/pay/Paypassword', {
             state: {
                 companyno,
@@ -85,27 +92,14 @@ function PayInfo() {
                 amount,
                 peramount,
                 bonus,
+                userno, // userno를 함께 전달
             },
         });
-        // if (loggedIn) {
-        //     navigate('/pay/Paypassword', {
-        //         state: {
-        //             companyName,
-        //             amount,
-        //             peramount,
-        //             bonus,
-        //         },
-        //     });
-        // } else {
-        //     navigate('/login');
-        // }
     };
 
-    // 숫자에 쉼표를 붙이는 함수
     const formatNumberWithCommas = (number) => {
         return new Intl.NumberFormat().format(number);
     };
-
     return (
         <PayDesign
             style={{
@@ -131,28 +125,40 @@ function PayInfo() {
                         variant="outlined"
                         value={companyName}
                         InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="4px" /* 테두리 두께 설정 */
+                        borderColor="rgb(148, 160, 227)" /* 테두리 색상 설정 */
                     />
+                    <StyledLabel htmlFor="amount">총 금액</StyledLabel>
                     <StyledTextField
                         id="amount"
                         variant="outlined"
-                        label="총 금액"
                         value={`${formatNumberWithCommas(amount)}원`}
                         InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="0px" /* 테두리 숨기기 */
+                        fontSize="48px" /* 글씨 크기 설정 */
                     />
                     <AmountContainer>
                         <StyledTextField
                             id="peramount1"
                             variant="outlined"
-                            value={`${formatNumberWithCommas(peramount)}원`}
+                            value={
+                                '나도 ' +
+                                `${formatNumberWithCommas(peramount)}원`
+                            }
                             InputProps={{ readOnly: true }}
-                            customBgColor="#C3FBFF" // 첫 번째 박스 색상
+                            customBgColor="#C3FBFF"
                         />
                         <StyledTextField
                             id="peramount2"
                             variant="outlined"
-                            value={`${formatNumberWithCommas(peramount)}원`}
+                            value={
+                                '너도 ' +
+                                `${formatNumberWithCommas(peramount)}원`
+                            }
                             InputProps={{ readOnly: true }}
-                            customBgColor="#FFCEF6" // 두 번째 박스 색상
+                            customBgColor="#FFCEF6"
                         />
                     </AmountContainer>
                 </TextContainer>
@@ -165,19 +171,15 @@ function PayInfo() {
                 >
                     결제하기
                 </StyledButton>
-                <StyledButton variant="contained" color="secondary">
-                    취소
-                </StyledButton>
             </ButtonContainer>
         </PayDesign>
     );
 }
-
 const PayDesign = styled.main`
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 상단과 하단의 공간을 최대로 늘리기 */
+    justify-content: space-between;
     align-items: center;
     padding: 16px;
     text-align: center;
@@ -189,26 +191,19 @@ const Title = styled.h1`
     margin-bottom: 30px;
 `;
 
-const TextContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-`;
-
 const AmountContainer = styled.div`
     display: flex;
-    gap: 90px; /* 텍스트 필드 사이의 간격 설정 */
-    width: 95%; /* 가로 폭을 100%로 설정 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    margin-top: 80px; /* 여백 추가 */
+    gap: 90px;
+    width: 95%;
+    justify-content: center;
+    margin-top: 80px;
 `;
 
 const ButtonContainer = styled.div`
     display: flex;
-    flex-direction: column; /* 버튼을 세로로 정렬 */
-    gap: 16px; /* 버튼 사이의 간격 */
-    margin-bottom: 70px; /* 하단 여백 */
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 70px;
 `;
 
 const StyledButton = styled(MuiButton)`
@@ -231,42 +226,52 @@ const StyledButton = styled(MuiButton)`
         }
     }
 `;
+const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 중앙 정렬 */
+    justify-content: center; /* 중앙 정렬 */
+    width: 100%;
+`;
+
+const StyledLabel = styled.div`
+    font-family: 'Gamja Flower', cursive;
+    font-size: 24px;
+    color: black;
+    margin-bottom: -20px;
+    text-align: center;
+    position: relative;
+    top: 0; /* 필요 시 조정 */
+    transform: translateX(0); /* 가운데 정렬을 위한 transform 제거 */
+    z-index: 1;
+    width: 100%; /* 라벨이 중앙에 위치하도록 전체 너비를 설정 */
+    display: flex;
+    justify-content: center; /* 라벨 텍스트를 중앙에 정렬 */
+`;
 
 const StyledTextField = styled(MuiTextField)`
     margin-bottom: 40px !important;
-    width: 45%; /* 조정된 폭, 가로로 정렬하기 위해 여유 공간 확보 */
+    width: ${(props) => (props.wide ? '70%' : '45%')};
+    max-width: ${(props) => (props.wide ? '600px' : 'none')};
+    min-width: ${(props) => (props.wide ? '300px' : 'none')};
+
+    .MuiOutlinedInput-notchedOutline {
+        border-color: ${(props) => props.borderColor || 'white'};
+        border-width: ${(props) => props.borderWidth || '2px'};
+        border-radius: 20px;
+    }
 
     .MuiInputBase-input {
         font-family: 'Gamja Flower', cursive;
-        font-size: 32px;
-        color: black; /* 텍스트 색상을 검은색으로 변경 */
-        background-color: ${(props) =>
-            props.customBgColor || 'white'}; /* 박스 내부 색상 설정 */
-        padding: 12px 14px; /* 텍스트가 박스의 중앙에 오도록 패딩 조정 */
-        height: 1.5em; /* 텍스트 높이를 조정 */
-        line-height: 1.5em; /* 수직 중앙 정렬을 위해 line-height 설정 */
-        text-align: center; /* 텍스트를 수평 중앙 정렬 */
-        box-sizing: border-box; /* 패딩을 포함한 박스 크기 계산 */
-        border-radius: 20px; /* 입력 박스의 테두리를 둥글게 설정 */
-    }
-
-    .MuiFormLabel-root {
-        font-family: 'Gamja Flower', cursive; /* 동일한 글씨체 설정 */
-        font-size: 32px; /* 동일한 글씨 크기 설정 */
-        color: black; /* 레이블 색상을 검은색으로 변경 */
-    }
-
-    .MuiOutlinedInput-root {
-        &.Mui-focused .MuiOutlinedInput-notchedOutline,
-        &:hover .MuiOutlinedInput-notchedOutline,
-        &.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-            border-color: white; /* 포커스 및 호버 상태에서 테두리 색상을 유지 */
-        }
-    }
-
-    .MuiOutlinedInput-notchedOutline {
-        border-color: white; /* 테두리 색상을 흰색으로 설정 */
-        border-radius: 20px; /* 테두리를 둥글게 설정 */
+        font-size: ${(props) => props.fontSize || '32px'};
+        color: black;
+        background-color: ${(props) => props.customBgColor || 'white'};
+        padding: 12px 14px;
+        height: 1.5em;
+        line-height: 1.5em;
+        text-align: center;
+        box-sizing: border-box;
+        border-radius: 20px;
     }
 `;
 
