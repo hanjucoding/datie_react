@@ -24,6 +24,8 @@ import ViewProfile from './component/profile/ViewProfile';
 import DiaryDetail from './component/diary/pages/DiaryDetail';
 import DiaryHome from './component/diary/pages/DiaryHome';
 
+import PayLogin from './component/pay/PayLoginPage';
+import PaymentRecord from './component/payment_record/PaymentRecord';
 function App() {
     return (
         <Routes>
