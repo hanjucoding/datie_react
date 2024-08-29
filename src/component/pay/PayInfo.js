@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-// import './PayInfo.css'; // CSS 파일을 import 합니다.z
-import backgroundImage from '../../assets/datie_highfive2.png';
 import styled from 'styled-components';
 import { TextField as MuiTextField, Button as MuiButton } from '@mui/material';
+import axios from 'axios';
+import Swal from 'sweetalert2'; // Swal import
+import backgroundImage from '../../assets/datie_highfive2.png';
+
 function PayInfo() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -100,10 +100,8 @@ function PayInfo() {
     const formatNumberWithCommas = (number) => {
         return new Intl.NumberFormat().format(number);
     };
-
     return (
-        <main
-            className="pay-design"
+        <PayDesign
             style={{
                 backgroundImage: `url(${backgroundImage})`,
                 backgroundSize: 'cover',
@@ -120,59 +118,68 @@ function PayInfo() {
             }}
         >
             <div>
-                <h1 className="title">결제정보</h1>
-                <div className="text-container">
-                    <input
-                        className="styled-text-field read-only"
+                <Title>결제정보</Title>
+                <TextContainer>
+                    <StyledTextField
                         id="companyname"
-                        type="text"
+                        variant="outlined"
                         value={companyName}
-                        readOnly
+                        InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="4px" /* 테두리 두께 설정 */
+                        borderColor="rgb(148, 160, 227)" /* 테두리 색상 설정 */
                     />
-                    <div className="styled-label" htmlFor="amount">
-                        총 금액
-                    </div>
-                    <input
-                        className="styled-text-field no-border"
+                    <StyledLabel htmlFor="amount">총 금액</StyledLabel>
+                    <StyledTextField
                         id="amount"
-                        type="text"
+                        variant="outlined"
                         value={`${formatNumberWithCommas(amount)}원`}
-                        readOnly
+                        InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="0px" /* 테두리 숨기기 */
+                        fontSize="48px" /* 글씨 크기 설정 */
                     />
-                    <div className="amount-container">
-                        <input
-                            className="styled-text-field custom-bg-color-1"
+                    <AmountContainer>
+                        <StyledTextField
                             id="peramount1"
-                            type="text"
-                            value={`${formatNumberWithCommas(peramount)}원`}
-                            readOnly
+                            variant="outlined"
+                            value={
+                                '나도 ' +
+                                `${formatNumberWithCommas(peramount)}원`
+                            }
+                            InputProps={{ readOnly: true }}
+                            customBgColor="#C3FBFF"
                         />
-                        <input
-                            className="styled-text-field custom-bg-color-2"
+                        <StyledTextField
                             id="peramount2"
-                            type="text"
-                            value={`${formatNumberWithCommas(peramount)}원`}
-                            readOnly
+                            variant="outlined"
+                            value={
+                                '너도 ' +
+                                `${formatNumberWithCommas(peramount)}원`
+                            }
+                            InputProps={{ readOnly: true }}
+                            customBgColor="#FFCEF6"
                         />
-                    </div>
-                </div>
+                    </AmountContainer>
+                </TextContainer>
             </div>
-            <div className="button-container">
-                <button
-                    className="styled-button styled-button-primary"
+            <ButtonContainer>
+                <StyledButton
+                    variant="contained"
+                    color="primary"
                     onClick={handlePayment}
                 >
                     결제하기
-                </button>
-            </div>
-        </main>
+                </StyledButton>
+            </ButtonContainer>
+        </PayDesign>
     );
 }
 const PayDesign = styled.main`
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 상단과 하단의 공간을 최대로 늘리기 */
+    justify-content: space-between;
     align-items: center;
     padding: 16px;
     text-align: center;
@@ -184,26 +191,19 @@ const Title = styled.h1`
     margin-bottom: 30px;
 `;
 
-const TextContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-`;
-
 const AmountContainer = styled.div`
     display: flex;
-    gap: 90px; /* 텍스트 필드 사이의 간격 설정 */
-    width: 95%; /* 가로 폭을 100%로 설정 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    margin-top: 80px; /* 여백 추가 */
+    gap: 90px;
+    width: 95%;
+    justify-content: center;
+    margin-top: 80px;
 `;
 
 const ButtonContainer = styled.div`
     display: flex;
-    flex-direction: column; /* 버튼을 세로로 정렬 */
-    gap: 16px; /* 버튼 사이의 간격 */
-    margin-bottom: 70px; /* 하단 여백 */
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 70px;
 `;
 
 const StyledButton = styled(MuiButton)`
@@ -226,42 +226,53 @@ const StyledButton = styled(MuiButton)`
         }
     }
 `;
+const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 중앙 정렬 */
+    justify-content: center; /* 중앙 정렬 */
+    width: 100%;
+`;
+
+const StyledLabel = styled.div`
+    font-family: 'Gamja Flower', cursive;
+    font-size: 24px;
+    color: black;
+    margin-bottom: -20px;
+    text-align: center;
+    position: relative;
+    top: 0; /* 필요 시 조정 */
+    transform: translateX(0); /* 가운데 정렬을 위한 transform 제거 */
+    z-index: 1;
+    width: 100%; /* 라벨이 중앙에 위치하도록 전체 너비를 설정 */
+    display: flex;
+    justify-content: center; /* 라벨 텍스트를 중앙에 정렬 */
+`;
 
 const StyledTextField = styled(MuiTextField)`
     margin-bottom: 40px !important;
-    width: 45%; /* 조정된 폭, 가로로 정렬하기 위해 여유 공간 확보 */
+    width: ${(props) => (props.wide ? '70%' : '45%')};
+    max-width: ${(props) => (props.wide ? '600px' : 'none')};
+    min-width: ${(props) => (props.wide ? '300px' : 'none')};
+
+    .MuiOutlinedInput-notchedOutline {
+        border-color: ${(props) => props.borderColor || 'white'};
+        border-width: ${(props) => props.borderWidth || '2px'};
+        border-radius: 20px;
+    }
 
     .MuiInputBase-input {
         font-family: 'Gamja Flower', cursive;
-        font-size: 32px;
-        color: black; /* 텍스트 색상을 검은색으로 변경 */
-        background-color: ${(props) =>
-            props.customBgColor || 'white'}; /* 박스 내부 색상 설정 */
-        padding: 12px 14px; /* 텍스트가 박스의 중앙에 오도록 패딩 조정 */
-        height: 1.5em; /* 텍스트 높이를 조정 */
-        line-height: 1.5em; /* 수직 중앙 정렬을 위해 line-height 설정 */
-        text-align: center; /* 텍스트를 수평 중앙 정렬 */
-        box-sizing: border-box; /* 패딩을 포함한 박스 크기 계산 */
-        border-radius: 20px; /* 입력 박스의 테두리를 둥글게 설정 */
-    }
-
-    .MuiFormLabel-root {
-        font-family: 'Gamja Flower', cursive; /* 동일한 글씨체 설정 */
-        font-size: 32px; /* 동일한 글씨 크기 설정 */
-        color: black; /* 레이블 색상을 검은색으로 변경 */
-    }
-
-    .MuiOutlinedInput-root {
-        &.Mui-focused .MuiOutlinedInput-notchedOutline,
-        &:hover .MuiOutlinedInput-notchedOutline,
-        &.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-            border-color: white; /* 포커스 및 호버 상태에서 테두리 색상을 유지 */
-        }
-    }
-
-    .MuiOutlinedInput-notchedOutline {
-        border-color: white; /* 테두리 색상을 흰색으로 설정 */
-        border-radius: 20px; /* 테두리를 둥글게 설정 */
+        font-size: ${(props) => props.fontSize || '32px'};
+        color: black;
+        background-color: ${(props) => props.customBgColor || 'white'};
+        padding: 12px 14px;
+        height: 1.5em;
+        line-height: 1.5em;
+        text-align: center;
+        box-sizing: border-box;
+        border-radius: 20px;
     }
 `;
+
 export default PayInfo;

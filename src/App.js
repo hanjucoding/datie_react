@@ -29,6 +29,8 @@ import Regist from './component/diaryboard/pages/Regist';
 import View from './component/diaryboard/pages/View';
 import Edit from './component/diaryboard/pages/Edit';
 
+import PayLogin from './component/pay/PayLoginPage';
+import PaymentRecord from './component/payment_record/PaymentRecord';
 function App() {
     return (
         <Routes>
