@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";  // react-router-dom 사용
-import background from "../../assets/datie_background.webp";
+import background from "../../assets/datie_background2.png";
 import logo from "../../assets/datie_logo.png";
 import { Button as MuiButton } from "@mui/material";
 
@@ -48,17 +48,17 @@ function IndexMain() {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        height: "100%",
+        minHeight: "1800px",
       }}
     >
       <div
         className="inner_wrapper"
         style={{
           backgroundImage: `url(${background})`,
-          backgroundSize: "auto",
-          backgroundPosition: "center",
+          backgroundSize: "cover",  // 변경된 부분
+          backgroundPosition: "center",  // 이미지가 가운데 정렬되도록 설정
           width: "600px",
-          height: "100vh", 
+          minHeight: "100vh", 
           borderRadius: "8px",
           position: "relative",
         }}
@@ -66,7 +66,7 @@ function IndexMain() {
         <div
           style={{
             position: "absolute",
-            top: "10px",
+            top: "-300px",
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 1,
@@ -89,10 +89,12 @@ function IndexMain() {
         >
           <div
             style={{
+              position: "relative",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               padding: "0 60px",
+              top: "-150px",
             }}
           >
             <h1
@@ -106,7 +108,7 @@ function IndexMain() {
                 animation: "fadeInLeft 1s ease-in-out",
               }}
             >
-              당신의 데이트
+              당신의 <br />데이트
             </h1>
             <h1
               style={{
@@ -119,16 +121,18 @@ function IndexMain() {
                 animation: "fadeInRight 1s ease-in-out",
               }}
             >
-              편리한 가계부
+              편리한 <br />가계부
             </h1>
           </div>
           <div
             style={{
+              position: "relative",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               padding: "0 60px",
               marginTop: "20px",
+              top: "-150px",
             }}
           >
             <h1
@@ -142,7 +146,7 @@ function IndexMain() {
                 animation: "fadeInLeft 1.5s ease-in-out",
               }}
             >
-              데이티와 함께하세요
+              데이티와 <br />함께하세요
             </h1>
             <h1
               style={{
@@ -155,7 +159,7 @@ function IndexMain() {
                 animation: "fadeInRight 1.5s ease-in-out",
               }}
             >
-              데이트헬퍼
+              데이트 <br />헬퍼
             </h1>
           </div>
         </div>
@@ -186,6 +190,7 @@ function IndexMain() {
               height: "70px",
               fontSize: "20px",
               fontWeight: "bold",
+              bottom: "-300px",
             }}
             onClick={handleSignClick}  // 로그인 버튼 클릭 이벤트 핸들러 추가
           >
@@ -203,6 +208,7 @@ function IndexMain() {
               height: "70px",
               fontSize: "20px",
               fontWeight: "bold",
+              bottom: "-300px",
             }}
             onClick={handleLoginClick}  // 로그인 버튼 클릭 이벤트 핸들러 추가
           >

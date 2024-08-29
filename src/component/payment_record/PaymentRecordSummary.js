@@ -5,7 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import ResponsiveAppBar from "../RealHeader";
 
-function PaymentRecord() {
+function PaymentRecordSummary() {
   const [paymentRecords, setPaymentRecords] = useState([]); // 거래 내역을 저장할 상태
   const [groupedRecords, setGroupedRecords] = useState({}); // 카테고리별로 그룹화된 거래 내역을 저장할 상태
   const [openCategories, setOpenCategories] = useState([]); // 열려 있는 카테고리를 저장할 상태
@@ -37,7 +37,7 @@ function PaymentRecord() {
     if (cardno) {
       // 결제 기록 가져오기
       axios
-        .post(`http://localhost:8090/api/card/${cardno}/payment-records`)
+        .post(`http://localhost:8090/api/card/${cardno}/payment-records-all`)
         .then((response) => {
           const records = response.data;
           setPaymentRecords(records); // 가져온 결제 기록을 상태에 저장
@@ -45,14 +45,16 @@ function PaymentRecord() {
           // 카테고리별로 거래 내역을 그룹화
           const grouped = records.reduce((acc, record) => {
             const category = record.category || "기타"; // 카테고리가 없으면 "기타"로 분류
-            if (!acc[category]) {
+            if (!acc[category] && record.paystate === 1) {
               acc[category] = {
                 total: 0,
                 records: [],
               };
             }
-            acc[category].total += record.amount;
-            acc[category].records.push(record);
+            if (record.paystate === 1) {
+              acc[category].total += record.amount;
+              acc[category].records.push(record);
+            }
             return acc;
           }, {});
 
@@ -98,23 +100,22 @@ function PaymentRecord() {
   };
 
   return (
+    <div>
+    <ResponsiveAppBar />
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         height: "100vh", // 뷰포트 전체 높이로 설정
-        maxWidth: "1024px", // 최대 너비 설정
+        maxWidth: "600px", // 최대 너비 설정
         width: "100%", // 너비 100%로 설정
         margin: "0 auto", // 가로 방향 중앙 정렬
-        padding: "20px",
         backgroundColor: "#f0f0f0",
         borderRadius: "8px",
         justifyContent: "center", // 세로 방향 중앙 정렬
         alignItems: "center", // 가로 방향 중앙 정렬
       }}
     >
-      <ResponsiveAppBar />
-
       {/* 파이차트 섹션 */}
       <Box
         sx={{
@@ -144,7 +145,6 @@ function PaymentRecord() {
           flex: "2",
           backgroundColor: "#ffffff",
           borderRadius: "8px",
-          padding: "20px",
           width: "600px",
           margin: "0px 10px",
           overflowY: "auto",
@@ -198,7 +198,8 @@ function PaymentRecord() {
         ))}
       </Box>
     </Box>
+    </div>
   );
 }
 
-export default PaymentRecord;
+export default PaymentRecordSummary;

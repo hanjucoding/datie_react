@@ -41,7 +41,7 @@ const LoginForm = () => {
                 }
 
                 // 로그인 성공 시 경로 이동
-                navigate('/'); // IndexMain 컴포넌트가 렌더링되는 경로
+                navigate('/main'); // IndexMain 컴포넌트가 렌더링되는 경로
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {
