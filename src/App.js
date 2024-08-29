@@ -24,6 +24,10 @@ import EditProfile from './component/profile/EditProfile';
 import ViewProfile from './component/profile/ViewProfile';
 import DiaryDetail from './component/diary/pages/DiaryDetail';
 import DiaryHome from './component/diary/pages/DiaryHome';
+import BoardList from './component/diaryboard/pages/BoardList';
+import Regist from './component/diaryboard/pages/Regist';
+import View from './component/diaryboard/pages/View';
+import Edit from './component/diaryboard/pages/Edit';
 
 function App() {
     return (
@@ -63,6 +67,10 @@ function App() {
             <Route path="/view-profile/:userno" element={<ViewProfile />} />
             <Route path="/diary" element={<DiaryHome />} />
             <Route path="/diary/detail/:date" element={<DiaryDetail />} />
+            <Route path="/board/list" element={<BoardList />} />
+            <Route path="/board/regist" element={<Regist />} />
+            <Route path="/board/view" element={<View />} />
+            <Route path="/board/edit" element={<Edit />} />
 
             <Route path="/" element={<LoginPage />} />
         </Routes>
