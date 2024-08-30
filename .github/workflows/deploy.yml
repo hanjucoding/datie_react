@@ -1,0 +1,68 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # 배포할 브랜치
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # React 앱에 맞는 Node.js 버전
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Remove old build files from EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          sudo rm -rf /var/www/html/*  # 기존 파일 삭제
+  
+    - name: Build the React app
+      run: npm run build
+
+    - name: Create .env file
+      run: echo "REACT_APP_API_URL=http://51.21.130.65:8090" > .env
+
+    - name: Deploy to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        source: "build/*"  # 배포할 파일 경로
+        target: "/var/www/html/"  # EC2에서의 배포 경로
+
+    - name: Upload .env file to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        source: ".env"  # .env 파일 경로
+        target: "/var/www/html/"  # EC2에서의 배포 경로
+
+    - name: Restart Nginx
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          sudo systemctl restart nginx
