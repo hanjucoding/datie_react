@@ -5,7 +5,7 @@ import { TextField as MuiTextField, Button as MuiButton } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import backgroundImage from '../../assets/datie_highfive2.png';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const backInDown1 = keyframes`
   0% {
     opacity: 0.5;
@@ -69,7 +69,7 @@ function PayInfo() {
     useEffect(() => {
         if (companyno && amount) {
             axios
-                .get(`http://localhost:8090/api/company?companyno=${companyno}`)
+                .get(`${apiUrl}/api/company?companyno=${companyno}`)
                 .then((response) => {
                     setCompanyName(response.data.companyname);
                 })
@@ -78,7 +78,7 @@ function PayInfo() {
                 });
 
             axios
-                .get(`http://localhost:8090/api/id?id=${id}`)
+                .get(`${apiUrl}/api/id?id=${id}`)
                 .then((response) => {
                     setUserNo(response.data.userno);
                 })
@@ -135,7 +135,7 @@ function PayInfo() {
     useEffect(() => {
         if (userno !== null) {
             axios
-                .get(`http://localhost:8090/api/card?userno=${userno}`)
+                .get(`${apiUrl}/api/card?userno=${userno}`)
                 .then((response) => {
                     setNames(response.data);
                 })

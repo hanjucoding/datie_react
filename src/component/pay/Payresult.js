@@ -6,6 +6,7 @@ import backgroundImage from '../../assets/datie_highfive2_result.png';
 import axios from 'axios';
 import logo from '../../assets/datie_logo.png';
 import styled from 'styled-components';
+const apiUrl = process.env.REACT_APP_API_URL;
 // Alert 설정
 const alerts = {
     success: {
@@ -80,7 +81,7 @@ function Payresult() {
         const processPayment = async () => {
             await showloading(setDarkOverlay); // 로딩 표시
             axios
-                .post('http://localhost:8090/api/payresult', {
+                .post(`${apiUrl}/api/payresult`, {
                     cardno,
                     companyno,
                     content,

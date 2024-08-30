@@ -5,7 +5,7 @@ import { Button as MuiButton } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import picture from '../../assets/datie_highfive2-cutout.png';
 import axios from 'axios';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const PayLoginForm = () => {
     const navigate = useNavigate();
     const location = useLocation(); // useLocation 훅 사용
@@ -40,7 +40,7 @@ const PayLoginForm = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8090/login',
+                `${apiUrl}/login`,
                 JSON.stringify({
                     id: id,
                     pw: pw,
