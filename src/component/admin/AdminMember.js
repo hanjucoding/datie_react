@@ -73,6 +73,11 @@ const Admin = () => {
     }, [param]);
     const [data, setData] = useState({});
     const getApi = () => {
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
         axios.get(`${apiUrl}/api/admin/list`, { params: param }).then((res) => {
             console.log(res);
             setData(res.data);
