@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import './Payresult.css'; // CSS 파일을 임포트
-import backgroundImage from '../../assets/payresult.webp';
+import backgroundImage from '../../assets/datie_highfive2_result.png';
 import axios from 'axios';
-
+import logo from '../../assets/datie_logo.png';
+import styled from 'styled-components';
 // Alert 설정
 const alerts = {
     success: {
@@ -33,7 +34,7 @@ const alerts = {
 
 const showAlert = (type, setDarkOverlay, navigate) => {
     if (alerts[type]) {
-        setDarkOverlay(true); // 특정 div를 어둡게 설정
+        // setDarkOverlay(true); // 특정 div를 어둡게 설정
         Swal.fire(alerts[type]).then((result) => {
             setDarkOverlay(false); // 알림 후 특정 div를 원래대로 복원
             if (result.isConfirmed) {
@@ -48,7 +49,7 @@ const showAlert = (type, setDarkOverlay, navigate) => {
 
 const showloading = (setDarkOverlay) => {
     return new Promise((resolve) => {
-        setDarkOverlay(true);
+        // setDarkOverlay(true);
         Swal.fire({
             title: '결제 처리중입니다',
             html: '좀만 기다려주세요!',
@@ -127,6 +128,7 @@ function Payresult() {
                 overflow: 'hidden',
             }}
         >
+            <CompletionImage src={logo} />
             {/* 어두운 오버레이를 위한 div */}
             <div
                 style={{
@@ -158,5 +160,13 @@ function Payresult() {
         </div>
     );
 }
+
+const CompletionImage = styled.img`
+    aspect-ratio: 1;
+    object-fit: contain;
+    width: 100%;
+    max-width: 300px;
+    margin-top: -650px;
+`;
 
 export default Payresult;
