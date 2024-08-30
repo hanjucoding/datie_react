@@ -58,7 +58,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         source: ".env"  # .env 파일 경로
-        target: "/var/www/html/"  # EC2에서의 배포 경로
+        target: "/var/www/html/build"  # EC2에서의 배포 경로
 
     - name: Restart Nginx
       uses: appleboy/ssh-action@master
