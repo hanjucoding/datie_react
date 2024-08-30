@@ -17,6 +17,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+const apiUrl = process.env.REACT_APP_API_URL;
 function CardInfoInput() {
     // 플러그인 사용
     dayjs.extend(utc);
@@ -45,7 +46,7 @@ function CardInfoInput() {
     }, []);
     const getApi = () => {
         axios
-            .get('http://localhost:8090/api/userInfoByNo', { params: param })
+            .get(`${apiUrl}/api/userInfoByNo`, { params: param })
             .then((res) => {
                 console.log(res);
                 setNames(res.data);
@@ -147,7 +148,7 @@ function CardInfoInput() {
         console.log(dateValue.add(9, 'hour').format('YYYY-MM-DD HH:mm:ss'));
         //POST 요청
         axios
-            .post('http://localhost:8090/api/creationCard', param)
+            .post(`${apiUrl}/api/creationCard`, param)
             .then((response) => {
                 console.log('User1 data sent successfully:', response.data);
                 // 추가적인 처리 (예: 성공 알림 등)

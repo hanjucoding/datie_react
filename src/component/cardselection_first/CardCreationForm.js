@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // useNavigate 사용
 import { Token } from '@mui/icons-material';
 import { jwtDecode } from 'jwt-decode';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const CardCreationForm = () => {
     const [token, setToken] = useState('');
     const [loverId, setLoverId] = useState('');
@@ -39,7 +39,7 @@ const CardCreationForm = () => {
         };
         try {
             const response = await axios.post(
-                'http://localhost:8090/api/lovercheck',
+                `${apiUrl}/api/lovercheck`,
                 requestBody,
             );
             console.log(response.data);

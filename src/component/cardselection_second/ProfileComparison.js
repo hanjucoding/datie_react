@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import type1Image from '../../assets/type1-front.png';
 import type2Image from '../../assets/type2-front.png';
 import type3Image from '../../assets/type3-front.png';
+const apiUrl = process.env.REACT_APP_API_URL;
 const ProfileComparison = () => {
     const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ const ProfileComparison = () => {
     let [userObject2, setUserObject2] = useState({});
     const getApi = () => {
         axios
-            .get('http://localhost:8090/api/userInfoByNo', { params: param })
+            .get(`${apiUrl}/api/userInfoByNo`, { params: param })
             .then((res) => {
                 console.log(res);
                 setUserObject1(res.data[0]);
