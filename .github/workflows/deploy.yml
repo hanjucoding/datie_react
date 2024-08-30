@@ -16,13 +16,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Create .env file
+      run: echo "REACT_APP_API_URL=http://51.21.130.65:8090" > .env  # 루트 디렉토리에 .env 파일 생성
+
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'  # React 앱에 맞는 Node.js 버전
 
     - name: Install dependencies
-      run: npm install
+      run: npm install  # 의존성 설치
+
+    - name: Build the React app
+      run: npm run build  # 빌드 실행
 
     - name: Remove old build files from EC2
       uses: appleboy/ssh-action@master
@@ -34,12 +40,6 @@ jobs:
         script: |
           sudo rm -rf /var/www/html/*  # 기존 파일 삭제
   
-    - name: Build the React app
-      run: npm run build
-
-    - name: Create .env file
-      run: echo "REACT_APP_API_URL=http://51.21.130.65:8090" > .env
-
     - name: Deploy to EC2
       uses: appleboy/scp-action@master
       with:
@@ -50,15 +50,6 @@ jobs:
         source: "build/*"  # 배포할 파일 경로
         target: "/var/www/html/"  # EC2에서의 배포 경로
 
-    - name: Upload .env file to EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        port: 22
-        source: ".env"  # .env 파일 경로
-        target: "/var/www/html/build"  # EC2에서의 배포 경로
 
     - name: Restart Nginx
       uses: appleboy/ssh-action@master
