@@ -4,6 +4,7 @@ import axios from 'axios';
 import RealHeader from '../../../component/RealHeader';
 import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
+import DiaryDetail from '../components/DiaryDetail';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -14,13 +15,14 @@ import { format } from 'date-fns';
 function Regist() {
     const navigate = useNavigate();
     const [param, setParam] = useState({
-        user_no: 63, // 임시
+        user_no: 65, // 임시
     });
     const [file, setFile] = useState([]); // 파일
     const [openEditorModal, setOpenEditorModal] = useState(false);
     const [dates, setDates] = useState([]); // API로부터 받은 날짜 리스트
     const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
     const [diaryData, setDiaryData] = useState([]); // 선택된 날짜의 다이어리 데이터
+    const [showDiaryDetail, setShowDiaryDetail] = useState(false); // 다이어리 상세 정보 표시 여부
 
     const handleOpenEditorModal = () => {
         fetchDates(); // 모달을 열기 전에 날짜를 가져옴
@@ -44,6 +46,11 @@ function Regist() {
         });
         for (let k in param) {
             formData.append(k, param[k]);
+        }
+
+        // selectedDate 추가
+        if (selectedDate) {
+            formData.append('selectedDate', selectedDate);
         }
 
         axios
@@ -128,6 +135,12 @@ function Regist() {
     const handleDateClick = (date) => {
         setSelectedDate(date);
         fetchDiaryDetails(date);
+        console.log(date);
+    };
+
+    const handleCompleteSelection = () => {
+        setShowDiaryDetail(true); // 선택 완료 시 다이어리 상세 정보를 표시
+        handleCloseEditorModal(); // 모달 창 닫기
     };
 
     return (
@@ -196,6 +209,13 @@ function Regist() {
                                     </div>
                                 </form>
                             </div>
+                            {/* 선택된 날짜의 다이어리 상세 정보 표시 */}
+                            {showDiaryDetail && (
+                                <DiaryDetail
+                                    key={selectedDate}
+                                    date={selectedDate}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -275,6 +295,17 @@ function Regist() {
                             ) : (
                                 <p>No diary data available for this date.</p>
                             )}
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    marginTop: '20px',
+                                    backgroundColor: 'blue',
+                                    color: 'white',
+                                }}
+                                onClick={handleCompleteSelection}
+                            >
+                                선택 완료
+                            </Button>
                         </div>
                     )}
                 </Box>
