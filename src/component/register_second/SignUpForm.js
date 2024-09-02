@@ -212,13 +212,13 @@ const SignUpForm = () => {
                     <Component>비밀번호</Component>
                     <InputField
                         placeholder="비밀번호 입력(문자, 숫자, 특수문자 포함 8~20자)"
-                        type="pw"
+                        type="password"
                         onChange={handlePasswordChange}
                     />
                     <Component>비밀번호 확인</Component>
                     <InputField
                         placeholder="비밀번호 재입력"
-                        type="pw"
+                        type="password"
                         onChange={handleConfirmPasswordChange}
                         style={{
                             color: pw === confirmPassword ? 'blue' : 'red',
