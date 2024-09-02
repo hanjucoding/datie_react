@@ -8,7 +8,7 @@ import Header from '../Header';
 import { Button as MuiButton, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const SignUpForm = () => {
     const navigate = useNavigate();
     const [id, setId] = useState('');
@@ -27,6 +27,7 @@ const SignUpForm = () => {
     const [address, setAddress] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
     const [selectedBank, setSelectedBank] = React.useState('');
+    const role = 'role';
 
     const [idCheckMessage, setIdCheckMessage] = useState(''); //아이디 중복상태저장용
     const [idCheckColor, setIdCheckColor] = useState('');
@@ -38,13 +39,13 @@ const SignUpForm = () => {
 
         try {
             console.log(accountno);
-            const response = await axios.post('http://localhost:8090/signup', {
+            const response = await axios.post(`${apiUrl}/signup`, {
                 id,
                 pw,
                 name,
                 // idnumber,
                 email,
-
+                role,
                 sex,
                 age,
                 hp,
