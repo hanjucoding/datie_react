@@ -29,7 +29,7 @@ import BoardList from './component/diaryboard/pages/BoardList';
 import Regist from './component/diaryboard/pages/Regist';
 import View from './component/diaryboard/pages/View';
 import Edit from './component/diaryboard/pages/Edit';
-
+import NotFound from './component/notfound/notfound';
 function App() {
     return (
         <Routes>
@@ -53,7 +53,6 @@ function App() {
             <Route path="/pay/PayLoginPage" element={<PayLogin />} />
             <Route path="/pay/Paypassword" element={<Paypassword />} />
             <Route path="/pay/Payresult" element={<Payresult />} />
-
             <Route path="/pay/PayInfo" element={<PayInfo />} />
             <Route path="/admin/member" element={<AdminMember />} />
             <Route path="/admin" element={<AdminStatistics />} />
@@ -75,8 +74,8 @@ function App() {
             <Route path="/board/regist" element={<Regist />} />
             <Route path="/board/view" element={<View />} />
             <Route path="/board/edit" element={<Edit />} />
-
             <Route path="/" element={<LoginPage />} />
+            <Route path="*" element={<NotFound />} /> {/* 404 페이지 */}
         </Routes>
     );
 }
