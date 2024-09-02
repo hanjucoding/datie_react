@@ -7,13 +7,18 @@ import RealHeader from '../../../component/RealHeader';
 import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
 import './View.css';
+import DiaryDetail from '../components/DiaryDetail.js';
+import Avatar from '@mui/material/Avatar';
 
 function View(props) {
     const navigate = useNavigate();
-
+    const [profileImageUrl, setProfileImageUrl] = useState(
+        '/static/images/avatar/2.jpg',
+    ); // 기본 아바타 이미지 URL
     const [params, setParams] = useSearchParams();
     const [data, setData] = useState(null);
     const no = params.get('no');
+    console.log(no);
     const getView = () => {
         axios
             .get('http://localhost:8090/api/diaryboard/view?no=' + no)
@@ -24,14 +29,6 @@ function View(props) {
     useEffect(() => {
         getView();
     }, []);
-
-    const url =
-        data && data.filename_org
-            ? 'http://localhost:8090/download?filename_org=' +
-              data.filename_org +
-              '&filename_real=' +
-              data.filename_real
-            : '#;';
 
     // 댓글관련
     // 목록
@@ -44,7 +41,7 @@ function View(props) {
     const [comment, setComment] = useState(null);
     const [param, setParam] = useState({
         page: 1,
-        user_no: 3, // 임의의 값
+        user_no: 65, // 임의의 값
         parent_no: Number(no),
     });
     const getCommentList = () => {
@@ -62,7 +59,15 @@ function View(props) {
     };
     useEffect(() => {
         getCommentList();
-    }, []);
+        getView();
+        console.log(data);
+    }, [no]);
+
+    useEffect(() => {
+        if (data) {
+            console.log(data.diarydate); // data가 업데이트된 후에 로그 출력
+        }
+    }, [data]);
 
     // 댓글 등록
     const handleChange = (e) => {
@@ -118,6 +123,7 @@ function View(props) {
         navigate('/board/reply?no=' + no);
     };
     const goDelete = (e) => {
+        e.preventDefault();
         if (window.confirm('삭제하시겠습니까?')) {
             axios
                 .post('http://localhost:8090/api/diaryboard/delete', {
@@ -138,215 +144,155 @@ function View(props) {
             <div>
                 <RealHeader />
                 <Header title={'커뮤니티'} />
-                <div className="body">
-                    <div className="sub">
-                        <div className="size">
-                            <h3 className="sub_title">게시판</h3>
-                            <div className="bbs">
-                                <div className="view">
-                                    <div className="title">
-                                        <dl>
-                                            <dt>{data && data.title}</dt>
-                                            <dd className="date">
-                                                작성일 :{' '}
-                                                {data &&
-                                                    data.writedate.substring(
-                                                        0,
-                                                        10,
-                                                    )}
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                    <div className="cont">
-                                        <p
-                                            dangerouslySetInnerHTML={{
-                                                __html: data && data.content,
-                                            }}
-                                        ></p>
-                                    </div>
-                                    <dl className="file">
-                                        <dt>첨부파일 </dt>
-                                        <dd>
-                                            {data && data.filename_org ? (
-                                                <a href={url} target="_blank">
-                                                    {data.filename_org}
-                                                </a>
-                                            ) : null}
-                                        </dd>
-                                    </dl>
 
-                                    <div className="btnSet clear">
-                                        <div className="fl_l">
-                                            <Link
-                                                to="/board/list"
-                                                className="btn"
-                                            >
-                                                목록
-                                            </Link>
-                                            <Link
-                                                onClick={goReply}
-                                                className="btn"
-                                            >
-                                                답변
-                                            </Link>
-                                            <Link
-                                                onClick={goEdit}
-                                                className="btn"
-                                            >
-                                                수정
-                                            </Link>
-                                            <Link
-                                                onClick={goDelete}
-                                                className="btn"
-                                            >
-                                                삭제
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
+                <div className="view">
+                    <div className="title">{data && data.title}</div>
+                    <div className="cont">
+                        <p
+                            dangerouslySetInnerHTML={{
+                                __html: data && data.content,
+                            }}
+                        ></p>
+                    </div>
+                    <div className="diary">
+                        {data && data.diarydate ? (
+                            <DiaryDetail date={data.diarydate} />
+                        ) : (
+                            <p>Loading...</p> // 또는 다른 로딩 상태를 표시
+                        )}
+                    </div>
 
-                                <div>
-                                    <table className="board_write">
-                                        <colgroup>
-                                            <col width="*" />
-                                            <col width="100px" />
-                                        </colgroup>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <textarea
-                                                        name="content"
-                                                        style={{
-                                                            height: '50px',
-                                                        }}
-                                                        onChange={handleChange}
-                                                        value={param.content}
-                                                    ></textarea>
-                                                </td>
-                                                <td>
-                                                    <div
-                                                        className="btnSet"
-                                                        style={{
-                                                            textAlign: 'right',
-                                                        }}
-                                                    >
-                                                        <a
-                                                            className="btn"
-                                                            href="#;"
-                                                            onClick={save}
-                                                        >
-                                                            저장
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <p>
-                                        <span>
-                                            <strong>
-                                                총 {totalElements}개
-                                            </strong>{' '}
-                                            | {currentPage}/{totalPages}
-                                        </span>
-                                    </p>
-                                    <table className="list">
-                                        <colgroup>
-                                            <col width="80px" />
-                                            <col width="*" />
-                                            <col width="100px" />
-                                            <col width="100px" />
-                                        </colgroup>
-                                        <tbody>
-                                            {comment ? (
-                                                comment.map((row, i) => (
-                                                    <CommentTr
-                                                        row={row}
-                                                        key={i}
-                                                        delComment={delComment}
-                                                    />
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td
-                                                        className="first"
-                                                        colSpan="4"
-                                                    >
-                                                        등록된 댓글이 없습니다.
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                    <div className="pagenate clear">
-                                        <ul className="paging">
-                                            {prevPage !== null ? (
-                                                <li>
-                                                    <Link
-                                                        onClick={() =>
-                                                            setParam({
-                                                                ...param,
-                                                                page:
-                                                                    prevPage.pageNumber +
-                                                                    1,
-                                                            })
-                                                        }
-                                                    >
-                                                        &lt;
-                                                    </Link>
-                                                </li>
-                                            ) : null}
-
-                                            {pageList
-                                                ? pageList.map((e, i) => (
-                                                      <li key={i}>
-                                                          <Link
-                                                              className={
-                                                                  e.pageNumber ===
-                                                                  currentPage -
-                                                                      1
-                                                                      ? 'current'
-                                                                      : ''
-                                                              }
-                                                              onClick={() =>
-                                                                  setParam({
-                                                                      ...param,
-                                                                      page:
-                                                                          e.pageNumber +
-                                                                          1,
-                                                                  })
-                                                              }
-                                                          >
-                                                              {e.pageNumber + 1}
-                                                          </Link>
-                                                      </li>
-                                                  ))
-                                                : ''}
-                                            {nextPage !== null ? (
-                                                <li>
-                                                    <Link
-                                                        onClick={() =>
-                                                            setParam({
-                                                                ...param,
-                                                                page:
-                                                                    nextPage.pageNumber +
-                                                                    1,
-                                                            })
-                                                        }
-                                                    >
-                                                        &gt;
-                                                    </Link>
-                                                </li>
-                                            ) : null}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="btnSet clear">
+                        <div className="fl_l">
+                            <Link to="/board/list" className="btn">
+                                목록
+                            </Link>
+                            <Link onClick={goReply} className="btn">
+                                답변
+                            </Link>
+                            <Link onClick={goEdit} className="btn">
+                                수정
+                            </Link>
+                            <Link onClick={goDelete} className="btn">
+                                삭제
+                            </Link>
                         </div>
                     </div>
                 </div>
+
+                <div className="board_write">
+                    <textarea
+                        name="content"
+                        style={{
+                            height: '50px',
+                            maxWidth: '500px',
+                        }}
+                        onChange={handleChange}
+                        value={param.content}
+                    ></textarea>
+
+                    <td>
+                        <div
+                            className="btnSet"
+                            style={{
+                                textAlign: 'right',
+                            }}
+                        >
+                            <a className="btn" href="#;" onClick={save}>
+                                저장
+                            </a>
+                        </div>
+                    </td>
+
+                    <p>
+                        <span>
+                            <strong>총 {totalElements}개</strong> |{' '}
+                            {currentPage}/{totalPages}
+                        </span>
+                    </p>
+                    <table className="list">
+                        <colgroup>
+                            <col width="80px" />
+                            <col width="*" />
+                            <col width="100px" />
+                            <col width="100px" />
+                        </colgroup>
+                        <tbody>
+                            {comment ? (
+                                comment.map((row, i) => (
+                                    <CommentTr
+                                        row={row}
+                                        key={i}
+                                        delComment={delComment}
+                                    />
+                                ))
+                            ) : (
+                                <tr>
+                                    <td className="first" colSpan="4">
+                                        등록된 댓글이 없습니다.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                    <div className="pagenate clear">
+                        <ul className="paging">
+                            {prevPage !== null ? (
+                                <li>
+                                    <Link
+                                        onClick={() =>
+                                            setParam({
+                                                ...param,
+                                                page: prevPage.pageNumber + 1,
+                                            })
+                                        }
+                                    >
+                                        &lt;
+                                    </Link>
+                                </li>
+                            ) : null}
+
+                            {pageList
+                                ? pageList.map((e, i) => (
+                                      <li key={i}>
+                                          <Link
+                                              className={
+                                                  e.pageNumber ===
+                                                  currentPage - 1
+                                                      ? 'current'
+                                                      : ''
+                                              }
+                                              onClick={() =>
+                                                  setParam({
+                                                      ...param,
+                                                      page: e.pageNumber + 1,
+                                                  })
+                                              }
+                                          >
+                                              {e.pageNumber + 1}
+                                          </Link>
+                                      </li>
+                                  ))
+                                : ''}
+                            {nextPage !== null ? (
+                                <li>
+                                    <Link
+                                        onClick={() =>
+                                            setParam({
+                                                ...param,
+                                                page: nextPage.pageNumber + 1,
+                                            })
+                                        }
+                                    >
+                                        &gt;
+                                    </Link>
+                                </li>
+                            ) : null}
+                        </ul>
+                    </div>
+                </div>
             </div>
+
             <div className="footer">
                 <Footer />
             </div>

@@ -46,7 +46,10 @@ function App() {
             <Route path="/" element={<IndexMain />} />
             <Route path="/main" element={<LoginMain />} />
             <Route path="/paymentRecords" element={<PaymentRecords />} />
-            <Route path="/paymentRecordSummary" element={<PaymentRecordSummary />} />
+            <Route
+                path="/paymentRecordSummary"
+                element={<PaymentRecordSummary />}
+            />
             <Route path="/pay/PayLoginPage" element={<PayLogin />} />
             <Route path="/pay/Paypassword" element={<Paypassword />} />
             <Route path="/pay/Payresult" element={<Payresult />} />

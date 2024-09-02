@@ -1,29 +1,75 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { TextField as MuiTextField, Button as MuiButton } from '@mui/material';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // Swal import
+import Swal from 'sweetalert2';
 import backgroundImage from '../../assets/datie_highfive2.png';
+const apiUrl = process.env.REACT_APP_API_URL;
+const backInDown1 = keyframes`
+  0% {
+    opacity: 0.5;
+    transform: translate(150px, -200px);
+  }
+  80% {
+    transform: translate(0px, 0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+`;
+
+const backInDown2 = keyframes`
+  0% {
+    opacity: 0.5;
+    transform: translate(-150px, -200px);
+  }
+  80% {
+    transform: translate(0px, 0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+`;
+
+const hasJongseong = (character) => {
+    const baseCode = 0xac00;
+    const charCode = character.charCodeAt(0);
+    if (charCode < baseCode || charCode > 0xd7a3) {
+        return false;
+    }
+    const jongseong = (charCode - baseCode) % 28;
+    return jongseong !== 0;
+};
+
+const processName = (name) => {
+    if (name.length <= 1) return name;
+    const lastChar = name[name.length - 1];
+    const processedName = name.slice(1);
+    const suffix = hasJongseong(lastChar) ? '이' : '';
+    return processedName + suffix;
+};
 
 function PayInfo() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 상태 변수 선언
     const [companyName, setCompanyName] = useState('');
     const [peramount, setPerAmount] = useState(0);
     const [bonus, setBonus] = useState(0);
-    const [userno, setUserNo] = useState(null); // userno 상태 변수 추가
-
+    const [userno, setUserNo] = useState(null);
+    const [isAnimationTriggered, setIsAnimationTriggered] = useState(false);
+    const [names, setNames] = useState({ userno_name: '', userno2_name: '' });
+    const [processedUsernoName, setProcessedUsernoName] = useState('');
+    const [processedUserno2Name, setProcessedUserno2Name] = useState('');
     const { id, companyno, amount } = location.state || {};
-    console.log('Received from location.state:', id, companyno, amount);
 
     useEffect(() => {
         if (companyno && amount) {
-            // 회사 이름 가져오기
             axios
-                .get(`http://localhost:8090/api/company?companyno=${companyno}`)
+                .get(`${apiUrl}/api/company?companyno=${companyno}`)
                 .then((response) => {
                     setCompanyName(response.data.companyname);
                 })
@@ -32,7 +78,7 @@ function PayInfo() {
                 });
 
             axios
-                .get(`http://localhost:8090/api/id?id=${id}`)
+                .get(`${apiUrl}/api/id?id=${id}`)
                 .then((response) => {
                     setUserNo(response.data.userno);
                 })
@@ -40,20 +86,14 @@ function PayInfo() {
                     console.error('userno찾기에러', error);
                 });
 
-            // amount의 1의 자리 구하기
             const lastDigit = amount % 10;
-
-            // 보너스: amount의 1의 자리
             const bonus = lastDigit;
-
-            // 나머지 금액을 절반으로 나누기
             const remainingAmount = amount - lastDigit;
             const peramount = remainingAmount / 2;
 
             setPerAmount(peramount);
             setBonus(bonus);
 
-            // 보너스 알림
             if (bonus > 0) {
                 Swal.fire({
                     html: `
@@ -70,19 +110,48 @@ function PayInfo() {
                         left top
                         no-repeat
                     `,
+                    confirmButtonText: '고마워',
+                }).then((result) => {
+                    setIsAnimationTriggered(true);
                 });
+            } else {
+                setIsAnimationTriggered(true);
             }
+
             console.log(
-                'After calculation:',
+                'After calculation1:',
                 companyno,
                 companyName,
                 amount,
                 peramount,
                 bonus,
                 userno,
+                names.userno_name,
+                names.userno2_name,
             );
         }
-    }, [companyno, amount, id, userno]);
+    }, [companyno, amount, id]);
+
+    useEffect(() => {
+        if (userno !== null) {
+            axios
+                .get(`${apiUrl}/api/card?userno=${userno}`)
+                .then((response) => {
+                    setNames(response.data);
+                })
+                .catch((error) => {
+                    console.error('userno찾기에러', error);
+                });
+        }
+    }, [userno]);
+
+    useEffect(() => {
+        // names.userno_name과 names.userno2_name의 처리
+        if (names.userno_name && names.userno2_name) {
+            setProcessedUsernoName(processName(names.userno_name));
+            setProcessedUserno2Name(processName(names.userno2_name));
+        }
+    }, [names]);
 
     const handlePayment = async () => {
         navigate('/pay/Paypassword', {
@@ -92,7 +161,7 @@ function PayInfo() {
                 amount,
                 peramount,
                 bonus,
-                userno, // userno를 함께 전달
+                userno,
             },
         });
     };
@@ -100,6 +169,7 @@ function PayInfo() {
     const formatNumberWithCommas = (number) => {
         return new Intl.NumberFormat().format(number);
     };
+
     return (
         <PayDesign
             style={{
@@ -126,8 +196,8 @@ function PayInfo() {
                         value={companyName}
                         InputProps={{ readOnly: true }}
                         wide
-                        borderWidth="4px" /* 테두리 두께 설정 */
-                        borderColor="rgb(148, 160, 227)" /* 테두리 색상 설정 */
+                        borderWidth="4px"
+                        borderColor="rgb(148, 160, 227)"
                     />
                     <StyledLabel htmlFor="amount">총 금액</StyledLabel>
                     <StyledTextField
@@ -136,31 +206,35 @@ function PayInfo() {
                         value={`${formatNumberWithCommas(amount)}원`}
                         InputProps={{ readOnly: true }}
                         wide
-                        borderWidth="0px" /* 테두리 숨기기 */
-                        fontSize="48px" /* 글씨 크기 설정 */
+                        borderWidth="0px"
+                        fontSize="48px"
                     />
-                    <AmountContainer>
-                        <StyledTextField
-                            id="peramount1"
-                            variant="outlined"
-                            value={
-                                '나도 ' +
-                                `${formatNumberWithCommas(peramount)}원`
-                            }
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#C3FBFF"
-                        />
-                        <StyledTextField
-                            id="peramount2"
-                            variant="outlined"
-                            value={
-                                '너도 ' +
-                                `${formatNumberWithCommas(peramount)}원`
-                            }
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#FFCEF6"
-                        />
-                    </AmountContainer>
+                    {isAnimationTriggered && (
+                        <AmountContainer>
+                            <AnimatedTextField1
+                                id="peramount1"
+                                variant="outlined"
+                                value={
+                                    `${processedUsernoName}` +
+                                    '도 ' +
+                                    `${formatNumberWithCommas(peramount)}원`
+                                }
+                                InputProps={{ readOnly: true }}
+                                customBgColor="#C3FBFF"
+                            />
+                            <AnimatedTextField2
+                                id="peramount2"
+                                variant="outlined"
+                                value={
+                                    `${processedUserno2Name}` +
+                                    '도 ' +
+                                    `${formatNumberWithCommas(peramount)}원`
+                                }
+                                InputProps={{ readOnly: true }}
+                                customBgColor="#FFCEF6"
+                            />
+                        </AmountContainer>
+                    )}
                 </TextContainer>
             </div>
             <ButtonContainer>
@@ -175,6 +249,8 @@ function PayInfo() {
         </PayDesign>
     );
 }
+
+// 스타일 컴포넌트 정의
 const PayDesign = styled.main`
     background-color: #fff;
     display: flex;
@@ -203,7 +279,7 @@ const ButtonContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 70px;
+    margin-bottom: 20px;
 `;
 
 const StyledButton = styled(MuiButton)`
@@ -211,7 +287,6 @@ const StyledButton = styled(MuiButton)`
     height: 50px;
     font-family: 'Gamja Flower', cursive;
     font-size: 18px;
-
     &.MuiButton-containedPrimary {
         background-color: rgb(148, 160, 227);
         &:hover {
@@ -226,11 +301,12 @@ const StyledButton = styled(MuiButton)`
         }
     }
 `;
+
 const TextContainer = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center; /* 중앙 정렬 */
-    justify-content: center; /* 중앙 정렬 */
+    align-items: center;
+    justify-content: center;
     width: 100%;
 `;
 
@@ -241,19 +317,20 @@ const StyledLabel = styled.div`
     margin-bottom: -20px;
     text-align: center;
     position: relative;
-    top: 0; /* 필요 시 조정 */
-    transform: translateX(0); /* 가운데 정렬을 위한 transform 제거 */
+    top: 0;
+    transform: translateX(0);
     z-index: 1;
-    width: 100%; /* 라벨이 중앙에 위치하도록 전체 너비를 설정 */
+    width: 100%;
     display: flex;
-    justify-content: center; /* 라벨 텍스트를 중앙에 정렬 */
+    justify-content: center;
 `;
 
 const StyledTextField = styled(MuiTextField)`
+    margin-top: 20px;
     margin-bottom: 40px !important;
-    width: ${(props) => (props.wide ? '70%' : '45%')};
-    max-width: ${(props) => (props.wide ? '600px' : 'none')};
-    min-width: ${(props) => (props.wide ? '300px' : 'none')};
+    width: ${(props) => (props.wide ? '80%' : '55%')};
+    max-width: ${(props) => (props.wide ? '800px' : 'none')};
+    min-width: ${(props) => (props.wide ? '400px' : 'none')};
 
     .MuiOutlinedInput-notchedOutline {
         border-color: ${(props) => props.borderColor || 'white'};
@@ -263,7 +340,7 @@ const StyledTextField = styled(MuiTextField)`
 
     .MuiInputBase-input {
         font-family: 'Gamja Flower', cursive;
-        font-size: ${(props) => props.fontSize || '32px'};
+        font-size: ${(props) => props.fontSize || '30px'};
         color: black;
         background-color: ${(props) => props.customBgColor || 'white'};
         padding: 12px 14px;
@@ -273,6 +350,14 @@ const StyledTextField = styled(MuiTextField)`
         box-sizing: border-box;
         border-radius: 20px;
     }
+`;
+
+const AnimatedTextField1 = styled(StyledTextField)`
+    animation: ${backInDown1} 2.5s ease both;
+`;
+
+const AnimatedTextField2 = styled(StyledTextField)`
+    animation: ${backInDown2} 2.5s ease both;
 `;
 
 export default PayInfo;

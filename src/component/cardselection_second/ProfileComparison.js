@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import type1Image from '../../assets/type1-front.png';
 import type2Image from '../../assets/type2-front.png';
 import type3Image from '../../assets/type3-front.png';
+const apiUrl = process.env.REACT_APP_API_URL;
 const ProfileComparison = () => {
     const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ const ProfileComparison = () => {
     let [userObject2, setUserObject2] = useState({});
     const getApi = () => {
         axios
-            .get('http://localhost:8090/api/userInfoByNo', { params: param })
+            .get(`${apiUrl}/api/userInfoByNo`, { params: param })
             .then((res) => {
                 console.log(res);
                 setUserObject1(res.data[0]);
@@ -50,59 +51,87 @@ const ProfileComparison = () => {
     const [selectedType2, setSelectedType2] = useState('2');
 
     // 여러 프로필 이미지 배열
-    const profileImages = [
+    const profileImages1 = [
+        [type1Image, 'TYPE 1. 꽃길만 걷자(Pink)'],
+        [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
+        [type3Image, 'TYPE 3. 다이노 그린(Green)'],
+    ];
+    const profileImages2 = [
         [type1Image, 'TYPE 1. 꽃길만 걷자(Pink)'],
         [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
         [type3Image, 'TYPE 3. 다이노 그린(Green)'],
     ];
 
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [currentImageText, setCurrentImageText] = useState(
-        profileImages[currentImageIndex][1],
+    const [currentImageIndex1, setCurrentImageIndex1] = useState(0);
+    const [currentImageIndex2, setCurrentImageIndex2] = useState(0);
+    const [currentImageText1, setCurrentImageText1] = useState(
+        profileImages1[currentImageIndex1][1],
+    );
+    const [currentImageText2, setCurrentImageText2] = useState(
+        profileImages2[currentImageIndex2][1],
     );
     const handleTypeChange1 = (event) => {
         setSelectedType1(event.target.value);
+        setCurrentImageIndex1(event.target.value - 1);
+        setCurrentImageText1(profileImages1[event.target.value - 1][1]);
     };
 
     const handleTypeChange2 = (event) => {
         setSelectedType2(event.target.value);
+        setCurrentImageIndex2(event.target.value - 1);
+        setCurrentImageText2(profileImages2[event.target.value - 1][1]);
     };
 
-    const handleNextImage = () => {
-        let index = (currentImageIndex + 1) % profileImages.length;
-        setCurrentImageIndex(index);
-        setCurrentImageText(profileImages[index][1]);
+    const handleNextImage1 = () => {
+        let index = (currentImageIndex1 + 1) % profileImages1.length;
+        setSelectedType1(index + 1 + '');
+        setCurrentImageIndex1(index);
+        setCurrentImageText1(profileImages1[index][1]);
+    };
+    const handleNextImage2 = () => {
+        let index = (currentImageIndex2 + 1) % profileImages2.length;
+        setSelectedType2(index + 1 + '');
+        setCurrentImageIndex2(index);
+        setCurrentImageText2(profileImages2[index][1]);
     };
 
-    const handlePreviousImage = () => {
+    const handlePreviousImage1 = () => {
         let index =
-            (currentImageIndex - 1 + profileImages.length) %
-            profileImages.length;
-        setCurrentImageIndex(index);
-        setCurrentImageText(profileImages[index][1]);
+            (currentImageIndex1 - 1 + profileImages1.length) %
+            profileImages1.length;
+        setSelectedType1(index + 1 + '');
+        setCurrentImageIndex1(index);
+        setCurrentImageText1(profileImages1[index][1]);
     };
-
+    const handlePreviousImage2 = () => {
+        let index =
+            (currentImageIndex2 - 1 + profileImages2.length) %
+            profileImages2.length;
+        setSelectedType2(index + 1 + '');
+        setCurrentImageIndex2(index);
+        setCurrentImageText2(profileImages2[index][1]);
+    };
     return (
         <div>
             <ResponsiveAppBar />
             <Header title={'카드선택'} />
             <ComparisonContainer>
                 <ProfileImage
-                    src={profileImages[currentImageIndex][0]}
+                    src={profileImages1[currentImageIndex1][0]}
                     alt="Profile"
                 />
                 <ButtonContainer>
-                    <NavigationButton onClick={handlePreviousImage}>
+                    <NavigationButton onClick={handlePreviousImage1}>
                         ◀
                     </NavigationButton>
-                    <NavigationButton onClick={handleNextImage}>
+                    <NavigationButton onClick={handleNextImage1}>
                         ▶
                     </NavigationButton>
                 </ButtonContainer>
-                <MustHaveLabel>{currentImageText}</MustHaveLabel>
+                <MustHaveLabel>{currentImageText1}</MustHaveLabel>
                 <ProfileSection>
                     <ProfileTitle>{userObject1.name}</ProfileTitle>
-                    <TypesContainer>
+                    <TypesContainer style={{ display: 'none' }}>
                         {['1', '2', '3'].map((type) => (
                             <label key={type}>
                                 <input
@@ -116,9 +145,24 @@ const ProfileComparison = () => {
                         ))}
                     </TypesContainer>
                 </ProfileSection>
+
+                <ProfileImage
+                    style={{ marginTop: '50px' }}
+                    src={profileImages1[currentImageIndex2][0]}
+                    alt="Profile"
+                />
+                <ButtonContainer>
+                    <NavigationButton onClick={handlePreviousImage2}>
+                        ◀
+                    </NavigationButton>
+                    <NavigationButton onClick={handleNextImage2}>
+                        ▶
+                    </NavigationButton>
+                </ButtonContainer>
+                <MustHaveLabel>{currentImageText2}</MustHaveLabel>
                 <ProfileSection>
                     <ProfileTitle>{userObject2.name}</ProfileTitle>
-                    <TypesContainer>
+                    <TypesContainer style={{ display: 'none' }}>
                         {['1', '2', '3'].map((type) => (
                             <label key={type}>
                                 <input
@@ -195,9 +239,7 @@ const MustHaveLabel = styled.span`
     display: flex;
 `;
 
-const ProfileSection = styled.section`
-    margin-top: 39px;
-`;
+const ProfileSection = styled.section``;
 
 const ProfileTitle = styled.h2`
     color: #000;
@@ -215,7 +257,6 @@ const TypesContainer = styled.div`
 const ButtonContainer = styled.div`
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
     width: 100%; /* 버튼을 전체 너비에 맞춤 */
 `;
 
