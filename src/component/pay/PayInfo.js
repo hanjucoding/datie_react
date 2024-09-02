@@ -1,83 +1,159 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { TextField as MuiTextField, Button as MuiButton } from '@mui/material';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // Swal import
+import Swal from 'sweetalert2';
 import backgroundImage from '../../assets/datie_highfive2.png';
+const apiUrl = process.env.REACT_APP_API_URL;
+const backInDown1 = keyframes`
+  0% {
+    opacity: 0.5;
+    transform: translate(150px, -200px);
+  }
+  80% {
+    transform: translate(0px, 0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+`;
+
+const backInDown2 = keyframes`
+  0% {
+    opacity: 0.5;
+    transform: translate(-150px, -200px);
+  }
+  80% {
+    transform: translate(0px, 0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+`;
+
+const hasJongseong = (character) => {
+    const baseCode = 0xac00;
+    const charCode = character.charCodeAt(0);
+    if (charCode < baseCode || charCode > 0xd7a3) {
+        return false;
+    }
+    const jongseong = (charCode - baseCode) % 28;
+    return jongseong !== 0;
+};
+
+const processName = (name) => {
+    if (name.length <= 1) return name;
+    const lastChar = name[name.length - 1];
+    const processedName = name.slice(1);
+    const suffix = hasJongseong(lastChar) ? '이' : '';
+    return processedName + suffix;
+};
 
 function PayInfo() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [companyno, setCompanyno] = useState(0);
+
     const [companyName, setCompanyName] = useState('');
-    const [amount, setAmount] = useState(0);
     const [peramount, setPerAmount] = useState(0);
     const [bonus, setBonus] = useState(0);
+    const [userno, setUserNo] = useState(null);
+    const [isAnimationTriggered, setIsAnimationTriggered] = useState(false);
+    const [names, setNames] = useState({ userno_name: '', userno2_name: '' });
+    const [processedUsernoName, setProcessedUsernoName] = useState('');
+    const [processedUserno2Name, setProcessedUserno2Name] = useState('');
+    const { id, companyno, amount } = location.state || {};
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const companynoFromUrl = parseInt(params.get('companyno'), 10) || 0;
-        setCompanyno(companynoFromUrl);
-        const amountFromUrl = parseInt(params.get('amount'), 10) || 0;
+        if (companyno && amount) {
+            axios
+                .get(`${apiUrl}/api/company?companyno=${companyno}`)
+                .then((response) => {
+                    setCompanyName(response.data.companyname);
+                })
+                .catch((error) => {
+                    console.error('Error fetching company data', error);
+                });
 
-        // 회사 이름 가져오기
-        axios
-            .get(
-                `http://localhost:8090/api/company?companyno=${companynoFromUrl}`,
-            )
-            .then((response) => {
-                setCompanyName(response.data.companyname);
-            })
-            .catch((error) => {
-                console.error('Error fetching company data', error);
-            });
+            axios
+                .get(`${apiUrl}/api/id?id=${id}`)
+                .then((response) => {
+                    setUserNo(response.data.userno);
+                })
+                .catch((error) => {
+                    console.error('userno찾기에러', error);
+                });
 
-        setAmount(amountFromUrl);
+            const lastDigit = amount % 10;
+            const bonus = lastDigit;
+            const remainingAmount = amount - lastDigit;
+            const peramount = remainingAmount / 2;
 
-        // perAmount와 bonus 계산
-        const calculatedBonus = amountFromUrl % 10; // 1의 자리수를 bonus로 설정
-        const calculatedPerAmount = (amountFromUrl - calculatedBonus) / 2; // 나머지 금액의 절반을 perAmount로 설정
+            setPerAmount(peramount);
+            setBonus(bonus);
 
-        setPerAmount(calculatedPerAmount);
-        setBonus(calculatedBonus);
+            if (bonus > 0) {
+                Swal.fire({
+                    html: `
+                        <div style="font-size: 24px;">
+                            ${bonus}원은 데이티가 쏘니까<br>
+                            걱정 말라구!
+                        </div>
+                    `,
+                    width: 900,
+                    padding: '3em',
+                    color: '#716add',
+                    backdrop: `
+                        rgba(0,0,123,0.4)
+                        left top
+                        no-repeat
+                    `,
+                    confirmButtonText: '고마워',
+                }).then((result) => {
+                    setIsAnimationTriggered(true);
+                });
+            } else {
+                setIsAnimationTriggered(true);
+            }
 
-        // bonus가 0보다 클 때 Swal.fire 호출
-        if (calculatedBonus > 0) {
-            Swal.fire({
-                html: `
-                    <div style="font-size: 24px;">
-                        ${calculatedBonus}원은 데이티가 쏘니까<br>
-                        걱정 말라구!
-                    </div>
-                `,
-                width: 900,
-                padding: '3em',
-                color: '#716add',
-                backdrop: `
-                    rgba(0,0,123,0.4)
-                    left top
-                    no-repeat
-                `,
-            });
-        }
-    }, [location.search]);
-
-    // 로그인 상태 확인 함수
-    const checkLoginStatus = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:8090/api/check-login',
+            console.log(
+                'After calculation1:',
+                companyno,
+                companyName,
+                amount,
+                peramount,
+                bonus,
+                userno,
+                names.userno_name,
+                names.userno2_name,
             );
-            return response.data.loggedIn; // 로그인 상태 여부 반환
-        } catch (error) {
-            console.error('Error checking login status', error);
-            return false; // 로그인 상태 확인 중 에러 발생 시 로그인 안 된 것으로 간주
         }
-    };
+    }, [companyno, amount, id]);
+
+    useEffect(() => {
+        if (userno !== null) {
+            axios
+                .get(`${apiUrl}/api/card?userno=${userno}`)
+                .then((response) => {
+                    setNames(response.data);
+                })
+                .catch((error) => {
+                    console.error('userno찾기에러', error);
+                });
+        }
+    }, [userno]);
+
+    useEffect(() => {
+        // names.userno_name과 names.userno2_name의 처리
+        if (names.userno_name && names.userno2_name) {
+            setProcessedUsernoName(processName(names.userno_name));
+            setProcessedUserno2Name(processName(names.userno2_name));
+        }
+    }, [names]);
 
     const handlePayment = async () => {
-        const loggedIn = await checkLoginStatus();
         navigate('/pay/Paypassword', {
             state: {
                 companyno,
@@ -85,23 +161,11 @@ function PayInfo() {
                 amount,
                 peramount,
                 bonus,
+                userno,
             },
         });
-        // if (loggedIn) {
-        //     navigate('/pay/Paypassword', {
-        //         state: {
-        //             companyName,
-        //             amount,
-        //             peramount,
-        //             bonus,
-        //         },
-        //     });
-        // } else {
-        //     navigate('/login');
-        // }
     };
 
-    // 숫자에 쉼표를 붙이는 함수
     const formatNumberWithCommas = (number) => {
         return new Intl.NumberFormat().format(number);
     };
@@ -131,30 +195,46 @@ function PayInfo() {
                         variant="outlined"
                         value={companyName}
                         InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="4px"
+                        borderColor="rgb(148, 160, 227)"
                     />
+                    <StyledLabel htmlFor="amount">총 금액</StyledLabel>
                     <StyledTextField
                         id="amount"
                         variant="outlined"
-                        label="총 금액"
                         value={`${formatNumberWithCommas(amount)}원`}
                         InputProps={{ readOnly: true }}
+                        wide
+                        borderWidth="0px"
+                        fontSize="48px"
                     />
-                    <AmountContainer>
-                        <StyledTextField
-                            id="peramount1"
-                            variant="outlined"
-                            value={`${formatNumberWithCommas(peramount)}원`}
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#C3FBFF" // 첫 번째 박스 색상
-                        />
-                        <StyledTextField
-                            id="peramount2"
-                            variant="outlined"
-                            value={`${formatNumberWithCommas(peramount)}원`}
-                            InputProps={{ readOnly: true }}
-                            customBgColor="#FFCEF6" // 두 번째 박스 색상
-                        />
-                    </AmountContainer>
+                    {isAnimationTriggered && (
+                        <AmountContainer>
+                            <AnimatedTextField1
+                                id="peramount1"
+                                variant="outlined"
+                                value={
+                                    `${processedUsernoName}` +
+                                    '도 ' +
+                                    `${formatNumberWithCommas(peramount)}원`
+                                }
+                                InputProps={{ readOnly: true }}
+                                customBgColor="#C3FBFF"
+                            />
+                            <AnimatedTextField2
+                                id="peramount2"
+                                variant="outlined"
+                                value={
+                                    `${processedUserno2Name}` +
+                                    '도 ' +
+                                    `${formatNumberWithCommas(peramount)}원`
+                                }
+                                InputProps={{ readOnly: true }}
+                                customBgColor="#FFCEF6"
+                            />
+                        </AmountContainer>
+                    )}
                 </TextContainer>
             </div>
             <ButtonContainer>
@@ -165,19 +245,17 @@ function PayInfo() {
                 >
                     결제하기
                 </StyledButton>
-                <StyledButton variant="contained" color="secondary">
-                    취소
-                </StyledButton>
             </ButtonContainer>
         </PayDesign>
     );
 }
 
+// 스타일 컴포넌트 정의
 const PayDesign = styled.main`
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 상단과 하단의 공간을 최대로 늘리기 */
+    justify-content: space-between;
     align-items: center;
     padding: 16px;
     text-align: center;
@@ -189,26 +267,19 @@ const Title = styled.h1`
     margin-bottom: 30px;
 `;
 
-const TextContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-`;
-
 const AmountContainer = styled.div`
     display: flex;
-    gap: 90px; /* 텍스트 필드 사이의 간격 설정 */
-    width: 95%; /* 가로 폭을 100%로 설정 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    margin-top: 80px; /* 여백 추가 */
+    gap: 90px;
+    width: 95%;
+    justify-content: center;
+    margin-top: 80px;
 `;
 
 const ButtonContainer = styled.div`
     display: flex;
-    flex-direction: column; /* 버튼을 세로로 정렬 */
-    gap: 16px; /* 버튼 사이의 간격 */
-    margin-bottom: 70px; /* 하단 여백 */
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
 `;
 
 const StyledButton = styled(MuiButton)`
@@ -216,7 +287,6 @@ const StyledButton = styled(MuiButton)`
     height: 50px;
     font-family: 'Gamja Flower', cursive;
     font-size: 18px;
-
     &.MuiButton-containedPrimary {
         background-color: rgb(148, 160, 227);
         &:hover {
@@ -232,42 +302,62 @@ const StyledButton = styled(MuiButton)`
     }
 `;
 
+const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+`;
+
+const StyledLabel = styled.div`
+    font-family: 'Gamja Flower', cursive;
+    font-size: 24px;
+    color: black;
+    margin-bottom: -20px;
+    text-align: center;
+    position: relative;
+    top: 0;
+    transform: translateX(0);
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`;
+
 const StyledTextField = styled(MuiTextField)`
+    margin-top: 20px;
     margin-bottom: 40px !important;
-    width: 45%; /* 조정된 폭, 가로로 정렬하기 위해 여유 공간 확보 */
+    width: ${(props) => (props.wide ? '80%' : '55%')};
+    max-width: ${(props) => (props.wide ? '800px' : 'none')};
+    min-width: ${(props) => (props.wide ? '400px' : 'none')};
+
+    .MuiOutlinedInput-notchedOutline {
+        border-color: ${(props) => props.borderColor || 'white'};
+        border-width: ${(props) => props.borderWidth || '2px'};
+        border-radius: 20px;
+    }
 
     .MuiInputBase-input {
         font-family: 'Gamja Flower', cursive;
-        font-size: 32px;
-        color: black; /* 텍스트 색상을 검은색으로 변경 */
-        background-color: ${(props) =>
-            props.customBgColor || 'white'}; /* 박스 내부 색상 설정 */
-        padding: 12px 14px; /* 텍스트가 박스의 중앙에 오도록 패딩 조정 */
-        height: 1.5em; /* 텍스트 높이를 조정 */
-        line-height: 1.5em; /* 수직 중앙 정렬을 위해 line-height 설정 */
-        text-align: center; /* 텍스트를 수평 중앙 정렬 */
-        box-sizing: border-box; /* 패딩을 포함한 박스 크기 계산 */
-        border-radius: 20px; /* 입력 박스의 테두리를 둥글게 설정 */
+        font-size: ${(props) => props.fontSize || '30px'};
+        color: black;
+        background-color: ${(props) => props.customBgColor || 'white'};
+        padding: 12px 14px;
+        height: 1.5em;
+        line-height: 1.5em;
+        text-align: center;
+        box-sizing: border-box;
+        border-radius: 20px;
     }
+`;
 
-    .MuiFormLabel-root {
-        font-family: 'Gamja Flower', cursive; /* 동일한 글씨체 설정 */
-        font-size: 32px; /* 동일한 글씨 크기 설정 */
-        color: black; /* 레이블 색상을 검은색으로 변경 */
-    }
+const AnimatedTextField1 = styled(StyledTextField)`
+    animation: ${backInDown1} 2.5s ease both;
+`;
 
-    .MuiOutlinedInput-root {
-        &.Mui-focused .MuiOutlinedInput-notchedOutline,
-        &:hover .MuiOutlinedInput-notchedOutline,
-        &.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-            border-color: white; /* 포커스 및 호버 상태에서 테두리 색상을 유지 */
-        }
-    }
-
-    .MuiOutlinedInput-notchedOutline {
-        border-color: white; /* 테두리 색상을 흰색으로 설정 */
-        border-radius: 20px; /* 테두리를 둥글게 설정 */
-    }
+const AnimatedTextField2 = styled(StyledTextField)`
+    animation: ${backInDown2} 2.5s ease both;
 `;
 
 export default PayInfo;

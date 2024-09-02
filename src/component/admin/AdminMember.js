@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Height } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
+const apiUrl = process.env.REACT_APP_API_URL;
 const columns = [
     { field: 'id', headerName: '번호', width: 50 },
     { field: 'userId', headerName: '아이디', width: 130 },
@@ -72,20 +73,23 @@ const Admin = () => {
     }, [param]);
     const [data, setData] = useState({});
     const getApi = () => {
-        axios
-            .get('http://localhost:8090/api/admin/list', { params: param })
-            .then((res) => {
-                console.log(res);
-                setData(res.data);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        console.log(apiUrl);
+        axios.get(`${apiUrl}/api/admin/list`, { params: param }).then((res) => {
+            console.log(res);
+            setData(res.data);
 
-                // setData(res.data.result.content);
-                // setTotalElements(res.data.result.totalElements);
-                // setTotalPages(res.data.result.totalPages);
-                // setCurrentPage(res.data.result.number + 1);
-                // setPageList(res.data.pageList);
-                // setPrevPage(res.data.prevPage);
-                // setNextPage(res.data.nextPage);
-            });
+            // setData(res.data.result.content);
+            // setTotalElements(res.data.result.totalElements);
+            // setTotalPages(res.data.result.totalPages);
+            // setCurrentPage(res.data.result.number + 1);
+            // setPageList(res.data.pageList);
+            // setPrevPage(res.data.prevPage);
+            // setNextPage(res.data.nextPage);
+        });
     };
 
     const [searchTypeState, setSearchTypeState] = React.useState('all');
@@ -118,7 +122,7 @@ const Admin = () => {
 
                             // axios를 사용하여 POST 요청 보내기
                             axios
-                                .post('http://localhost:8090/api/admin/list', {
+                                .post(`${apiUrl}/api/admin/list`, {
                                     selectedRows: selectedRows, // selectedRows를 JSON 형식으로 전송
                                     flag: 'hold',
                                 })
@@ -158,7 +162,7 @@ const Admin = () => {
 
                             // axios를 사용하여 POST 요청 보내기
                             axios
-                                .post('http://localhost:8090/api/admin/list', {
+                                .post(`${apiUrl}/api/admin/list`, {
                                     selectedRows: selectedRows, // selectedRows를 JSON 형식으로 전송
                                     flag: 'deactive',
                                 })

@@ -13,11 +13,10 @@ function PasswordInput() {
     // 카드정보
     const [cardno, setCardno] = useState('');
     const [cardpw, setCardpw] = useState('0000'); // 기본값으로 설정되어 있으나, API에서 받아옴
-    const [userno, setUserno] = useState(62); // 고객 번호를 실제로 사용해야 한다면 적절히 설정
 
     //PayInfo로부터 받은 결제정보
     const location = useLocation();
-    const { companyno, content, amount, peramount, bonus } =
+    const { companyno, content, amount, peramount, bonus, userno } =
         location.state || {};
 
     useEffect(() => {

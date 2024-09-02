@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import { jwtDecode } from 'jwt-decode';
-
-import axios from 'axios'; // axios 임포트
+import axios from 'axios';
 
 import RealHeader from '../../../component/RealHeader';
 import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
-import KakaoMap from '../components/KakaoMap';
-import DiaryList from '../components/DiaryList';
+import KakaoMap from '../../diary/components/KakaoMap';
+import DiaryList from '../../diary/components/DiaryList';
 
-function DiaryDetail() {
-    const { date } = useParams(); // URL에서 date 파라미터를 가져옴
+function DiaryDetail({ date }) {
     const formattedDate = moment(date, 'YYYY-MM-DD');
     const [locations, setLocations] = useState([]);
     const [data, setData] = useState([]);
@@ -20,14 +17,13 @@ function DiaryDetail() {
     let userNo = 0;
 
     useEffect(() => {
-        // 로컬 스토리지에서 토큰 가져오기
-        const storedToken = localStorage.getItem('jwt'); // 'token'은 실제 저장한 키로 변경할 수 있습니다.
+        const storedToken = localStorage.getItem('jwt');
         if (storedToken) {
             token = storedToken;
         }
         if (token) {
-            const decoded = jwtDecode(token); // 수정된 호출
-            console.log(decoded); // 디코딩된 정보 출력
+            const decoded = jwtDecode(token);
+            console.log(decoded);
             userNo = decoded.userno;
         }
         console.log(userNo);
@@ -39,9 +35,14 @@ function DiaryDetail() {
                         'YYYY-MM-DD',
                     )}`,
                 );
-                setData(response.data); // API 응답 데이터를 state에 설정
+                // 응답이 배열인지 확인
+                const responseData = Array.isArray(response.data)
+                    ? response.data
+                    : [];
+                setData(responseData);
             } catch (error) {
                 console.error('Error fetching diary details:', error);
+                setData([]); // 에러 발생 시 빈 배열로 설정
             }
         };
 
@@ -87,7 +88,6 @@ function DiaryDetail() {
         };
 
         if (data.length > 0) {
-            // 데이터가 있을 때만 위치를 가져옴
             fetchLocations();
         }
     }, [data]);
@@ -114,20 +114,13 @@ function DiaryDetail() {
 
     return (
         <div>
-            <div>
-                <RealHeader />
-                <Header title={'데이트 기록'} />
-                <div className="body">
-                    <KakaoMap
-                        locations={locations}
-                        placeNames={diaryData.map((item) => item.companyName)}
-                        categorys={diaryData.map((item) => item.category)}
-                    />
-                    <DiaryList data={diaryData} date={formattedDate} />
-                </div>
-            </div>
-            <div className="footer">
-                <Footer />
+            <div className="body">
+                <KakaoMap
+                    locations={locations}
+                    placeNames={diaryData.map((item) => item.companyName)}
+                    categorys={diaryData.map((item) => item.category)}
+                />
+                <DiaryList data={diaryData} date={formattedDate} />
             </div>
         </div>
     );

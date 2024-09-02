@@ -1,0 +1,61 @@
+.BoardItem {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e2e2;
+    display: flex;
+    justify-content: space-between;
+}
+
+.BoardItem .info_section {
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    
+}
+
+.BoardItem .info_section .user_info {
+    display: flex;
+    margin-bottom: 30px;
+    gap: 10px;
+    font-size: 20px;
+    
+}
+
+.BoardItem .info_section .title_wrapper {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+.BoardItem .info_section .content_wrapper {
+    font-size: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap; /* Allows boxes to wrap to the next line if they don't fit in one row */
+    gap: 10px; /* Adds space between the boxes */
+}
+.BoardItem .info_section .content_wrapper .company-box {
+    
+    border: 1px solid #ffcccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 5px; /* Adds space inside the box */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
+    
+    min-width: 30px; /* Minimum width for each box */
+}
+.BoardItem .info_section .info_row {
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: gray;
+}
+
+.BoardItem .info_section .comment-count {
+    margin-left: auto; /* Push the comment count to the right */
+}
+.BoardItem .info_section .comment-count .icon {
+    font-size: 12px; /* Adjust the icon size as needed */
+    margin-right: 3px; /* Optional: add some space between the icon and the number */
+    margin-left: 5px;
+}
