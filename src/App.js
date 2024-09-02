@@ -9,7 +9,6 @@ import CardInfoInput from './component/cardselection_3/CardInfoInput';
 import LoginPage from './component/Login/LoginPage';
 import Paypassword from './component/pay/Paypassword';
 import PayLogin from './component/pay/PayLoginPage';
-import PaymentRecord from './component/payment_record/PaymentRecord';
 import PayInfo from './component/pay/PayInfo';
 import IndexMain from './component/mainIndex/IndexMain';
 import LoginMain from './component/mainIndex/LoginMain';
@@ -30,7 +29,6 @@ import BoardList from './component/diaryboard/pages/BoardList';
 import Regist from './component/diaryboard/pages/Regist';
 import View from './component/diaryboard/pages/View';
 import Edit from './component/diaryboard/pages/Edit';
-import PayLogin from './component/pay/PayLoginPage';
 
 function App() {
     return (

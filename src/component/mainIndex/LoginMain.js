@@ -5,6 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 import ResponsiveAppBar from "../RealHeader";
+import GptRecommend from "../recommend/GptRecommend";
 
 // 이미지 import
 import type1Front from "../../assets/type1-front.png";
@@ -353,7 +354,9 @@ function LoginMain() {
               onClick={() => handleIconClick("/diary")}
             />
           </Box>
+          {cardno && <GptRecommend cardno={cardno} />}
         </Box>
+        
       </Box>
     </div>
   );

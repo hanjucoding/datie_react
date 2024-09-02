@@ -5,6 +5,13 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import ResponsiveAppBar from "../RealHeader";
 
+// 아이콘 이미지 임포트
+import martIcon from "../../assets/mart.png";
+import foodIcon from "../../assets/food.png";
+import hospitalIcon from "../../assets/hospital.png";
+import hobbyIcon from "../../assets/hobby.png";
+import questionMarkIcon from "../../assets/question-mark.png";
+
 function PaymentRecordSummary() {
   const [paymentRecords, setPaymentRecords] = useState([]); // 거래 내역을 저장할 상태
   const [groupedRecords, setGroupedRecords] = useState({}); // 카테고리별로 그룹화된 거래 내역을 저장할 상태
@@ -99,6 +106,21 @@ function PaymentRecordSummary() {
     );
   };
 
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "식료품":
+        return martIcon;
+      case "외식":
+        return foodIcon;
+      case "의료비":
+        return hospitalIcon;
+      case "문화/여가":
+        return hobbyIcon;
+      default:
+        return questionMarkIcon;
+    }
+  };
+
   return (
     <div>
     <ResponsiveAppBar />
@@ -161,17 +183,38 @@ function PaymentRecordSummary() {
           <Box key={category} sx={{ marginBottom: "20px" }}>
             <Card
               sx={{
+                display: "flex",
                 padding: "10px",
                 cursor: "pointer",
                 backgroundColor: "#f9f9f9",
               }}
               onClick={() => handleCategoryClick(category)}
             >
+              <Box
+                component="img"
+                src={getCategoryIcon(category)}
+                alt={category}
+                sx={{
+                  width: 24,
+                  height: 24,
+                  marginLeft: "10px",
+                  cursor: "pointer",
+                  marginRight: "10px",
+                }}>
+              </Box>
               <Typography variant="h6" sx={{ 
                 fontFamily: '"Gamja Flower", cursive',
                 fontSize: '22px',
               }}>
-                {category} - 총 금액: {groupedRecords[category].total.toLocaleString()} 원
+                {category}
+              </Typography>
+              <Typography variant="h6" sx={{ 
+                fontFamily: '"Gamja Flower", cursive',
+                fontSize: '22px',
+                textAlign:"right",
+                marginLeft: "auto", // 왼쪽 여백을 자동으로 설정하여 오른쪽으로 밀어냄
+              }}>
+                총 금액: {groupedRecords[category].total.toLocaleString()} 원
               </Typography>
             </Card>
             <Collapse in={openCategories.includes(category)}>
