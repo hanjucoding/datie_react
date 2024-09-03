@@ -1,1 +1,50 @@
+.view .user_info {
+    display: flex;
 
+    gap: 10px;
+    font-size: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.view .user_info .btn {
+    margin-left: auto; /* EditIcon을 오른쪽 끝으로 이동 */
+    cursor: pointer;
+}
+
+.view .title {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.view .contents {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-bottom: 15px;
+    font-size: 15px;
+}
+.view .diary {
+    padding-bottom: 15px;
+}
+
+.board_write {
+    padding-top: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-bottom: 15px;
+    font-size: 15px;
+}
+.board_write .btn {
+    text-align: right;
+}
+
+.board_write .comment {
+    display: flex;
+    flex-direction: column;
+}

@@ -67,30 +67,6 @@ function BoardList() {
                     <div className="sub">
                         <div className="size">
                             <div className="bbs">
-                                <div
-                                    className="bbsSearch"
-                                    style={{
-                                        marginTop: '20px',
-                                        textAlign: 'center',
-                                        marginBottom: '20px',
-                                        fontSize: '20px',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    <LocalFireDepartmentIcon />
-                                    이번 달 핫플레이스 TOP 5
-                                </div>
-                                <div
-                                    className="bbsSearch"
-                                    style={{
-                                        marginTop: '20px',
-                                        textAlign: 'center',
-                                        marginBottom: '20px',
-                                    }}
-                                >
-                                    이번 달 핫플레이스 TOP 5
-                                </div>
-                                <Divider />
                                 <p
                                     style={{
                                         display: 'flex',

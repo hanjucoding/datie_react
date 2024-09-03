@@ -1,0 +1,28 @@
+.commentlist {
+    border-bottom: 1px solid gainsboro; /* 댓글 구분을 위한 구분선 */
+    padding: 10px 0; /* 위아래 여백 추가 */
+    margin-bottom: 10px; /* 댓글 간 간격 조절 */
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.commentlist .user_info {
+    display: flex;
+    gap: 10px;
+    font-size: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.commentlist .txt_l {
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.commentlist .date {
+    font-size: 15px;
+    color: gray;
+}

@@ -7,7 +7,7 @@ import RealHeader from '../../../component/RealHeader';
 import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
 import KakaoMap from '../../diary/components/KakaoMap';
-import DiaryList from '../../diary/components/DiaryList';
+import DiaryList from '../components/DiaryList';
 
 function DiaryDetail({ date }) {
     const formattedDate = moment(date, 'YYYY-MM-DD');

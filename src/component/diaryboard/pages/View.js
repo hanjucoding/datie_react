@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
@@ -9,16 +9,56 @@ import Footer from '../../../component/Footer';
 import './View.css';
 import DiaryDetail from '../components/DiaryDetail.js';
 import Avatar from '@mui/material/Avatar';
+import { jwtDecode } from 'jwt-decode'; // import from 'jwt-decode', not { jwtDecode }
+import Divider from '@mui/material/Divider';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import EditIcon from '@mui/icons-material/Edit';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import { colors } from '@mui/material';
 
 function View(props) {
     const navigate = useNavigate();
-    const [profileImageUrl, setProfileImageUrl] = useState(
-        '/static/images/avatar/2.jpg',
-    ); // 기본 아바타 이미지 URL
+    console.log(props);
+
+    let token;
+
+    const [userNo, setUserNo] = useState(0);
+    const [userId, setUserId] = useState('user');
     const [params, setParams] = useSearchParams();
     const [data, setData] = useState(null);
     const no = params.get('no');
     console.log(no);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('jwt');
+        if (storedToken) {
+            token = storedToken;
+        }
+        if (token) {
+            const decoded = jwtDecode(token);
+            console.log(decoded);
+            setUserNo(decoded.userno);
+            setUserId(decoded.id);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (userNo && params.get('no')) {
+            setParam((prevParam) => ({
+                ...prevParam,
+                user_no: Number(userNo),
+                parent_no: Number(params.get('no')),
+            }));
+        }
+    }, [userNo, params]);
+
+    console.log(userNo);
+    console.log(userId);
+
     const getView = () => {
         axios
             .get('http://localhost:8090/api/diaryboard/view?no=' + no)
@@ -26,24 +66,18 @@ function View(props) {
                 setData(res.data);
             });
     };
-    useEffect(() => {
-        getView();
-    }, []);
 
     // 댓글관련
-    // 목록
     const [totalElements, setTotalElements] = useState(0); // 총개수
     const [totalPages, setTotalPages] = useState(0); // 총페이지
-    const [currentPage, setCurrentPage] = useState(0); // 현재페이지
-    const [pageList, setPageList] = useState([]);
-    const [prevPage, setPrevPage] = useState({});
-    const [nextPage, setNextPage] = useState({});
+    const [currentPage, setCurrentPage] = useState(1); // 현재페이지
     const [comment, setComment] = useState(null);
     const [param, setParam] = useState({
         page: 1,
-        user_no: 65, // 임의의 값
+        user_no: Number(userNo),
         parent_no: Number(no),
     });
+
     const getCommentList = () => {
         axios
             .get('http://localhost:8090/api/comment/list', { params: param })
@@ -52,28 +86,52 @@ function View(props) {
                 setTotalElements(res.data.result.totalElements);
                 setTotalPages(res.data.result.totalPages);
                 setCurrentPage(res.data.result.number + 1);
-                setPageList(res.data.pageList);
-                setPrevPage(res.data.prevPage);
-                setNextPage(res.data.nextPage);
             });
     };
+
     useEffect(() => {
         getCommentList();
         getView();
         console.log(data);
-    }, [no]);
+    }, [no, param.page]);
+
+    //작성자프로필
+    const [profileImageUrl, setProfileImageUrl] = useState(
+        '/static/images/avatar/2.jpg',
+    ); // 기본 아바타 이미지 URL
 
     useEffect(() => {
-        if (data) {
-            console.log(data.diarydate); // data가 업데이트된 후에 로그 출력
+        if (data && data.user && data.user.userno) {
+            axios
+                .get(
+                    `http://localhost:8090/api/profileImage/${data.user.userno}`,
+                    {
+                        responseType: 'blob',
+                    },
+                )
+                .then((response) => {
+                    setProfileImageUrl(URL.createObjectURL(response.data)); // 받은 URL로 프로필 이미지 설정
+                })
+                .catch((error) => {
+                    console.error(
+                        '프로필 이미지를 가져오는 중 오류가 발생했습니다:',
+                        error,
+                    );
+                });
         }
     }, [data]);
 
-    // 댓글 등록
     const handleChange = (e) => {
         setParam({
             ...param,
             [e.target.name]: e.target.value,
+        });
+    };
+
+    const handlePageChange = (event, value) => {
+        setParam({
+            ...param,
+            page: value,
         });
     };
 
@@ -139,6 +197,12 @@ function View(props) {
             e.preventDefault();
         }
     };
+    const [isLiked, setIsLiked] = useState(false);
+    const handleIconClick = () => {
+        setIsLiked((prevState) => !prevState);
+    };
+    console.log(data);
+
     return (
         <div>
             <div>
@@ -146,63 +210,88 @@ function View(props) {
                 <Header title={'커뮤니티'} />
 
                 <div className="view">
+                    <div className="user_info">
+                        <Avatar alt="Profile Image" src={profileImageUrl} />
+                        {data ? data.user.id : ''}
+                        <div className="btn">
+                            {data && data.user.userno == userNo && (
+                                <EditIcon
+                                    onClick={goEdit}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            )}
+                            {data && data.user.userno != userNo && (
+                                <div
+                                    onClick={handleIconClick}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {isLiked ? (
+                                        <ThumbUpAltIcon />
+                                    ) : (
+                                        <ThumbUpOffAltIcon />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="title">{data && data.title}</div>
-                    <div className="cont">
+                    <div className="contents">
                         <p
                             dangerouslySetInnerHTML={{
                                 __html: data && data.content,
                             }}
                         ></p>
                     </div>
+                    <Divider />
                     <div className="diary">
                         {data && data.diarydate ? (
                             <DiaryDetail date={data.diarydate} />
                         ) : (
-                            <p>Loading...</p> // 또는 다른 로딩 상태를 표시
+                            <p>Loading...</p>
                         )}
                     </div>
-
-                    <div className="btnSet clear">
-                        <div className="fl_l">
-                            <Link to="/board/list" className="btn">
-                                목록
-                            </Link>
-                            <Link onClick={goReply} className="btn">
-                                답변
-                            </Link>
-                            <Link onClick={goEdit} className="btn">
-                                수정
-                            </Link>
-                            <Link onClick={goDelete} className="btn">
-                                삭제
-                            </Link>
-                        </div>
-                    </div>
+                    <Divider />
                 </div>
 
                 <div className="board_write">
-                    <textarea
+                    <TextField
+                        id="filled-multiline-static"
+                        label="댓글"
+                        multiline
+                        rows={2}
                         name="content"
-                        style={{
-                            height: '50px',
-                            maxWidth: '500px',
-                        }}
-                        onChange={handleChange}
                         value={param.content}
-                    ></textarea>
-
-                    <td>
-                        <div
-                            className="btnSet"
-                            style={{
-                                textAlign: 'right',
+                        onChange={handleChange}
+                        sx={{
+                            width: '100%',
+                            marginBottom: '5px',
+                        }}
+                        InputProps={{
+                            sx: {
+                                fontFamily: 'Gamja Flower',
+                            },
+                        }}
+                        InputLabelProps={{
+                            sx: {
+                                fontFamily: 'Gamja Flower',
+                            },
+                        }}
+                    />
+                    <div className="btn">
+                        <Button
+                            variant="text"
+                            onClick={save}
+                            sx={{
+                                fontFamily: 'Gamja Flower',
+                                fontSize: '16px',
+                                color: 'blue',
+                                borderColor: 'blue',
                             }}
                         >
-                            <a className="btn" href="#;" onClick={save}>
-                                저장
-                            </a>
-                        </div>
-                    </td>
+                            댓글 등록하기
+                        </Button>
+                    </div>
 
                     <p>
                         <span>
@@ -210,86 +299,45 @@ function View(props) {
                             {currentPage}/{totalPages}
                         </span>
                     </p>
-                    <table className="list">
-                        <colgroup>
-                            <col width="80px" />
-                            <col width="*" />
-                            <col width="100px" />
-                            <col width="100px" />
-                        </colgroup>
-                        <tbody>
-                            {comment ? (
-                                comment.map((row, i) => (
-                                    <CommentTr
-                                        row={row}
-                                        key={i}
-                                        delComment={delComment}
-                                    />
-                                ))
-                            ) : (
-                                <tr>
-                                    <td className="first" colSpan="4">
-                                        등록된 댓글이 없습니다.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                    <div className="pagenate clear">
-                        <ul className="paging">
-                            {prevPage !== null ? (
-                                <li>
-                                    <Link
-                                        onClick={() =>
-                                            setParam({
-                                                ...param,
-                                                page: prevPage.pageNumber + 1,
-                                            })
-                                        }
-                                    >
-                                        &lt;
-                                    </Link>
-                                </li>
-                            ) : null}
-
-                            {pageList
-                                ? pageList.map((e, i) => (
-                                      <li key={i}>
-                                          <Link
-                                              className={
-                                                  e.pageNumber ===
-                                                  currentPage - 1
-                                                      ? 'current'
-                                                      : ''
-                                              }
-                                              onClick={() =>
-                                                  setParam({
-                                                      ...param,
-                                                      page: e.pageNumber + 1,
-                                                  })
-                                              }
-                                          >
-                                              {e.pageNumber + 1}
-                                          </Link>
-                                      </li>
-                                  ))
-                                : ''}
-                            {nextPage !== null ? (
-                                <li>
-                                    <Link
-                                        onClick={() =>
-                                            setParam({
-                                                ...param,
-                                                page: nextPage.pageNumber + 1,
-                                            })
-                                        }
-                                    >
-                                        &gt;
-                                    </Link>
-                                </li>
-                            ) : null}
-                        </ul>
+                    <div className="comment">
+                        {comment ? (
+                            comment.map((row, i) => (
+                                <CommentTr
+                                    row={row}
+                                    key={i}
+                                    delComment={delComment}
+                                />
+                            ))
+                        ) : (
+                            <tr>
+                                <td className="first" colSpan="4">
+                                    등록된 댓글이 없습니다.
+                                </td>
+                            </tr>
+                        )}
                     </div>
+
+                    <Stack
+                        spacing={2}
+                        sx={{
+                            marginTop: '20px',
+                            alignItems: 'center',
+                            marginBottom: '40px',
+                        }}
+                    >
+                        <Pagination
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            sx={{
+                                '& .MuiPaginationItem-root': {
+                                    fontSize: '18px', // 글꼴 크기
+                                    padding: '10px', // 크기 조정
+                                    fontFamily: 'Gamja Flower', // 글꼴 스타일
+                                },
+                            }}
+                        />
+                    </Stack>
                 </div>
             </div>
 

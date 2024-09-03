@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import RealHeader from '../../../component/RealHeader';
@@ -11,12 +11,44 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { format } from 'date-fns';
+import { Rating } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import { jwtDecode } from 'jwt-decode';
 
 function Regist() {
-    const navigate = useNavigate();
+    let token;
+    const [userNo, setUserNo] = useState(0);
+    const [userId, setUserId] = useState('user');
     const [param, setParam] = useState({
-        user_no: 65, // 임시
+        user_no: 0,
+        user_id: 'user',
     });
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('jwt');
+        if (storedToken) {
+            token = storedToken;
+        }
+        if (token) {
+            const decoded = jwtDecode(token);
+            console.log(decoded.userno);
+            setUserNo(decoded.userno);
+            setUserId(decoded.id);
+
+            // param 업데이트
+            setParam({
+                user_no: decoded.userno,
+                user_id: decoded.id,
+            });
+        }
+        console.log(userNo);
+        console.log(userId);
+    }, []);
+
+    console.log(param);
+
+    const navigate = useNavigate();
+
     const [file, setFile] = useState([]); // 파일
     const [openEditorModal, setOpenEditorModal] = useState(false);
     const [dates, setDates] = useState([]); // API로부터 받은 날짜 리스트
@@ -77,7 +109,7 @@ function Regist() {
     const fetchDates = () => {
         axios
             .get('http://localhost:8090/api/diary/confirmdate', {
-                params: { userno: param.user_no },
+                params: { userno: userNo },
             })
             .then((res) => {
                 // Remove duplicate dates
@@ -101,7 +133,7 @@ function Regist() {
         axios
             .get('http://localhost:8090/api/diary/detail', {
                 params: {
-                    userNo: param.user_no,
+                    userNo: userNo,
                     confirmDate: formattedDate,
                 },
             })
@@ -151,24 +183,6 @@ function Regist() {
                 <div className="body">
                     <div className="sub">
                         <div className="size">
-                            <div>
-                                <Button
-                                    variant="text"
-                                    sx={{
-                                        fontSize: '16px', // 글꼴 크기
-                                        padding: '3px 16px', // 버튼 크기 조정
-                                        fontFamily: 'Gamja Flower',
-                                        color: 'blue', // 글자색 파란색 설정
-                                        fontWeight: 'bold', // 글자 두께를 두껍게 설정
-                                        marginBottom: '10px',
-                                    }}
-                                    onClick={handleOpenEditorModal}
-                                >
-                                    등록할 일기를 선택해주세요 <MenuBookIcon />
-                                </Button>
-                            </div>
-                            <Divider />
-
                             <div className="bbs">
                                 <form
                                     method="post"
@@ -176,37 +190,68 @@ function Regist() {
                                     id="frm"
                                     encType="multipart/form-data"
                                 >
-                                    <table className="board_write">
-                                        <tbody>
-                                            <tr>
-                                                <th>제목</th>
-                                                <td>
-                                                    <input
-                                                        type="text"
-                                                        name="title"
-                                                        onChange={handleChange}
-                                                    />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>내용</th>
-                                                <td>
-                                                    <textarea
-                                                        name="content"
-                                                        onChange={handleChange}
-                                                    ></textarea>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div
-                                        className="btnSet"
-                                        style={{ textAlign: 'right' }}
-                                    >
-                                        <Link className="btn" onClick={save}>
-                                            저장
-                                        </Link>
+                                    <div className="board_write">
+                                        <TextField
+                                            id="standard-basic"
+                                            label="글 제목을 입력해주세요"
+                                            variant="standard"
+                                            name="title"
+                                            onChange={handleChange}
+                                            sx={{
+                                                marginBottom: '16px',
+                                            }} // 간격 추가
+                                            InputProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 입력 텍스트의 폰트 변경
+                                                },
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 레이블의 폰트 변경
+                                                },
+                                            }}
+                                        />
+
+                                        <TextField
+                                            id="filled-multiline-static"
+                                            label="공유하고 싶은 내용을 작성해주세요"
+                                            multiline
+                                            rows={4}
+                                            name="content"
+                                            onChange={handleChange}
+                                            sx={{
+                                                marginBottom: '16px', // 간격 추가
+                                            }}
+                                            InputProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 입력 텍스트의 폰트 변경
+                                                },
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 레이블의 폰트 변경
+                                                },
+                                            }}
+                                        />
                                     </div>
+                                    <div>
+                                        <Button
+                                            variant="text"
+                                            sx={{
+                                                fontSize: '16px', // 글꼴 크기
+                                                padding: '3px 16px', // 버튼 크기 조정
+                                                fontFamily: 'Gamja Flower',
+                                                color: 'blue', // 글자색 파란색 설정
+                                                fontWeight: 'bold', // 글자 두께를 두껍게 설정
+                                                marginBottom: '10px',
+                                            }}
+                                            onClick={handleOpenEditorModal}
+                                        >
+                                            +등록할 일기를 선택해주세요{' '}
+                                            <MenuBookIcon />
+                                        </Button>
+                                    </div>
+                                    <Divider />
                                 </form>
                             </div>
                             {/* 선택된 날짜의 다이어리 상세 정보 표시 */}
@@ -216,6 +261,28 @@ function Regist() {
                                     date={selectedDate}
                                 />
                             )}
+                            <div
+                                className="btnSet"
+                                style={{
+                                    textAlign: 'right',
+                                    marginTop: '20px',
+                                    marginBottom: '20px',
+                                }}
+                            >
+                                <Button
+                                    variant="outlined"
+                                    onClick={save}
+                                    sx={{
+                                        fontFamily: 'Gamja Flower', // 폰트를 Gamja Flower로 설정
+                                        fontSize: '16px', // 글자 크기 설정
+                                        padding: '8px 16px', // 패딩 설정
+                                        color: 'blue', // 글자색 파란색 설정
+                                        borderColor: 'blue', // 테두리 색상을 파란색으로 설정
+                                    }}
+                                >
+                                    등록하기
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -243,14 +310,25 @@ function Regist() {
                         overflowY: 'auto', // 스크롤 가능하게 설정
                     }}
                 >
-                    <h1>user님의 데이트 기록</h1>
-                    <ul>
+                    <h1>{userId}님의 데이트 기록</h1>
+                    <ul
+                        style={{
+                            maxHeight: '150px', // 최대 높이를 설정하여 스크롤 가능하게 설정
+                            overflowY: 'auto', // 스크롤 가능하게 설정
+                            padding: 0,
+                            margin: 0,
+                            listStyleType: 'none', // 불릿 제거
+                        }}
+                    >
                         {dates.length > 0 ? (
                             dates.map((date, index) => (
                                 <li
                                     key={index}
                                     onClick={() => handleDateClick(date)}
-                                    style={{ cursor: 'pointer' }}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '8px 0', // 리스트 간격을 조금 추가
+                                    }}
                                 >
                                     {new Date(date).toLocaleDateString()}
                                 </li>
@@ -262,32 +340,45 @@ function Regist() {
                     {selectedDate && (
                         <div>
                             <h2>
-                                Diary Details for{' '}
-                                {new Date(selectedDate).toLocaleDateString()}
+                                {new Date(selectedDate).toLocaleDateString()}{' '}
+                                일기
                             </h2>
                             {diaryData.length > 0 ? (
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Diary No</th>
-                                            <th>Company Name</th>
-                                            <th>Rate</th>
-                                            <th>Review</th>
-                                            <th>Upload Org</th>
-                                            <th>Upload Real</th>
-                                            <th>Category</th>
-                                        </tr>
-                                    </thead>
+                                <table
+                                    style={{
+                                        width: '100%',
+                                        borderSpacing: '0 10px', // 열 간격을 추가
+                                    }}
+                                >
                                     <tbody>
                                         {diaryData.map((diary, index) => (
                                             <tr key={index}>
-                                                <td>{diary.diaryNo}</td>
-                                                <td>{diary.companyName}</td>
-                                                <td>{diary.rate}</td>
+                                                <td
+                                                    style={{
+                                                        paddingRight: '5px',
+                                                    }}
+                                                >
+                                                    <Rating
+                                                        name={
+                                                            diary.rate
+                                                                ? 'conditional-read-only'
+                                                                : 'no-value'
+                                                        }
+                                                        value={
+                                                            diary.rate || null
+                                                        }
+                                                        size="small"
+                                                        readOnly={true}
+                                                    />
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        paddingRight: '5px',
+                                                    }}
+                                                >
+                                                    {diary.companyName}
+                                                </td>
                                                 <td>{diary.review}</td>
-                                                <td>{diary.uploadOrg}</td>
-                                                <td>{diary.uploadReal}</td>
-                                                <td>{diary.category}</td>
                                             </tr>
                                         ))}
                                     </tbody>
