@@ -9,6 +9,8 @@ import { Button as MuiButton, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const SignUpForm = () => {
     const navigate = useNavigate();
     const [id, setId] = useState('');
@@ -38,7 +40,7 @@ const SignUpForm = () => {
 
         try {
             console.log(accountno);
-            const response = await axios.post('http://localhost:8090/signup', {
+            const response = await axios.post(`${apiUrl}/signup`, {
                 id,
                 pw,
                 name,
@@ -81,7 +83,7 @@ const SignUpForm = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8090/check-fourdigit',
+                `${apiUrl}/check-fourdigit`,
                 {
                     accountno, // 계좌번호
                     accountcheck, // 전송된 4자리 숫자
@@ -113,7 +115,7 @@ const SignUpForm = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8090/check-id',
+                `${apiUrl}/check-id`,
                 { id },
             );
             setIdCheckMessage(response.data.message); // 상태 변수에 메시지 저장
@@ -133,7 +135,7 @@ const SignUpForm = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8090/check-account',
+                `${apiUrl}/check-account`,
                 { accountno },
             );
 
