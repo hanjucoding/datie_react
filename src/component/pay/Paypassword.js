@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios'; // axios를 사용하여 API 호출
+import Swal from 'sweetalert2';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function PasswordInput() {
     //비밀번호 입력 로직
@@ -16,7 +18,7 @@ function PasswordInput() {
 
     //PayInfo로부터 받은 결제정보
     const location = useLocation();
-    const { companyno, content, amount, peramount, bonus, userno } =
+    const { companyno, content, amount, peramount, bonus, userno, key } =
         location.state || {};
 
     useEffect(() => {
@@ -37,6 +39,31 @@ function PasswordInput() {
 
     // 비밀번호가 변경될 때마다 검사
     useEffect(() => {
+        // 페이지 로딩 시 Key 상태 확인 요청
+        const checkKeyStatus = async () => {
+            try {
+                const keyResponse = await axios.get(`${apiUrl}/api/check-key`, {
+                    params: { key: key },
+                });
+                console.log('Key:', key); // 디버깅용 로그
+
+                if (keyResponse.data === 0) {
+                    await Swal.fire({
+                        title: '결제가 이미 처리되었습니다!',
+                        icon: 'warning',
+                        confirmButtonText: '메인메뉴로 이동',
+                    });
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Key status check failed:', error);
+            }
+        };
+
+        if (key) {
+            checkKeyStatus();
+        }
+
         if (currentIndex === 4) {
             // 비밀번호가 모두 입력된 경우
             const enteredPassword = password.join('');
@@ -49,6 +76,7 @@ function PasswordInput() {
                         peramount,
                         bonus,
                         cardno,
+                        key,
                     },
                 });
                 // 비밀번호가 맞으면 /pay/Payresult 페이지로 이동
