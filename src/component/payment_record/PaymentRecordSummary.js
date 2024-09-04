@@ -25,6 +25,8 @@ import hospitalIcon from "../../assets/hospital.png";
 import hobbyIcon from "../../assets/hobby.png";
 import questionMarkIcon from "../../assets/question-mark.png";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function PaymentRecordSummary() {
   const [paymentRecords, setPaymentRecords] = useState([]); // 거래 내역을 저장할 상태
   const [groupedRecords, setGroupedRecords] = useState({}); // 카테고리별로 그룹화된 거래 내역을 저장할 상태
@@ -45,7 +47,7 @@ function PaymentRecordSummary() {
 
         // userno로 cardno 가져오기
         axios
-          .post(`http://localhost:8090/api/getCardno?userno=${userno}`)
+          .post(`${apiUrl}/api/getCardno?userno=${userno}`)
           .then((response) => {
             setCardno(response.data);
           })
