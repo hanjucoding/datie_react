@@ -7,6 +7,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { jwtDecode } from 'jwt-decode';
 
 function CommentTr(props) {
+    const apiUrl = process.env.REACT_APP_API_URL;
     let token;
     const [userNo, setUserNo] = useState(0);
     const [userId, setUserId] = useState('user');
@@ -35,12 +36,9 @@ function CommentTr(props) {
         if (props) {
             // 프로필 이미지 URL 가져오기
             axios
-                .get(
-                    `http://localhost:8090/api/profileImage/${props.row.user.userno}`,
-                    {
-                        responseType: 'blob',
-                    },
-                )
+                .get(`${apiUrl}/api/profileImage/${props.row.user.userno}`, {
+                    responseType: 'blob',
+                })
                 .then((response) => {
                     setProfileImageUrl(URL.createObjectURL(response.data)); // 받은 URL로 프로필 이미지 설정
                 })

@@ -11,6 +11,8 @@ import Footer from '../../../component/Footer';
 import KakaoMap from '../components/KakaoMap';
 import DiaryList from '../components/DiaryList';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function DiaryDetail() {
     const { date } = useParams(); // URL에서 date 파라미터를 가져옴
     const formattedDate = moment(date, 'YYYY-MM-DD');
@@ -35,7 +37,7 @@ function DiaryDetail() {
         const fetchDiaryDetail = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8090/api/diary/detail?userNo=${userNo}&confirmDate=${formattedDate.format(
+                    `${apiUrl}/api/diary/detail?userNo=${userNo}&confirmDate=${formattedDate.format(
                         'YYYY-MM-DD',
                     )}`,
                 );

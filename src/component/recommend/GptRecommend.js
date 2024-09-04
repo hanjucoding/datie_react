@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Box, Typography, Button, List, ListItem, ListItemText } from "@mui/material";
+import { Box, Typography, Button, List, ListItem, ListItemText, CircularProgress } from "@mui/material";
+
+import recommendIcon from "../../assets/recommend.png";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -34,37 +36,77 @@ const GptRecommend = ({ cardno }) => {
     fetchRecommendations();
   }, [cardno]);
 
+  const handleMapClick = (location) => {
+    const kakaoMapUrl = `https://map.kakao.com/?q=${encodeURIComponent(location)}`;
+    window.open(kakaoMapUrl, '_blank'); // 새 탭에서 카카오맵 열기
+  };
+
   return (
     <Box sx={{ maxWidth: 600, margin: "0 auto", padding: 2 }}>
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
-        추천 활동
-      </Typography>
-      
+      <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontFamily: '"Gamja Flower", cursive',
+            fontSize: "25px",
+            fontWeight: "bold",
+            marginRight: "10px", // 텍스트와 아이콘 사이에 간격 추가
+          }}
+        >
+          당신만을 위한 데이티의 추천
+        </Typography>
+        <Box
+          component="img"
+          src={recommendIcon}
+          alt="Recommend Icon"
+          sx={{ width: 40, height: 40 }} // 아이콘 크기 설정
+        />
+      </Box>
 
-      {loading && <Typography>로딩 중...</Typography>}
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
+          <CircularProgress />
+        </Box>
+      )}
       {error && <Typography color="error">{error}</Typography>}
 
-        {!loading && !error && recommendations.length > 0 && (
-            <Typography variant="h4" sx={{marginBottom: 2}}>
-                {recommendations[0].Basis}에 가장 많이 사용하셨어요
-            </Typography>
-        )}
+      {!loading && !error && recommendations.length > 0 && (
+        <Typography
+          variant="h4"
+          sx={{
+            marginBottom: 2,
+            fontFamily: '"Gamja Flower", cursive',
+            fontSize: "22px",
+          }}
+        >
+          {recommendations[0].Basis}에 사용하신 횟수가 제일 많아요!
+        </Typography>
+      )}
       {!loading && !error && recommendations.length > 0 && (
         <List>
           {recommendations.map((recommendation, index) => (
-            <ListItem key={index} divider>
+            <ListItem
+              key={index}
+              divider
+              button
+              onClick={() => handleMapClick(recommendation.Location)} // 클릭 시 카카오맵으로 연결
+            >
               <ListItemText
-                primary={`활동 ${index + 1}: ${recommendation.Activity}`}
+                primary={`${recommendation.Activity}`}
                 secondary={`${recommendation.Location}`}
+                primaryTypographyProps={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "20px",
+                }}
+                secondaryTypographyProps={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "18px",
+                }}
               />
             </ListItem>
           ))}
         </List>
       )}
-
-      <Button variant="contained" onClick={fetchRecommendations} disabled={loading}>
-        추천 새로고침
-      </Button>
     </Box>
   );
 };

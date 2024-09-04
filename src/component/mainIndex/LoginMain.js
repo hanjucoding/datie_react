@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 
 import ResponsiveAppBar from "../RealHeader";
 import GptRecommend from "../recommend/GptRecommend";
+import PaymentRecordSummaryMonth from "../payment_record/PaymentRecordSummaryMonth";
 
 // 이미지 import
 import type1Front from "../../assets/type1-front.png";
@@ -19,6 +20,9 @@ import nocard from "../../assets/nocard.png"; // 카드가 없을 때 사용할 
 import icon_record from "../../assets/Icon-record.png";
 import icon_summary from "../../assets/Icon-summary.png";
 import icon_diary from "../../assets/Icon-diary.png";
+import icon_group from "../../assets/group.png"; // 새로운 그룹 아이콘
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function LoginMain() {
   const [cardInfo, setCardInfo] = useState(null);
@@ -43,7 +47,7 @@ function LoginMain() {
 
       // userno로 cardno 가져오기
       axios
-        .post(`http://localhost:8090/api/getCardno?userno=${userno}`)
+        .post(`${apiUrl}/api/getCardno?userno=${userno}`)
         .then((response) => {
           console.log(response);
           setCardno(response.data); // 가져온 cardno를 상태에 저장
@@ -59,7 +63,7 @@ function LoginMain() {
       // 카드 정보 가져오기
       console.log(cardno);
       axios
-        .post(`http://localhost:8090/api/card/${cardno}`)
+        .post(`${apiUrl}/api/card/${cardno}`)
         .then((response) => {
           setCardInfo(response.data);
 
@@ -67,7 +71,7 @@ function LoginMain() {
           if (response.data.userno) {
             console.log(response.data.userno);
             axios
-              .get(`http://localhost:8090/api/profile?userno=${response.data.userno}`)
+              .get(`${apiUrl}/api/profile?userno=${response.data.userno}`)
               .then((res) => {
                 setOwnerName(res.data.name);
                 console.log(res.data.name);
@@ -81,7 +85,7 @@ function LoginMain() {
           if (response.data.userno2) {
             console.log(response.data.userno2);
             axios
-              .get(`http://localhost:8090/api/profile?userno=${response.data.userno2}`)
+              .get(`${apiUrl}/api/profile?userno=${response.data.userno2}`)
               .then((res) => {
                 setPartnerName(res.data.name);
               })
@@ -177,7 +181,7 @@ function LoginMain() {
             alignItems: "center",
             position: "relative",
             width: "600px",
-            height: "400px",
+            height: "380px",
             perspective: "1000px",
           }}
           onClick={handleCardClick}
@@ -191,8 +195,8 @@ function LoginMain() {
                   color: "white",
                   borderRadius: "12px",
                   position: "absolute",
-                  top: "10%",
-                  left: "10%",
+                  top: "43px",
+                  left: "55px",
                   backgroundImage: `url(${getFrontBackgroundImage()})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -246,10 +250,13 @@ function LoginMain() {
                   variant="body2"
                   component="div"
                   sx={{
+                    position: "relative",
+                    top: "-90px",
                     marginBottom: "10px",
-                    marginTop: "100px",
+                    marginTop: "0px",
                     fontFamily: '"Gamja Flower", cursive',
                     fontSize: "22px",
+                    color: "white",
                   }}
                 >
                   {ownerName}님과 {partnerName}님의 데이티카드
@@ -258,9 +265,13 @@ function LoginMain() {
                   variant="body2"
                   component="div"
                   sx={{
+                    position: "relative",
+                    top: "100px",
+                    left: "-140px",
                     marginBottom: "10px",
                     fontFamily: '"Gamja Flower", cursive',
                     fontSize: "22px",
+                    color: "white",
                   }}
                 >
                   유효 기간: {formatDateTimeCard(cardInfo.date)}
@@ -306,9 +317,10 @@ function LoginMain() {
             flex: "2",
             backgroundColor: "#ffffff",
             borderRadius: "8px",
-            width: "600px",
-            margin: "0px 10px",
-            paddingBottom: "20px", // 밑 공간을 추가
+            width: "490px",
+            margin: "0px",
+            paddingBottom: "20px",
+            marginBottom: "20px",
           }}
         >
           <Typography
@@ -317,46 +329,125 @@ function LoginMain() {
             gutterBottom
             sx={{
               fontFamily: '"Gamja Flower", cursive',
-              fontSize: "22px",
+              fontSize: "25px",
+              fontWeight: "bold",
               padding: "10px",
             }}
           >
             데이티 서비스
           </Typography>
-            {/* 아이콘 섹션 */}
+
+          {/* 아이콘 섹션 */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-around",
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)", // 2x2 그리드로 설정
+              gridGap: "20px",
+              justifyItems: "center",
               alignItems: "center",
               padding: "10px",
             }}
           >
-            <Box
-              component="img"
-              src={icon_record}
-              alt="결제 기록"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
-              onClick={() => handleIconClick("/paymentRecords")}
-            />
-            <Box
-              component="img"
-              src={icon_summary}
-              alt="요약"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
-              onClick={() => handleIconClick("/paymentRecordSummary")}
-            />
-            <Box
-              component="img"
-              src={icon_diary}
-              alt="일기"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
-              onClick={() => handleIconClick("/diary")}
-            />
+            {/* 각 아이콘 밑에 텍스트를 배치 */}
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={icon_record}
+                alt="결제 기록"
+                sx={{ width: 100, height: 100, cursor: "pointer" }}
+                onClick={() => handleIconClick("/paymentRecords")}
+              />
+              <Typography
+                sx={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "22px",
+                }}
+              >
+                거래 내역
+              </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={icon_summary}
+                alt="요약"
+                sx={{ width: 100, height: 100, cursor: "pointer" }}
+                onClick={() => handleIconClick("/paymentRecordSummary")}
+              />
+              <Typography
+                sx={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "22px",
+                }}
+              >
+                가계부
+              </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={icon_diary}
+                alt="일기"
+                sx={{ width: 100, height: 100, cursor: "pointer" }}
+                onClick={() => handleIconClick("/diary")}
+              />
+              <Typography
+                sx={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "22px",
+                }}
+              >
+                데이트일기
+              </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: "center" }}>
+              <Box
+                component="img"
+                src={icon_group}
+                alt="커뮤니티"
+                sx={{ width: 100, height: 100, cursor: "pointer" }}
+                onClick={() => handleIconClick("/board/list")}
+              />
+              <Typography
+                sx={{
+                  fontFamily: '"Gamja Flower", cursive',
+                  fontSize: "22px",
+                }}
+              >
+                커뮤니티
+              </Typography>
+            </Box>
           </Box>
+        </Box>
+        <Box
+          sx={{
+            flex: "3",
+            backgroundColor: "#ffffff",
+            borderRadius: "8px",
+            width: "490px",
+            margin: "0px",
+            paddingBottom: "20px",
+            marginBottom: "20px",
+          }}
+        >
+          {cardno && <PaymentRecordSummaryMonth cardno={cardno} />}
+        </Box>
+        <Box
+          sx={{
+            flex: "4",
+            backgroundColor: "#ffffff",
+            borderRadius: "8px",
+            width: "490px",
+            margin: "0px",
+            paddingBottom: "20px",
+            marginBottom: "20px",
+          }}
+        >
           {cardno && <GptRecommend cardno={cardno} />}
         </Box>
-        
       </Box>
     </div>
   );

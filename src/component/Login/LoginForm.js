@@ -5,6 +5,8 @@ import { Button as MuiButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const LoginForm = () => {
     const navigate = useNavigate(); // useNavigate 훅 사용
     const [id, setId] = useState(localStorage.getItem('savedId') || ''); // 아이디 상태 관리
@@ -18,7 +20,7 @@ const LoginForm = () => {
     const handleLoginClick = async () => {
         try {
             const response = await axios.post(
-                'http://localhost:8090/login',
+                `${apiUrl}/login`,
                 JSON.stringify({
                     id: id,
                     pw: pw,

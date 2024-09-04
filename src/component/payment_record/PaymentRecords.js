@@ -13,6 +13,8 @@ import hospitalIcon from "../../assets/hospital.png";
 import hobbyIcon from "../../assets/hobby.png";
 import questionMarkIcon from "../../assets/question-mark.png";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const PaymentRecords = () => {
   const [cardno, setCardno] = useState(null);
   const [paymentRecords, setPaymentRecords] = useState([]);
@@ -33,7 +35,7 @@ const PaymentRecords = () => {
           setUserno(userno);
 
           axios
-              .post(`http://localhost:8090/api/getCardno?userno=${userno}`)
+              .post(`${apiUrl}/api/getCardno?userno=${userno}`)
               .then((response) => {
                   setCardno(response.data);
               })
@@ -53,7 +55,7 @@ const PaymentRecords = () => {
       if (hasMore && !isFetching) {
           setIsFetching(true);
           axios
-              .post(`http://localhost:8090/api/card/${cardno}/payment-records?page=${page}&size=4`)
+              .post(`${apiUrl}/api/card/${cardno}/payment-records?page=${page}&size=4`)
               .then((response) => {
                   setPaymentRecords((prevRecords) => [...prevRecords, ...response.data.content]);
                   setHasMore(response.data.content.length === 4);
@@ -118,7 +120,7 @@ const PaymentRecords = () => {
   const handleCategoryChange = async (index, newCategory) => {
     try {
       const record = paymentRecords[index];
-      const response = await axios.post(`http://localhost:8090/api/payment-record/${record.payno}/category`, newCategory, {
+      const response = await axios.post(`${apiUrl}/api/payment-record/${record.payno}/category`, newCategory, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -170,7 +172,7 @@ const PaymentRecords = () => {
                   key={index}
                   ref={paymentRecords.length === index + 1 ? lastRecordRef : null}
                   sx={{
-                      border: "1px solid #ccc",
+                      border: "3px solid #ccc",
                       borderRadius: "8px",
                       borderColor: item.paystate === 1 ? "green" : "red",
                       padding: "10px",

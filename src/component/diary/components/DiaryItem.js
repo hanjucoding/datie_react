@@ -8,8 +8,10 @@ import Editor from './Editor';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 // 기본 이미지 URL
-const DEFAULT_IMAGE_URL = 'http://localhost:8090/api/diary/image/default.png';
+const DEFAULT_IMAGE_URL = `${apiUrl}/api/diary/image/default.png`;
 
 const DiaryItem = ({
     diaryNo,
@@ -34,7 +36,7 @@ const DiaryItem = ({
     useEffect(() => {
         // 이미지 URL 리스트를 가져오기
         axios
-            .get(`http://localhost:8090/api/diary/images/${diaryNo}`)
+            .get(`${apiUrl}/api/diary/images/${diaryNo}`)
             .then((response) => {
                 setImageUrls(response.data);
                 if (response.data.length > 0) {

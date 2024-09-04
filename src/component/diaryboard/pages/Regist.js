@@ -16,6 +16,7 @@ import TextField from '@mui/material/TextField';
 import { jwtDecode } from 'jwt-decode';
 
 function Regist() {
+    const apiUrl = process.env.REACT_APP_API_URL;
     let token;
     const [userNo, setUserNo] = useState(0);
     const [userId, setUserId] = useState('user');
@@ -86,7 +87,7 @@ function Regist() {
         }
 
         axios
-            .post('http://localhost:8090/api/diaryboard/regist', formData, {
+            .post(`${apiUrl}/api/diaryboard/regist`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     charset: 'utf-8',
@@ -108,7 +109,7 @@ function Regist() {
 
     const fetchDates = () => {
         axios
-            .get('http://localhost:8090/api/diary/confirmdate', {
+            .get(`${apiUrl}/api/diary/confirmdate`, {
                 params: { userno: userNo },
             })
             .then((res) => {
@@ -131,7 +132,7 @@ function Regist() {
     const fetchDiaryDetails = (date) => {
         const formattedDate = format(new Date(date), 'yyyy-MM-dd');
         axios
-            .get('http://localhost:8090/api/diary/detail', {
+            .get(`${apiUrl}/api/diary/detail`, {
                 params: {
                     userNo: userNo,
                     confirmDate: formattedDate,
