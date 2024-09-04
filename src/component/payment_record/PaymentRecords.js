@@ -170,7 +170,7 @@ const PaymentRecords = () => {
                   key={index}
                   ref={paymentRecords.length === index + 1 ? lastRecordRef : null}
                   sx={{
-                      border: "1px solid #ccc",
+                      border: "3px solid #ccc",
                       borderRadius: "8px",
                       borderColor: item.paystate === 1 ? "green" : "red",
                       padding: "10px",

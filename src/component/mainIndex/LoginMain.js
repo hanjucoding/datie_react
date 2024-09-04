@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 
 import ResponsiveAppBar from "../RealHeader";
 import GptRecommend from "../recommend/GptRecommend";
+import PaymentRecordSummaryMonth from "../payment_record/PaymentRecordSummaryMonth";
 
 // 이미지 import
 import type1Front from "../../assets/type1-front.png";
@@ -177,7 +178,7 @@ function LoginMain() {
             alignItems: "center",
             position: "relative",
             width: "600px",
-            height: "400px",
+            height: "380px",
             perspective: "1000px",
           }}
           onClick={handleCardClick}
@@ -191,8 +192,8 @@ function LoginMain() {
                   color: "white",
                   borderRadius: "12px",
                   position: "absolute",
-                  top: "10%",
-                  left: "10%",
+                  top: "43px",
+                  left: "55px",
                   backgroundImage: `url(${getFrontBackgroundImage()})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -246,10 +247,13 @@ function LoginMain() {
                   variant="body2"
                   component="div"
                   sx={{
+                    position: "relative",
+                    top: "-90px",
                     marginBottom: "10px",
-                    marginTop: "100px",
+                    marginTop: "0px",
                     fontFamily: '"Gamja Flower", cursive',
                     fontSize: "22px",
+                    color: "white",
                   }}
                 >
                   {ownerName}님과 {partnerName}님의 데이티카드
@@ -258,9 +262,13 @@ function LoginMain() {
                   variant="body2"
                   component="div"
                   sx={{
+                    position: "relative",
+                    top: "100px",
+                    left: "-140px",
                     marginBottom: "10px",
                     fontFamily: '"Gamja Flower", cursive',
                     fontSize: "22px",
+                    color: "white",
                   }}
                 >
                   유효 기간: {formatDateTimeCard(cardInfo.date)}
@@ -306,9 +314,10 @@ function LoginMain() {
             flex: "2",
             backgroundColor: "#ffffff",
             borderRadius: "8px",
-            width: "600px",
-            margin: "0px 10px",
+            width: "490px",
+            margin: "0px",
             paddingBottom: "20px", // 밑 공간을 추가
+            marginBottom: "20px",
           }}
         >
           <Typography
@@ -317,7 +326,8 @@ function LoginMain() {
             gutterBottom
             sx={{
               fontFamily: '"Gamja Flower", cursive',
-              fontSize: "22px",
+              fontSize: "25px",
+              fontWeight: "bold",
               padding: "10px",
             }}
           >
@@ -336,26 +346,86 @@ function LoginMain() {
               component="img"
               src={icon_record}
               alt="결제 기록"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
+              sx={{ width: 100, height: 100, cursor: "pointer" }}
               onClick={() => handleIconClick("/paymentRecords")}
             />
             <Box
               component="img"
               src={icon_summary}
               alt="요약"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
+              sx={{ width: 100, height: 100, cursor: "pointer" }}
               onClick={() => handleIconClick("/paymentRecordSummary")}
             />
             <Box
               component="img"
               src={icon_diary}
               alt="일기"
-              sx={{ width: 140, height: 100, cursor: "pointer" }}
+              sx={{ width: 100, height: 100, cursor: "pointer" }}
               onClick={() => handleIconClick("/diary")}
             />
           </Box>
-          {cardno && <GptRecommend cardno={cardno} />}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              margin: "0px 40px",
+              fontFamily: '"Gamja Flower", cursive',
+              fontSize: "22px",
+            }}
+          >
+            <Typography
+              sx={{
+                fontFamily: '"Gamja Flower", cursive',
+                fontSize: "22px",
+              }}
+            >
+              거래 내역
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: '"Gamja Flower", cursive',
+                fontSize: "22px",
+              }}
+            >
+              가계부
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: '"Gamja Flower", cursive',
+                fontSize: "22px",
+              }}
+            >
+              데이트일기
+            </Typography>
+          </Box>
         </Box>
+        <Box
+            sx={{
+              flex: "3",
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              width: "490px",
+              margin: "0px",
+              paddingBottom: "20px", // 밑 공간을 추가
+              marginBottom: "20px",
+            }}
+          >
+          {cardno && <PaymentRecordSummaryMonth cardno={cardno} />}
+          </Box>
+        <Box
+            sx={{
+              flex: "4",
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              width: "490px",
+              margin: "0px",
+              paddingBottom: "20px", // 밑 공간을 추가
+              marginBottom: "20px",
+            }}
+          >
+          {cardno && <GptRecommend cardno={cardno} />}
+          </Box>
         
       </Box>
     </div>
