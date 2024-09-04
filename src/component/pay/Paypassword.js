@@ -24,7 +24,7 @@ function PasswordInput() {
     useEffect(() => {
         // 컴포넌트가 처음 렌더링될 때 API 호출
         axios
-            .post('http://localhost:8090/api/cardpassword', { userno })
+            .post(`${apiUrl}/api/cardpassword`, { userno })
             .then((response) => {
                 // 서버로부터 받은 카드 번호와 비밀번호를 설정
                 const { cardpw, cardno } = response.data;
