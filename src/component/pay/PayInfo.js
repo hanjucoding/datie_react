@@ -64,9 +64,34 @@ function PayInfo() {
     const [names, setNames] = useState({ userno_name: '', userno2_name: '' });
     const [processedUsernoName, setProcessedUsernoName] = useState('');
     const [processedUserno2Name, setProcessedUserno2Name] = useState('');
-    const { id, companyno, amount } = location.state || {};
+    const { id, companyno, amount, key } = location.state || {};
 
     useEffect(() => {
+        // 페이지 로딩 시 Key 상태 확인 요청
+        const checkKeyStatus = async () => {
+            try {
+                const keyResponse = await axios.get(`${apiUrl}/api/check-key`, {
+                    params: { key: key },
+                });
+                console.log('Key:', key); // 디버깅용 로그
+
+                if (keyResponse.data === 0) {
+                    await Swal.fire({
+                        title: '결제가 이미 처리되었습니다!',
+                        icon: 'warning',
+                        confirmButtonText: '메인메뉴로 이동',
+                    });
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Key status check failed:', error);
+            }
+        };
+
+        if (key) {
+            checkKeyStatus();
+        }
+
         if (companyno && amount) {
             axios
                 .get(`${apiUrl}/api/company?companyno=${companyno}`)
@@ -128,9 +153,10 @@ function PayInfo() {
                 userno,
                 names.userno_name,
                 names.userno2_name,
+                key,
             );
         }
-    }, [companyno, amount, id]);
+    }, [companyno, amount, id, key]);
 
     useEffect(() => {
         if (userno !== null) {
@@ -162,6 +188,7 @@ function PayInfo() {
                 peramount,
                 bonus,
                 userno,
+                key,
             },
         });
     };

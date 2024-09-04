@@ -4,8 +4,11 @@ import { TextField } from '@mui/material';
 import { Button as MuiButton } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import picture from '../../assets/datie_highfive2-cutout.png';
+import Swal from 'sweetalert2';
 import axios from 'axios';
+
 const apiUrl = process.env.REACT_APP_API_URL;
+
 const PayLoginForm = () => {
     const navigate = useNavigate();
     const location = useLocation(); // useLocation 훅 사용
@@ -16,28 +19,48 @@ const PayLoginForm = () => {
     // URL 파라미터로부터 값 받기
     const [companyno, setCompanyno] = useState(0);
     const [amount, setAmount] = useState(0);
+    const [key, setKey] = useState('');
 
-    useEffect(() => {}, [location.search]); // location.search가 변경될 때마다 실행
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const companynoFromUrl = parseInt(params.get('companyno'), 10) || 0;
+        const amountFromUrl = parseInt(params.get('amount'), 10) || 0;
+        const keyFromUrl = params.get('key') || '';
+        setCompanyno(companynoFromUrl);
+        setAmount(amountFromUrl);
+        setKey(keyFromUrl);
+
+        // 페이지 로딩 시 Key 상태 확인 요청
+        const checkKeyStatus = async () => {
+            try {
+                const keyResponse = await axios.get(`${apiUrl}/api/check-key`, {
+                    params: { key: keyFromUrl },
+                });
+                console.log('Key:', keyFromUrl); // 디버깅용 로그
+
+                if (keyResponse.data === 0) {
+                    await Swal.fire({
+                        title: '결제가 이미 처리되었습니다!',
+                        icon: 'warning',
+                        confirmButtonText: '메인메뉴로 이동',
+                    });
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Key status check failed:', error);
+            }
+        };
+
+        if (keyFromUrl) {
+            checkKeyStatus();
+        }
+    }, [location.search, navigate]); // 의존성 배열 설정
 
     const handlesignupclick = () => {
         navigate('/verify');
     };
 
     const handleLoginClick = async () => {
-        // location.search를 파싱하여 URLSearchParams 객체 생성
-        const params = new URLSearchParams(location.search);
-
-        // URL 파라미터 추출
-        const companynoFromUrl = parseInt(params.get('companyno'), 10) || 0;
-        const amountFromUrl = parseInt(params.get('amount'), 10) || 0;
-
-        // 상태 업데이트
-        setCompanyno(companynoFromUrl);
-        setAmount(amountFromUrl);
-
-        // 콘솔 로그 출력
-        console.log('wtf', companynoFromUrl, amountFromUrl);
-
         try {
             const response = await axios.post(
                 `${apiUrl}/login`,
@@ -60,9 +83,10 @@ const PayLoginForm = () => {
 
                 navigate('/pay/Payinfo', {
                     state: {
-                        id: id, // 전달할 id
-                        companyno: companynoFromUrl, // 전달할 companyno
-                        amount: amountFromUrl, // 전달할 amount
+                        id: id,
+                        companyno: companyno,
+                        amount: amount,
+                        key: key,
                     },
                 });
             }
