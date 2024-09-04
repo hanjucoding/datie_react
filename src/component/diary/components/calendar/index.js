@@ -10,6 +10,8 @@ import {
 import moment from 'moment';
 import { jwtDecode } from 'jwt-decode';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const DogInfo = () => {
     let token;
     const navigate = useNavigate();
@@ -44,7 +46,7 @@ const DogInfo = () => {
         const fetchAttendanceDates = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:8090/api/diary/confirmdate',
+                    `${apiUrl}/api/diary/confirmdate`,
                     {
                         params: {
                             userno: userNo, // Replace '62' with the actual userno if needed

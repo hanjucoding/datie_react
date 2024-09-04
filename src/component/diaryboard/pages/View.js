@@ -23,6 +23,7 @@ import { colors } from '@mui/material';
 function View(props) {
     const navigate = useNavigate();
     console.log(props);
+    const apiUrl = process.env.REACT_APP_API_URL;
 
     let token;
 
@@ -60,11 +61,9 @@ function View(props) {
     console.log(userId);
 
     const getView = () => {
-        axios
-            .get('http://localhost:8090/api/diaryboard/view?no=' + no)
-            .then((res) => {
-                setData(res.data);
-            });
+        axios.get(`${apiUrl}/api/diaryboard/view?no=` + no).then((res) => {
+            setData(res.data);
+        });
     };
 
     // 댓글관련
@@ -80,7 +79,7 @@ function View(props) {
 
     const getCommentList = () => {
         axios
-            .get('http://localhost:8090/api/comment/list', { params: param })
+            .get(`${apiUrl}/api/comment/list`, { params: param })
             .then((res) => {
                 setComment(res.data.result.content);
                 setTotalElements(res.data.result.totalElements);
@@ -103,12 +102,9 @@ function View(props) {
     useEffect(() => {
         if (data && data.user && data.user.userno) {
             axios
-                .get(
-                    `http://localhost:8090/api/profileImage/${data.user.userno}`,
-                    {
-                        responseType: 'blob',
-                    },
-                )
+                .get(`${apiUrl}/api/profileImage/${data.user.userno}`, {
+                    responseType: 'blob',
+                })
                 .then((response) => {
                     setProfileImageUrl(URL.createObjectURL(response.data)); // 받은 URL로 프로필 이미지 설정
                 })
@@ -138,19 +134,17 @@ function View(props) {
     const saveComment = () => {
         console.log(param);
 
-        axios
-            .post('http://localhost:8090/api/comment/regist', param)
-            .then((res) => {
-                console.log(res);
-                if (res.data.result === 'success') {
-                    alert('정상적으로 저장되었습니다.');
-                    setParam({
-                        ...param,
-                        content: '',
-                    });
-                    getCommentList();
-                }
-            });
+        axios.post(`${apiUrl}/api/comment/regist`, param).then((res) => {
+            console.log(res);
+            if (res.data.result === 'success') {
+                alert('정상적으로 저장되었습니다.');
+                setParam({
+                    ...param,
+                    content: '',
+                });
+                getCommentList();
+            }
+        });
     };
 
     const save = () => {
@@ -160,7 +154,7 @@ function View(props) {
     };
 
     const delComment = (no) => {
-        let url = 'http://localhost:8090/api/comment/delete?no=' + no;
+        let url = `${apiUrl}/api/comment/delete?no=` + no;
         console.log('commentno: ' + no);
         if (window.confirm('댓글을 삭제하시겠습니까?')) {
             axios.get(url).then((res) => {
@@ -184,7 +178,7 @@ function View(props) {
         e.preventDefault();
         if (window.confirm('삭제하시겠습니까?')) {
             axios
-                .post('http://localhost:8090/api/diaryboard/delete', {
+                .post(`${apiUrl}/api/diaryboard/delete`, {
                     no: Number(no),
                 })
                 .then((res) => {
