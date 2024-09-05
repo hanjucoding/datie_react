@@ -118,7 +118,7 @@ const ViewProfile = () => {
         formData.append('userno', userno);
 
         try {
-            await axios.post('${apiUrl}/api/profileUpload', formData, {
+            await axios.post(`${apiUrl}/api/profileUpload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             alert('프로필 사진이 성공적으로 업로드되었습니다.');
