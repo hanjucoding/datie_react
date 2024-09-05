@@ -8,6 +8,8 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; // jwtDecode를 잘못된 방식으로 사용하고 있어, 수정했습니다.
 import Avatar from '@mui/material/Avatar';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function BoardTr(props) {
     const [companyNames, setCompanyNames] = useState([]);
     const [profileImageUrl, setProfileImageUrl] = useState(
@@ -19,12 +21,9 @@ function BoardTr(props) {
     useEffect(() => {
         // 프로필 이미지 URL 가져오기
         axios
-            .get(
-                `http://localhost:8090/api/profileImage/${props.row.user.userno}`,
-                {
-                    responseType: 'blob',
-                },
-            )
+            .get(`${apiUrl}/api/profileImage/${props.row.user.userno}`, {
+                responseType: 'blob',
+            })
             .then((response) => {
                 setProfileImageUrl(URL.createObjectURL(response.data)); // 받은 URL로 프로필 이미지 설정
             })
@@ -41,7 +40,7 @@ function BoardTr(props) {
         async function fetchCompanyData() {
             try {
                 const response = await axios.get(
-                    `http://localhost:8090/api/diaryboard/getcompany?no=${props.row.boardno}`,
+                    `${apiUrl}/api/diaryboard/getcompany?no=${props.row.boardno}`,
                 );
                 const companies = response.data;
                 // Extract company names from the response
@@ -60,7 +59,7 @@ function BoardTr(props) {
             <div className="info_section">
                 <div className="user_info">
                     <Avatar alt="Profile Image" src={profileImageUrl} />
-                    {props.row.user ? props.row.user.name : ''}
+                    {props.row.user ? props.row.user.id : ''}
                 </div>
                 <div className="title_wrapper">
                     <Link to={url}>

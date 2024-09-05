@@ -17,6 +17,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Divider from '@mui/material/Divider';
 
 function BoardList() {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const [data, setData] = useState(null);
     const [totalElements, setTotalElements] = useState(0); // 총개수
     const [totalPages, setTotalPages] = useState(0); // 총페이지
@@ -30,7 +31,7 @@ function BoardList() {
     const searchWordRef = useRef(null); // 검색어
     const getApi = () => {
         axios
-            .get('http://localhost:8090/api/diaryboard/list', { params: param })
+            .get(`${apiUrl}/api/diaryboard/list`, { params: param })
             .then((res) => {
                 setData(res.data.result.content);
                 setTotalElements(res.data.result.totalElements);
@@ -67,30 +68,6 @@ function BoardList() {
                     <div className="sub">
                         <div className="size">
                             <div className="bbs">
-                                <div
-                                    className="bbsSearch"
-                                    style={{
-                                        marginTop: '20px',
-                                        textAlign: 'center',
-                                        marginBottom: '20px',
-                                        fontSize: '20px',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    <LocalFireDepartmentIcon />
-                                    이번 달 핫플레이스 TOP 5
-                                </div>
-                                <div
-                                    className="bbsSearch"
-                                    style={{
-                                        marginTop: '20px',
-                                        textAlign: 'center',
-                                        marginBottom: '20px',
-                                    }}
-                                >
-                                    이번 달 핫플레이스 TOP 5
-                                </div>
-                                <Divider />
                                 <p
                                     style={{
                                         display: 'flex',

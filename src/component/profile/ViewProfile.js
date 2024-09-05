@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../Header';
+import RealHeader from '../RealHeader';
 import Footer from '../Footer';
 import { Button as MuiButton, Typography, Box, Avatar } from '@mui/material';
 import axios from 'axios';
 import '../../index.css';
 import './ViewProfile.css';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const ViewProfile = () => {
     const { userno } = useParams();
@@ -20,14 +22,14 @@ const ViewProfile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const url = `http://localhost:8090/api/profile?userno=${userno}`;
+                const url = `${apiUrl}/api/profile?userno=${userno}`;
                 const response = await axios.get(url);
                 setUser(response.data);
 
                 // Fetch profile image
                 try {
                     const imageResponse = await axios.get(
-                        `http://localhost:8090/api/profileImage/${userno}`,
+                        `${apiUrl}/api/profileImage/${userno}`,
                         { responseType: 'blob' },
                     );
                     const imageUrl = URL.createObjectURL(imageResponse.data);
@@ -70,7 +72,7 @@ const ViewProfile = () => {
     };
 
     const handleCardPasswordChange = () => {
-        navigate(`/changecardpassword/${userno}`);
+        navigate(`/change-cardpassword/${userno}`);
     };
 
     const handleCardLostReport = () => {
@@ -90,7 +92,7 @@ const ViewProfile = () => {
                     status: 0 // 필요한 경우 다른 status 값
                 };
     
-                await axios.post(`http://localhost:8090/api/delete/${userno}`, deleteData);
+                await axios.post(`${apiUrl}/api/delete/${userno}`, deleteData);
                 alert('회원 탈퇴가 완료되었습니다.');
                 navigate('/login');
             } catch (error) {
@@ -116,7 +118,7 @@ const ViewProfile = () => {
 
         try {
             await axios.post(
-                'http://localhost:8090/api/profileUpload',
+                `${apiUrl}/api/profileUpload`,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } },
             );
@@ -139,7 +141,7 @@ const ViewProfile = () => {
 
     return (
         <div className="ViewProfile">
-            <Header title="내 프로필" />
+            <RealHeader title="내 프로필" />
             <div className="view_profile_container">
                 <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
                     <Avatar
@@ -373,14 +375,16 @@ const ViewProfile = () => {
                         >
                             내 정보수정
                         </MuiButton>
+                    </Box>
+                    <Box sx={{ mt: 2, textAlign: 'center' }}>
                         <MuiButton
                             variant="contained"
                             sx={{
-                                backgroundColor: 'rgb(255, 0, 0)',
+                                backgroundColor: 'Gray',
                                 '&:hover': {
-                                    backgroundColor: 'rgb(200, 0, 0)',
+                                    backgroundColor: 'rgb(120, 140, 200)',
                                 },
-                                width: '100%',
+                                width: '50%', // Center by making width smaller and using auto margins
                             }}
                             onClick={handleDeleteAccount}
                         >

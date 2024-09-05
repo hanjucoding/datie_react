@@ -1,31 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import RealHeader from '../../../component/RealHeader';
-import Header from '../../../component/Header';
-import Footer from '../../../component/Footer';
+import RealHeader from '../../RealHeader';
+import Header from '../../Header';
+import Footer from '../../Footer';
+import DiaryDetail from '../components/DiaryDetail';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import { format } from 'date-fns';
+import { Rating } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import { jwtDecode } from 'jwt-decode';
+import { useSearchParams } from 'react-router-dom';
 
-function Edit() {
-    const navigate = useNavigate();
+function Regist() {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    let token;
+    const [userNo, setUserNo] = useState(0);
+    const [userId, setUserId] = useState('user');
     const [param, setParam] = useState({
-        user_no: 3, // 임시
+        user_no: 0,
+        user_id: 'user',
     });
-    const [file, setFile] = useState([]); //파일
 
     // 상세 조회
     const [params, setParams] = useSearchParams();
     const no = params.get('no');
     const getView = () => {
-        axios
-            .get('http://localhost:8090/api/diaryboard/view?no=' + no)
-            .then((res) => {
-                setParam(res.data);
-            });
+        axios.get(`${apiUrl}/api/diaryboard/view?no=` + no).then((res) => {
+            setParam(res.data);
+        });
     };
     useEffect(() => {
         getView();
     }, []);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('jwt');
+        if (storedToken) {
+            token = storedToken;
+        }
+        if (token) {
+            const decoded = jwtDecode(token);
+            console.log(decoded.userno);
+            setUserNo(decoded.userno);
+            setUserId(decoded.id);
+
+            // param 업데이트
+            setParam({
+                user_no: decoded.userno,
+                user_id: decoded.id,
+            });
+        }
+        console.log(userNo);
+        console.log(userId);
+    }, []);
+
+    console.log(param);
+
+    const navigate = useNavigate();
+
+    const [file, setFile] = useState([]); // 파일
+    const [openEditorModal, setOpenEditorModal] = useState(false);
+    const [dates, setDates] = useState([]); // API로부터 받은 날짜 리스트
+    const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
+    const [diaryData, setDiaryData] = useState([]); // 선택된 날짜의 다이어리 데이터
+    const [showDiaryDetail, setShowDiaryDetail] = useState(false); // 다이어리 상세 정보 표시 여부
+
+    const handleOpenEditorModal = () => {
+        fetchDates(); // 모달을 열기 전에 날짜를 가져옴
+        setOpenEditorModal(true);
+    };
+
+    const handleCloseEditorModal = () => setOpenEditorModal(false);
 
     const handleChange = (e) => {
         setParam({
@@ -33,38 +83,103 @@ function Edit() {
             [e.target.name]: e.target.value,
         });
     };
-    const handleChangeFile = (e) => {
-        setFile(Array.from(e.target.files));
-    };
 
     const getApi = () => {
-        console.log(param);
-        // const formData = new FormData();
-        // // 파일 데이터 저장
-        // file.map((f) => {
-        //   formData.append("file", f);
-        // });
-        // //formData.append("data", JSON.stringify(param));
-        // for (let k in param) {
-        //   formData.append(k, param[k]);
-        // }
-        // console.log(Array.from(formData));
+        const formData = new FormData();
+        // 파일 데이터 저장
+        file.forEach((f) => {
+            formData.append('file', f);
+        });
+        for (let k in param) {
+            formData.append(k, param[k]);
+        }
 
-        axios
-            .post('http://localhost:8090/api/diaryboard/update', param)
-            .then((res) => {
-                console.log(res);
-                if (res.data.result === 'success') {
-                    alert('정상적으로 저장되었습니다.');
-                    navigate('/board/list');
-                }
-            });
+        // selectedDate 추가
+        if (selectedDate) {
+            formData.append('selectedDate', selectedDate);
+        }
+
+        axios.post(`${apiUrl}/api/diaryboard/update`, param).then((res) => {
+            if (res.data.result === 'success') {
+                alert('정상적으로 저장되었습니다.');
+                navigate('/board/list');
+            }
+        });
     };
 
     const save = () => {
-        if (window.confirm('글을 저장하시겠습니까?')) {
+        if (window.confirm('글을 등록하시겠습니까?')) {
             getApi();
         }
+    };
+
+    const fetchDates = () => {
+        axios
+            .get(`${apiUrl}/api/diary/confirmdate`, {
+                params: { userno: userNo },
+            })
+            .then((res) => {
+                // Remove duplicate dates
+                const uniqueDates = Array.from(
+                    new Set(
+                        res.data.map(
+                            (date) =>
+                                new Date(date).toISOString().split('T')[0],
+                        ),
+                    ),
+                );
+                setDates(uniqueDates);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch dates:', err);
+            });
+    };
+
+    const fetchDiaryDetails = (date) => {
+        const formattedDate = format(new Date(date), 'yyyy-MM-dd');
+        axios
+            .get(`${apiUrl}/api/diary/detail`, {
+                params: {
+                    userNo: userNo,
+                    confirmDate: formattedDate,
+                },
+            })
+            .then((res) => {
+                const diaryData = res.data.map(
+                    ({
+                        diaryNo,
+                        companyName,
+                        rate,
+                        review,
+                        uploadOrg,
+                        uploadReal,
+                        category,
+                    }) => ({
+                        diaryNo,
+                        companyName,
+                        rate,
+                        review,
+                        uploadOrg,
+                        uploadReal,
+                        category,
+                    }),
+                );
+                setDiaryData(diaryData);
+            })
+            .catch((err) => {
+                console.error('Failed to fetch diary details:', err);
+            });
+    };
+
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+        fetchDiaryDetails(date);
+        console.log(date);
+    };
+
+    const handleCompleteSelection = () => {
+        setShowDiaryDetail(true); // 선택 완료 시 다이어리 상세 정보를 표시
+        handleCloseEditorModal(); // 모달 창 닫기
     };
 
     return (
@@ -75,60 +190,225 @@ function Edit() {
                 <div className="body">
                     <div className="sub">
                         <div className="size">
-                            <h3 className="sub_title">게시판</h3>
-
                             <div className="bbs">
                                 <form
                                     method="post"
                                     name="frm"
                                     id="frm"
-                                    action=""
                                     encType="multipart/form-data"
                                 >
-                                    <table className="board_write">
-                                        <tbody>
-                                            <tr>
-                                                <th>제목</th>
-                                                <td>
-                                                    <input
-                                                        type="text"
-                                                        name="title"
-                                                        onChange={handleChange}
-                                                        value={
-                                                            param && param.title
-                                                        }
-                                                    />
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th>내용</th>
-                                                <td>
-                                                    <textarea
-                                                        name="content"
-                                                        onChange={handleChange}
-                                                        value={
-                                                            param &&
-                                                            param.content
-                                                        }
-                                                    ></textarea>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div
-                                        className="btnSet"
-                                        style={{ textAlign: 'right' }}
-                                    >
-                                        <Link className="btn" onClick={save}>
-                                            저장
-                                        </Link>
+                                    <div className="board_write">
+                                        <TextField
+                                            id="standard-basic"
+                                            variant="standard"
+                                            name="title"
+                                            value={param && param.title}
+                                            onChange={handleChange}
+                                            sx={{
+                                                marginBottom: '16px',
+                                            }} // 간격 추가
+                                            InputProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 입력 텍스트의 폰트 변경
+                                                },
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 레이블의 폰트 변경
+                                                },
+                                            }}
+                                        />
+
+                                        <TextField
+                                            id="filled-multiline-static"
+                                            multiline
+                                            rows={4}
+                                            name="content"
+                                            value={param && param.content}
+                                            onChange={handleChange}
+                                            sx={{
+                                                marginBottom: '16px', // 간격 추가
+                                            }}
+                                            InputProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 입력 텍스트의 폰트 변경
+                                                },
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    fontFamily: 'Gamja Flower', // 레이블의 폰트 변경
+                                                },
+                                            }}
+                                        />
                                     </div>
+                                    <div>
+                                        <Button
+                                            variant="text"
+                                            sx={{
+                                                fontSize: '16px', // 글꼴 크기
+                                                padding: '3px 16px', // 버튼 크기 조정
+                                                fontFamily: 'Gamja Flower',
+                                                color: 'blue', // 글자색 파란색 설정
+                                                fontWeight: 'bold', // 글자 두께를 두껍게 설정
+                                                marginBottom: '10px',
+                                            }}
+                                            onClick={handleOpenEditorModal}
+                                        >
+                                            +등록할 일기를 선택해주세요{' '}
+                                            <MenuBookIcon />
+                                        </Button>
+                                    </div>
+                                    <Divider />
                                 </form>
+                            </div>
+                            {/* 선택된 날짜의 다이어리 상세 정보 표시 */}
+                            {showDiaryDetail && (
+                                <DiaryDetail
+                                    key={selectedDate}
+                                    date={selectedDate}
+                                />
+                            )}
+                            <div
+                                className="btnSet"
+                                style={{
+                                    textAlign: 'right',
+                                    marginTop: '20px',
+                                    marginBottom: '20px',
+                                }}
+                            >
+                                <Button
+                                    variant="outlined"
+                                    onClick={save}
+                                    sx={{
+                                        fontFamily: 'Gamja Flower', // 폰트를 Gamja Flower로 설정
+                                        fontSize: '16px', // 글자 크기 설정
+                                        padding: '8px 16px', // 패딩 설정
+                                        color: 'blue', // 글자색 파란색 설정
+                                        borderColor: 'blue', // 테두리 색상을 파란색으로 설정
+                                    }}
+                                >
+                                    등록하기
+                                </Button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Editor Modal 컴포넌트 */}
+            <Modal
+                open={openEditorModal}
+                onClose={handleCloseEditorModal}
+                aria-labelledby="editor-modal-title"
+                aria-describedby="editor-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 600,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: 2,
+                        maxHeight: '80vh', // 모달의 최대 높이를 설정하여 오버플로우 방지
+                        overflowY: 'auto', // 스크롤 가능하게 설정
+                    }}
+                >
+                    <h1>{userId}님의 데이트 기록</h1>
+                    <ul
+                        style={{
+                            maxHeight: '150px', // 최대 높이를 설정하여 스크롤 가능하게 설정
+                            overflowY: 'auto', // 스크롤 가능하게 설정
+                            padding: 0,
+                            margin: 0,
+                            listStyleType: 'none', // 불릿 제거
+                        }}
+                    >
+                        {dates.length > 0 ? (
+                            dates.map((date, index) => (
+                                <li
+                                    key={index}
+                                    onClick={() => handleDateClick(date)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        padding: '8px 0', // 리스트 간격을 조금 추가
+                                    }}
+                                >
+                                    {new Date(date).toLocaleDateString()}
+                                </li>
+                            ))
+                        ) : (
+                            <li>등록된 날짜가 없습니다.</li>
+                        )}
+                    </ul>
+                    {selectedDate && (
+                        <div>
+                            <h2>
+                                {new Date(selectedDate).toLocaleDateString()}{' '}
+                                일기
+                            </h2>
+                            {diaryData.length > 0 ? (
+                                <table
+                                    style={{
+                                        width: '100%',
+                                        borderSpacing: '0 10px', // 열 간격을 추가
+                                    }}
+                                >
+                                    <tbody>
+                                        {diaryData.map((diary, index) => (
+                                            <tr key={index}>
+                                                <td
+                                                    style={{
+                                                        paddingRight: '5px',
+                                                    }}
+                                                >
+                                                    <Rating
+                                                        name={
+                                                            diary.rate
+                                                                ? 'conditional-read-only'
+                                                                : 'no-value'
+                                                        }
+                                                        value={
+                                                            diary.rate || null
+                                                        }
+                                                        size="small"
+                                                        readOnly={true}
+                                                    />
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        paddingRight: '5px',
+                                                    }}
+                                                >
+                                                    {diary.companyName}
+                                                </td>
+                                                <td>{diary.review}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p>No diary data available for this date.</p>
+                            )}
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    marginTop: '20px',
+                                    backgroundColor: 'blue',
+                                    color: 'white',
+                                }}
+                                onClick={handleCompleteSelection}
+                            >
+                                선택 완료
+                            </Button>
+                        </div>
+                    )}
+                </Box>
+            </Modal>
+
             <div className="footer">
                 <Footer />
             </div>
@@ -136,4 +416,4 @@ function Edit() {
     );
 }
 
-export default Edit;
+export default Regist;

@@ -9,7 +9,6 @@ import CardInfoInput from './component/cardselection_3/CardInfoInput';
 import LoginPage from './component/Login/LoginPage';
 import Paypassword from './component/pay/Paypassword';
 import PayLogin from './component/pay/PayLoginPage';
-import PaymentRecord from './component/payment_record/PaymentRecords';
 import PayInfo from './component/pay/PayInfo';
 import IndexMain from './component/mainIndex/IndexMain';
 import LoginMain from './component/mainIndex/LoginMain';
@@ -30,7 +29,7 @@ import BoardList from './component/diaryboard/pages/BoardList';
 import Regist from './component/diaryboard/pages/Regist';
 import View from './component/diaryboard/pages/View';
 import Edit from './component/diaryboard/pages/Edit';
-
+import NotFound from './component/notfound/notfound';
 function App() {
     return (
         <Routes>
@@ -54,20 +53,13 @@ function App() {
             <Route path="/pay/PayLoginPage" element={<PayLogin />} />
             <Route path="/pay/Paypassword" element={<Paypassword />} />
             <Route path="/pay/Payresult" element={<Payresult />} />
-
             <Route path="/pay/PayInfo" element={<PayInfo />} />
             <Route path="/admin/member" element={<AdminMember />} />
             <Route path="/admin" element={<AdminStatistics />} />
-            <Route path="/card-lost-report" element={<CardLostReport />} />
-            <Route
-                path="/card-lost-report-cancellation"
-                element={<CardLostReportCancellation />}
-            />
-            <Route path="/card-cancellation" element={<CardCancellation />} />
-            <Route
-                path="/change-cardpassword"
-                element={<CardPasswordChange />}
-            />
+            <Route path="/card-lost-report/:userno" element={<CardLostReport />} />
+            <Route path="/lostCardCancel/:userno" element={<CardLostReportCancellation />} />
+            <Route path="/card-cancellation/:userno" element={<CardCancellation />} />
+            <Route path="/change-cardpassword/:userno" element={<CardPasswordChange />} />
             <Route path="/edit-profile/:userno" element={<EditProfile />} />
             <Route path="/view-profile/:userno" element={<ViewProfile />} />
             <Route path="/diary" element={<DiaryHome />} />
@@ -76,8 +68,8 @@ function App() {
             <Route path="/board/regist" element={<Regist />} />
             <Route path="/board/view" element={<View />} />
             <Route path="/board/edit" element={<Edit />} />
-
             <Route path="/" element={<LoginPage />} />
+            <Route path="*" element={<NotFound />} /> {/* 404 페이지 */}
         </Routes>
     );
 }

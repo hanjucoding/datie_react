@@ -3,13 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { Rating } from '@mui/material';
-import EditButton from './EditButton';
-import Editor from './Editor';
+
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
 const apiUrl = process.env.REACT_APP_API_URL;
-
 // 기본 이미지 URL
 const DEFAULT_IMAGE_URL = `${apiUrl}/api/diary/image/default.png`;
 
@@ -90,40 +87,6 @@ const DiaryItem = ({
                     {review || '이 장소에 대한 평가를 남겨주세요!'}
                 </div>
             </div>
-            <div className="button_section">
-                <EditButton onClick={handleOpenEditorModal} />
-            </div>
-
-            {/* Editor Modal 컴포넌트 */}
-            <Modal
-                open={openEditorModal}
-                onClose={handleCloseEditorModal}
-                aria-labelledby="editor-modal-title"
-                aria-describedby="editor-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 2,
-                    }}
-                >
-                    <Editor
-                        diaryNo={diaryNo}
-                        companyName={companyName}
-                        rate={rate}
-                        review={review}
-                        uploadOrg={uploadOrg}
-                        onSubmit={handleCloseEditorModal}
-                    />
-                </Box>
-            </Modal>
 
             {/* Image Gallery Modal 컴포넌트 */}
             <Modal

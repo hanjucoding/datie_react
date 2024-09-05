@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react';
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['내 정보', '로그아웃'];
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -61,12 +63,9 @@ function ResponsiveAppBar() {
 
             // 프로필 이미지 URL 가져오기
             axios
-                .get(
-                    `http://localhost:8090/api/profileImage/${decoded.userno}`,
-                    {
-                        responseType: 'blob',
-                    },
-                )
+                .get(`${apiUrl}/api/profileImage/${decoded.userno}`, {
+                    responseType: 'blob',
+                })
                 .then((response) => {
                     setProfileImageUrl(URL.createObjectURL(response.data)); // 받은 URL로 프로필 이미지 설정
                 })
@@ -107,54 +106,58 @@ function ResponsiveAppBar() {
                             />
                         </Box>
                         <Box sx={{ flexGrow: 1 }} />
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Tooltip title="Open settings">
-                                <IconButton
-                                    onClick={handleOpenUserMenu}
-                                    sx={{ p: 0 }}
-                                >
-                                    <Avatar
-                                        alt="Profile Image"
-                                        src={profileImageUrl}
-                                    />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu
-                                sx={{ mt: '45px' }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                {settings.map((setting) => (
-                                    <MenuItem
-                                        key={setting}
-                                        onClick={() =>
-                                            handleMenuItemClick(setting)
-                                        } // 메뉴 항목 클릭 시 호출
+
+                        {/* userNo가 null이 아닐 때만 렌더링 */}
+                        {userNo && (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Tooltip title="Open settings">
+                                    <IconButton
+                                        onClick={handleOpenUserMenu}
+                                        sx={{ p: 0 }}
                                     >
-                                        <Typography
-                                            textAlign="center"
-                                            sx={{
-                                                fontFamily:
-                                                    'Gamja Flower, cursive',
-                                            }}
+                                        <Avatar
+                                            alt="Profile Image"
+                                            src={profileImageUrl}
+                                        />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseUserMenu}
+                                >
+                                    {settings.map((setting) => (
+                                        <MenuItem
+                                            key={setting}
+                                            onClick={() =>
+                                                handleMenuItemClick(setting)
+                                            } // 메뉴 항목 클릭 시 호출
                                         >
-                                            {setting}
-                                        </Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
+                                            <Typography
+                                                textAlign="center"
+                                                sx={{
+                                                    fontFamily:
+                                                        'Gamja Flower, cursive',
+                                                }}
+                                            >
+                                                {setting}
+                                            </Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </Box>
+                        )}
                     </Box>
                 </Toolbar>
             </Container>

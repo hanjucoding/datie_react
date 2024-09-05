@@ -10,7 +10,9 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import './AdminMember.css';
 import RealHeader from '../RealHeader';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Height } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
@@ -56,6 +58,29 @@ const columns = [
 ];
 
 const Admin = () => {
+    let navigate = useNavigate();
+    const [shouldNavigate, setShouldNavigate] = useState(false);
+    const [token, setToken] = useState('');
+    useLayoutEffect(() => {
+        if (!shouldNavigate) {
+            setShouldNavigate(true);
+        }
+
+        // 로컬 스토리지에서 토큰 가져오기
+        const storedToken = localStorage.getItem('jwt'); // 'token'은 실제 저장한 키로 변경할 수 있습니다.
+        if (storedToken) {
+            const decoded = jwtDecode(storedToken); // 수정된 호출
+            console.log(decoded); // 디코딩된 정보 출력
+            if (decoded.role == 'admin') {
+                setToken(decoded);
+            } else {
+                navigate('/');
+            }
+        } else {
+            navigate('/');
+        }
+    }, [navigate, shouldNavigate]);
+
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const searchType = queryParams.get('searchType');

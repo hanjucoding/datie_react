@@ -7,9 +7,10 @@ import RealHeader from '../../../component/RealHeader';
 import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
 import KakaoMap from '../../diary/components/KakaoMap';
-import DiaryList from '../../diary/components/DiaryList';
+import DiaryList from '../components/DiaryList';
 
 function DiaryDetail({ date }) {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const formattedDate = moment(date, 'YYYY-MM-DD');
     const [locations, setLocations] = useState([]);
     const [data, setData] = useState([]);
@@ -31,7 +32,7 @@ function DiaryDetail({ date }) {
         const fetchDiaryDetail = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8090/api/diary/detail?userNo=${userNo}&confirmDate=${formattedDate.format(
+                    `${apiUrl}/api/diary/detail?userNo=${userNo}&confirmDate=${formattedDate.format(
                         'YYYY-MM-DD',
                     )}`,
                 );
