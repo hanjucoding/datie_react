@@ -45,6 +45,10 @@ function Footer() {
             onChange={handleChange} // onChange 이벤트 핸들러에 handleChange 함수 전달
             sx={{
                 backgroundColor: 'rgb(148, 160, 227)',
+                zIndex: 1000, // 다른 요소 위에 나타나도록 z-index 설정
+                position: "fixed", // 화면에 고정
+                bottom: 0, // 화면 하단에 고정
+                width: "600px",
             }}
         >
             <StyledBottomNavigationAction

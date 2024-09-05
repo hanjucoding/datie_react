@@ -10,6 +10,8 @@ import moment from 'moment';
 import { jwtDecode } from 'jwt-decode';
 import DiaryDetail from './DiaryDetail'; // DiaryDetail 컴포넌트 임포트
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const DogInfo = () => {
     let token;
     const today = new Date();
@@ -36,7 +38,7 @@ const DogInfo = () => {
         const fetchAttendanceDates = async () => {
             try {
                 const response = await axios.get(
-                    'http://localhost:8090/api/diary/confirmdate',
+                    `${apiUrl}/api/diary/confirmdate`,
                     {
                         params: {
                             userno: userNo, // 실제 userno로 변경

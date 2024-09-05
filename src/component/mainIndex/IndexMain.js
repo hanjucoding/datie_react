@@ -48,7 +48,7 @@ function IndexMain() {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        minHeight: "1800px",
+        minHeight: "1500px",
       }}
     >
       <div
@@ -73,7 +73,7 @@ function IndexMain() {
             paddingTop: "20px",
           }}
         >
-          <img src={logo} alt="Datie Logo" style={{ width: "400px", height: "200px" }} />
+          <img src={logo} alt="Datie Logo" style={{ width: "400px", height: "200px", paddingTop: "20px" }} />
         </div>
 
         <div
@@ -102,7 +102,7 @@ function IndexMain() {
                 color: "black",
                 fontFamily: "'Black Han Sans', sans-serif",
                 fontWeight: "400",
-                fontSize: "64px",
+                fontSize: "50px",
                 margin: "0",
                 WebkitTextStroke: "1px white",
                 animation: "fadeInLeft 1s ease-in-out",
@@ -115,7 +115,7 @@ function IndexMain() {
                 color: "white",
                 fontFamily: "'Black Han Sans', sans-serif",
                 fontWeight: "400",
-                fontSize: "64px",
+                fontSize: "50px",
                 margin: "0",
                 WebkitTextStroke: "1px black",
                 animation: "fadeInRight 1s ease-in-out",
@@ -140,7 +140,7 @@ function IndexMain() {
                 color: "black",
                 fontFamily: "'Black Han Sans', sans-serif",
                 fontWeight: "400",
-                fontSize: "64px",
+                fontSize: "50px",
                 margin: "0",
                 WebkitTextStroke: "1px white",
                 animation: "fadeInLeft 1.5s ease-in-out",
@@ -153,7 +153,7 @@ function IndexMain() {
                 color: "white",
                 fontFamily: "'Black Han Sans', sans-serif",
                 fontWeight: "400",
-                fontSize: "64px",
+                fontSize: "50px",
                 margin: "0",
                 WebkitTextStroke: "1px black",
                 animation: "fadeInRight 1.5s ease-in-out",
@@ -190,7 +190,7 @@ function IndexMain() {
               height: "70px",
               fontSize: "20px",
               fontWeight: "bold",
-              bottom: "-300px",
+              bottom: "-200px",
             }}
             onClick={handleSignClick}  // 로그인 버튼 클릭 이벤트 핸들러 추가
           >
@@ -208,7 +208,7 @@ function IndexMain() {
               height: "70px",
               fontSize: "20px",
               fontWeight: "bold",
-              bottom: "-300px",
+              bottom: "-200px",
             }}
             onClick={handleLoginClick}  // 로그인 버튼 클릭 이벤트 핸들러 추가
           >

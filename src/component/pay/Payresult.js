@@ -7,6 +7,7 @@ import axios from 'axios';
 import logo from '../../assets/datie_logo.png';
 import styled from 'styled-components';
 const apiUrl = process.env.REACT_APP_API_URL;
+
 // Alert 설정
 const alerts = {
     success: {
@@ -35,11 +36,9 @@ const alerts = {
 
 const showAlert = (type, setDarkOverlay, navigate) => {
     if (alerts[type]) {
-        // setDarkOverlay(true); // 특정 div를 어둡게 설정
         Swal.fire(alerts[type]).then((result) => {
-            setDarkOverlay(false); // 알림 후 특정 div를 원래대로 복원
+            setDarkOverlay(false);
             if (result.isConfirmed) {
-                // 확인 버튼 클릭 시
                 navigate('/');
             }
         });
@@ -50,18 +49,17 @@ const showAlert = (type, setDarkOverlay, navigate) => {
 
 const showloading = (setDarkOverlay) => {
     return new Promise((resolve) => {
-        // setDarkOverlay(true);
         Swal.fire({
             title: '결제 처리중입니다',
             html: '좀만 기다려주세요!',
             timer: 2500,
             timerProgressBar: true,
             didOpen: () => {
-                Swal.showLoading(); // 로딩 스피너 표시
+                Swal.showLoading();
             },
             willClose: () => {
                 setDarkOverlay(false);
-                resolve(); // 로딩이 끝나면 resolve 호출
+                resolve();
             },
         });
     });
@@ -70,18 +68,39 @@ const showloading = (setDarkOverlay) => {
 function Payresult() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { companyno, content, amount, peramount, bonus, cardno } =
+    const { companyno, content, amount, peramount, bonus, cardno, key } =
         location.state || {};
 
     const [darkOverlay, setDarkOverlay] = useState(false);
 
     useEffect(() => {
-        console.log(cardno, companyno, content, amount, peramount, bonus);
+        const checkKeyStatus = async () => {
+            try {
+                const keyResponse = await axios.get(`${apiUrl}/api/check-key`, {
+                    params: { key: key },
+                });
+                console.log('Key:', key); // 디버깅용 로그
+
+                if (keyResponse.data === 0) {
+                    await Swal.fire({
+                        title: '결제가 이미 처리되었습니다!',
+                        icon: 'warning',
+                        confirmButtonText: '메인메뉴로 이동',
+                    });
+                    navigate('/');
+                } else {
+                    // Key 상태가 유효할 때만 결제 처리
+                    await processPayment();
+                }
+            } catch (error) {
+                console.error('Key status check failed:', error);
+            }
+        };
 
         const processPayment = async () => {
             await showloading(setDarkOverlay); // 로딩 표시
             axios
-                .post(`${apiUrl}/api/payresult`, {
+                .post(`${apiUrl}/api/payresult?key=${key}`, {
                     cardno,
                     companyno,
                     content,
@@ -92,15 +111,11 @@ function Payresult() {
                 .then((response) => {
                     console.log(response.data);
 
-                    // 서버 응답에 따른 알림 표시
                     if (response.status === 200) {
-                        // 결제 성공
                         showAlert('success', setDarkOverlay, navigate);
                     } else if (response.status === 400) {
-                        // 잔액 부족
                         showAlert('error', setDarkOverlay, navigate);
                     } else {
-                        // 카드 유효하지 않음
                         showAlert('warning', setDarkOverlay, navigate);
                     }
                 })
@@ -110,8 +125,10 @@ function Payresult() {
                 });
         };
 
-        processPayment();
-    }, [cardno, companyno, amount, peramount, bonus, navigate]);
+        if (key) {
+            checkKeyStatus();
+        }
+    }, [cardno, companyno, amount, peramount, bonus, key, navigate]);
 
     return (
         <div
@@ -130,7 +147,6 @@ function Payresult() {
             }}
         >
             <CompletionImage src={logo} />
-            {/* 어두운 오버레이를 위한 div */}
             <div
                 style={{
                     position: 'absolute',
@@ -140,20 +156,20 @@ function Payresult() {
                     height: '100%',
                     backgroundColor: darkOverlay
                         ? 'rgba(0, 0, 0, 0.6)'
-                        : 'transparent', // 어두운 반투명 배경
-                    zIndex: 1, // 알림 창 위에 위치하도록 설정
-                    transition: 'background-color 0.3s', // 배경 색상 전환 애니메이션
+                        : 'transparent',
+                    zIndex: 1,
+                    transition: 'background-color 0.3s',
                 }}
             />
             <div
                 style={{
                     position: 'relative',
-                    zIndex: 2, // 알림 창 아래에 위치하도록 설정
-                    padding: '20px', // 적당한 여백 추가
-                    borderRadius: '8px', // 모서리 둥글게
+                    zIndex: 2,
+                    padding: '20px',
+                    borderRadius: '8px',
                     backgroundColor: darkOverlay
                         ? 'rgba(255, 255, 255, 0.8)'
-                        : 'transparent', // 어두운 오버레이에 따른 내용 영역 배경색
+                        : 'transparent',
                 }}
             >
                 {/* 필요에 따라 추가적인 내용 */}
