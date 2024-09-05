@@ -8,26 +8,29 @@ import '../../index.css';
 import './ViewProfile.css';
 
 const ViewProfile = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const { userno } = useParams();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [profileImageUrl, setProfileImageUrl] = useState('/default-avatar.png');
+    const [profileImageUrl, setProfileImageUrl] = useState(
+        '/default-avatar.png',
+    );
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null); // State for preview URL
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const url = `http://localhost:8090/api/profile?userno=${userno}`;
+                const url = `${apiUrl}/api/profile?userno=${userno}`;
                 const response = await axios.get(url);
                 setUser(response.data);
 
                 // Fetch profile image
                 try {
                     const imageResponse = await axios.get(
-                        `http://localhost:8090/api/profileImage/${userno}`,
+                        `${apiUrl}/api/profileImage/${userno}`,
                         { responseType: 'blob' },
                     );
                     const imageUrl = URL.createObjectURL(imageResponse.data);
@@ -65,7 +68,7 @@ const ViewProfile = () => {
         }
     }, [selectedFile]);
 
-    const handleEdit = () => { 
+    const handleEdit = () => {
         navigate(`/edit-profile/${userno}`);
     };
 
@@ -87,10 +90,10 @@ const ViewProfile = () => {
                 const deleteData = {
                     userno: userno,
                     cardno: 0, // 필요한 경우 다른 cardno 값
-                    status: 0 // 필요한 경우 다른 status 값
+                    status: 0, // 필요한 경우 다른 status 값
                 };
-    
-                await axios.post(`http://localhost:8090/api/delete/${userno}`, deleteData);
+
+                await axios.post(`${apiUrl}/api/delete/${userno}`, deleteData);
                 alert('회원 탈퇴가 완료되었습니다.');
                 navigate('/login');
             } catch (error) {
@@ -99,7 +102,7 @@ const ViewProfile = () => {
             }
         }
     };
-    
+
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
@@ -115,11 +118,9 @@ const ViewProfile = () => {
         formData.append('userno', userno);
 
         try {
-            await axios.post(
-                'http://localhost:8090/api/profileUpload',
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } },
-            );
+            await axios.post('${apiUrl}/api/profileUpload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
             alert('프로필 사진이 성공적으로 업로드되었습니다.');
             window.location.reload(); // Refresh the page
         } catch (error) {
