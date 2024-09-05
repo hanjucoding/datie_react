@@ -153,7 +153,7 @@ function CardInfoInput() {
                 console.log('User1 data sent successfully:', response.data);
                 // 추가적인 처리 (예: 성공 알림 등)
                 alert('성공적으로 카드생성 하였습니다.');
-                navigate('/');
+                navigate('/main');
             })
             .catch((error) => {
                 console.error('Error sending user1 data:', error);
