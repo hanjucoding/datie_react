@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../Header';
+import RealHeader from '../RealHeader';
 import Footer from '../Footer';
 import { Button as MuiButton, Typography, Box, TextField } from '@mui/material';
 import axios from 'axios';
 import '../../index.css';
 import './ViewProfile.css';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const DeleteAccount = () => {
     const { userno } = useParams(); // URL 파라미터에서 userno 추출
@@ -14,13 +16,15 @@ const DeleteAccount = () => {
     const [user, setUser] = useState(null);
     const [currentPassword, setCurrentPassword] = useState('');
     const [hasCard, setHasCard] = useState(false);
+    const [cStatus, setCStatus] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8090/api/profile/${userno}`);
+                const response = await axios.get(`${apiUrl}/api/profile/${userno}`);
                 setUser(response.data);
-                setHasCard(response.data.cardno !== 0); // cardno가 0이 아닌 경우 카드가 있는 것으로 간주
+                setHasCard(response.data.cardno !== 0);
+                setCStatus(response.data.cStatus); // cStatus 설정
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 setError('사용자 정보를 가져오는 데 실패했습니다.');
@@ -32,13 +36,14 @@ const DeleteAccount = () => {
 
     const handleDeleteAccount = async () => {
         if (user) {
-            if (!hasCard) {
-                // 카드가 없는 경우 회원 탈퇴 진행
+            if (!hasCard || cStatus !== 1) {
+                // 카드가 없거나 cStatus가 1이 아닌 경우 회원 탈퇴 진행
                 if (window.confirm('정말로 회원 탈퇴를 하시겠습니까?')) {
                     try {
-                        await axios.post(`http://localhost:8090/api/delete/${userno}`, {
+                        await axios.post(`${apiUrl}/api/delete/${userno}`, {
                             userno: userno,
-                            cardno: 0, // cardno가 0이면 회원 탈퇴 로직으로 간주
+                            cardno: 0,
+                            cStatus: cStatus,
                             status: 0,
                             currentPassword: currentPassword
                         });
@@ -50,7 +55,7 @@ const DeleteAccount = () => {
                     }
                 }
             } else {
-                // 카드가 있는 경우 카드 탈퇴 페이지로 이동
+                // 카드가 있는 경우 카드 해지 페이지로 이동
                 navigate(`/card-cancellation/${userno}`);
             }
         }
@@ -58,7 +63,7 @@ const DeleteAccount = () => {
 
     return (
         <div className="DeleteAccount">
-            <Header title="회원 탈퇴" />
+            <RealHeader title="회원 탈퇴" />
             <div className="delete_account_container">
                 <Box sx={{ mt: 4, width: '100%', textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ fontFamily: 'Gamja Flower, cursive' }}>

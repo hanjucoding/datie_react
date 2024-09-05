@@ -85,7 +85,7 @@ const Admin = () => {
     const chartSetting = {
         yAxis: [
             {
-                label: '결재내역 수',
+                label: '결제내역 수',
             },
         ],
         width: 500,
@@ -171,7 +171,7 @@ const Admin = () => {
             <div className="adminStatistics">
                 <div className="adminStatistics_container">
                     <Typography margin={3} variant="h5">
-                        오늘 결재내역 수
+                        오늘 결제내역 수
                     </Typography>
                     <Stack
                         direction={{ xs: 'column', md: 'row' }}
@@ -187,7 +187,7 @@ const Admin = () => {
                     </Stack>
 
                     <Typography margin={3} variant="h5">
-                        이번달 분야별 결재 수
+                        이번달 분야별 결제 수
                     </Typography>
                     <PieChart
                         series={[
@@ -199,7 +199,7 @@ const Admin = () => {
                         height={200}
                     />
                     <Typography margin={3} variant="h5">
-                        이번달 나이대별 결재 수
+                        이번달 나이대별 결제 수
                     </Typography>
                     <BarChart
                         dataset={dataset}
