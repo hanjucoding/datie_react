@@ -59,7 +59,7 @@ function BoardTr(props) {
             <div className="info_section">
                 <div className="user_info">
                     <Avatar alt="Profile Image" src={profileImageUrl} />
-                    {props.row.user ? props.row.user.name : ''}
+                    {props.row.user ? props.row.user.id : ''}
                 </div>
                 <div className="title_wrapper">
                     <Link to={url}>
