@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
     console.log(placeNames);
     console.log(categorys);
@@ -38,36 +40,29 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
             const bounds = new window.kakao.maps.LatLngBounds();
 
             points.forEach((point, index) => {
-                let imageUrl = 'http://localhost:8090/api/diary/image/etc.png';
+                let imageUrl = `${apiUrl}/api/diary/image/etc.png`;
 
                 switch (categorys[index]) {
                     case '식료품':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/food.png';
+                        imageUrl = `${apiUrl}/api/diary/image/food.png`;
                         break;
                     case '외식':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/restaurant.png';
+                        imageUrl = `${apiUrl}/api/diary/image/restaurant.png`;
                         break;
                     case '교통비':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/transportation.png';
+                        imageUrl = `${apiUrl}/api/diary/image/transportation.png`;
                         break;
                     case '의료비':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/hospital.png';
+                        imageUrl = `${apiUrl}/api/diary/image/hospital.png`;
                         break;
                     case '쇼핑':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/shopping.png';
+                        imageUrl = `${apiUrl}/api/diary/image/shopping.png`;
                         break;
                     case '문화/여가':
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/culture.png';
+                        imageUrl = `${apiUrl}/api/diary/image/culture.png`;
                         break;
                     default:
-                        imageUrl =
-                            'http://localhost:8090/api/diary/image/etc.png';
+                        imageUrl = `${apiUrl}/api/diary/image/etc.png`;
                         break;
                 }
 

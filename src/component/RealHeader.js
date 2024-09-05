@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react';
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['내 정보', '로그아웃'];
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -62,7 +64,7 @@ function ResponsiveAppBar() {
             // 프로필 이미지 URL 가져오기
             axios
                 .get(
-                    `http://localhost:8090/api/profileImage/${decoded.userno}`,
+                    `${apiUrl}/api/profileImage/${decoded.userno}`,
                     {
                         responseType: 'blob',
                     },

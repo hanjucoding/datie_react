@@ -6,6 +6,8 @@ import { Rating } from '@mui/material';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const Editor = ({ diaryNo, companyName, rate, review, onSubmit }) => {
     const [value, setValue] = useState(rate || 0);
     const [reviewText, setReviewText] = useState(review || '');
@@ -29,7 +31,7 @@ const Editor = ({ diaryNo, companyName, rate, review, onSubmit }) => {
 
         try {
             const response = await axios.post(
-                'http://localhost:8090/api/diary/imageUpload',
+                `${apiUrl}/api/diary/imageUpload`,
                 imageFormData,
                 {
                     headers: {
@@ -59,7 +61,7 @@ const Editor = ({ diaryNo, companyName, rate, review, onSubmit }) => {
             formData.append('review', reviewText);
 
             const response = await axios.post(
-                'http://localhost:8090/api/diary/upload',
+                `${apiUrl}/api/diary/upload`,
                 formData,
                 {
                     headers: {

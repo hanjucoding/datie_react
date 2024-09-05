@@ -17,6 +17,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useSearchParams } from 'react-router-dom';
 
 function Regist() {
+    const apiUrl = process.env.REACT_APP_API_URL;
     let token;
     const [userNo, setUserNo] = useState(0);
     const [userId, setUserId] = useState('user');
@@ -29,11 +30,9 @@ function Regist() {
     const [params, setParams] = useSearchParams();
     const no = params.get('no');
     const getView = () => {
-        axios
-            .get('http://localhost:8090/api/diaryboard/view?no=' + no)
-            .then((res) => {
-                setParam(res.data);
-            });
+        axios.get(`${apiUrl}/api/diaryboard/view?no=` + no).then((res) => {
+            setParam(res.data);
+        });
     };
     useEffect(() => {
         getView();
@@ -100,14 +99,12 @@ function Regist() {
             formData.append('selectedDate', selectedDate);
         }
 
-        axios
-            .post('http://localhost:8090/api/diaryboard/update', param)
-            .then((res) => {
-                if (res.data.result === 'success') {
-                    alert('정상적으로 저장되었습니다.');
-                    navigate('/board/list');
-                }
-            });
+        axios.post(`${apiUrl}/api/diaryboard/update`, param).then((res) => {
+            if (res.data.result === 'success') {
+                alert('정상적으로 저장되었습니다.');
+                navigate('/board/list');
+            }
+        });
     };
 
     const save = () => {
@@ -118,7 +115,7 @@ function Regist() {
 
     const fetchDates = () => {
         axios
-            .get('http://localhost:8090/api/diary/confirmdate', {
+            .get(`${apiUrl}/api/diary/confirmdate`, {
                 params: { userno: userNo },
             })
             .then((res) => {
@@ -141,7 +138,7 @@ function Regist() {
     const fetchDiaryDetails = (date) => {
         const formattedDate = format(new Date(date), 'yyyy-MM-dd');
         axios
-            .get('http://localhost:8090/api/diary/detail', {
+            .get(`${apiUrl}/api/diary/detail`, {
                 params: {
                     userNo: userNo,
                     confirmDate: formattedDate,
