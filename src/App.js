@@ -56,16 +56,10 @@ function App() {
             <Route path="/pay/PayInfo" element={<PayInfo />} />
             <Route path="/admin/member" element={<AdminMember />} />
             <Route path="/admin" element={<AdminStatistics />} />
-            <Route path="/card-lost-report" element={<CardLostReport />} />
-            <Route
-                path="/card-lost-report-cancellation"
-                element={<CardLostReportCancellation />}
-            />
-            <Route path="/card-cancellation" element={<CardCancellation />} />
-            <Route
-                path="/change-cardpassword"
-                element={<CardPasswordChange />}
-            />
+            <Route path="/card-lost-report/:userno" element={<CardLostReport />} />
+            <Route path="/lostCardCancel/:userno" element={<CardLostReportCancellation />} />
+            <Route path="/card-cancellation/:userno" element={<CardCancellation />} />
+            <Route path="/change-cardpassword/:userno" element={<CardPasswordChange />} />
             <Route path="/edit-profile/:userno" element={<EditProfile />} />
             <Route path="/view-profile/:userno" element={<ViewProfile />} />
             <Route path="/diary" element={<DiaryHome />} />
