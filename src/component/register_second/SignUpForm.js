@@ -8,6 +8,7 @@ import Header from '../Header';
 import { Button as MuiButton, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -19,7 +20,6 @@ const SignUpForm = () => {
     const [passwordMessage, setPasswordMessage] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
-    // const [idnumber, setIdnumber] = useState('');
     const [hp, setHp] = useState('');
     const [accountno, setAccountno] = useState(''); // 계좌 인증 받는 4자리 숫자변수
     const [accountcheck, setAccountcheck] = useState('');
@@ -28,7 +28,7 @@ const SignUpForm = () => {
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [detailAddress, setDetailAddress] = useState('');
-    const [selectedBank, setSelectedBank] = React.useState('');
+    const [selectedBank, setSelectedBank] = useState('');
 
     const [idCheckMessage, setIdCheckMessage] = useState(''); //아이디 중복상태저장용
     const [idCheckColor, setIdCheckColor] = useState('');
@@ -44,9 +44,7 @@ const SignUpForm = () => {
                 id,
                 pw,
                 name,
-                // idnumber,
                 email,
-
                 sex,
                 age,
                 hp,
@@ -58,16 +56,25 @@ const SignUpForm = () => {
 
             // 성공적으로 가입된 경우
             if (response.data.success) {
-                alert('회원가입이 완료되었습니다!');
-                navigate('/login');
+                Swal.fire({
+                    title: '회원가입이 완료되었습니다!',
+                    icon: 'success',
+                }).then(() => {
+                    navigate('/login');
+                });
             } else {
-                alert(
-                    '회원가입에 실패하였습니다: ' +
-                        (response.data.message || '알 수 없는 오류'),
-                );
+                Swal.fire({
+                    title: '회원가입에 실패하였습니다',
+                    text: response.data.message || '알 수 없는 오류',
+                    icon: 'error',
+                });
             }
         } catch (error) {
-            alert('모든 입력창에 입력을 해주십시오.');
+            Swal.fire({
+                title: '입력 오류',
+                text: '모든 입력창에 입력을 해주십시오.',
+                icon: 'warning',
+            });
         }
     };
 
@@ -77,18 +84,19 @@ const SignUpForm = () => {
             accountcheck.length !== 4 ||
             isNaN(accountcheck)
         ) {
-            alert('인증번호 4자리를 입력해주세요.');
+            Swal.fire({
+                title: '입력 오류',
+                text: '인증번호 4자리를 입력해주세요.',
+                icon: 'warning',
+            });
             return;
         }
 
         try {
-            const response = await axios.post(
-                `${apiUrl}/check-fourdigit`,
-                {
-                    accountno, // 계좌번호
-                    accountcheck, // 전송된 4자리 숫자
-                },
-            );
+            const response = await axios.post(`${apiUrl}/check-fourdigit`, {
+                accountno, // 계좌번호
+                accountcheck, // 전송된 4자리 숫자
+            });
 
             if (response.data.success) {
                 setAccountMessage(
@@ -103,50 +111,74 @@ const SignUpForm = () => {
             }
         } catch (error) {
             console.error('계좌 인증 중 오류 발생:', error);
-            alert('계좌 인증 중 오류가 발생하였습니다.');
+            Swal.fire({
+                title: '오류',
+                text: '계좌 인증 중 오류가 발생하였습니다.',
+                icon: 'error',
+            });
         }
     };
 
     const handleIdCheck = async () => {
         if (id.trim() === '') {
-            alert('아이디를 입력해주세요.');
+            Swal.fire({
+                title: '입력 오류',
+                text: '아이디를 입력해주세요.',
+                icon: 'warning',
+            });
             return;
         }
 
         try {
-            const response = await axios.post(
-                `${apiUrl}/check-id`,
-                { id },
-            );
+            const response = await axios.post(`${apiUrl}/check-id`, { id });
             setIdCheckMessage(response.data.message); // 상태 변수에 메시지 저장
             // 추가: 메시지에 따라 색상 설정
             setIdCheckColor(response.data.exists ? 'red' : 'blue'); // 색상 상태 추가
         } catch (error) {
             console.error('아이디 중복 확인 중 오류 발생:', error);
-            alert('아이디 중복 확인 중 오류가 발생하였습니다.');
+            Swal.fire({
+                title: '오류',
+                text: '아이디 중복 확인 중 오류가 발생하였습니다.',
+                icon: 'error',
+            });
         }
     };
 
     const handleAccountno = async () => {
         if (accountno.trim() === '') {
-            alert('계좌를 입력해주세요.');
+            Swal.fire({
+                title: '입력 오류',
+                text: '계좌를 입력해주세요.',
+                icon: 'warning',
+            });
             return;
         }
 
         try {
-            const response = await axios.post(
-                `${apiUrl}/check-account`,
-                { accountno },
-            );
+            const response = await axios.post(`${apiUrl}/check-account`, {
+                accountno,
+            });
 
             if (response.data.exists) {
-                alert('계좌에 전송된 계좌주 끝 4자리를 입력하세요.');
+                Swal.fire({
+                    title: '계좌 확인',
+                    text: '계좌에 전송된 계좌주 끝 4자리를 입력하세요.',
+                    icon: 'info',
+                });
             } else {
-                alert('존재하지 않는 계좌입니다.');
+                Swal.fire({
+                    title: '오류',
+                    text: '존재하지 않는 계좌입니다.',
+                    icon: 'error',
+                });
             }
         } catch (error) {
             console.error('계좌 확인 중 오류 발생:', error);
-            alert('계좌 확인 중 오류가 발생하였습니다.');
+            Swal.fire({
+                title: '오류',
+                text: '계좌 확인 중 오류가 발생하였습니다.',
+                icon: 'error',
+            });
         }
     };
 

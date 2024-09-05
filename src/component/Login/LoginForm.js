@@ -4,6 +4,7 @@ import { TextField } from '@mui/material';
 import { Button as MuiButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -47,7 +48,12 @@ const LoginForm = () => {
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {
-                alert('아이디 / 비밀번호가 틀렸습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '로그인 실패',
+                    text: '아이디 / 비밀번호가 틀렸습니다.',
+                    confirmButtonText: '확인',
+                });
             }
         }
     };
