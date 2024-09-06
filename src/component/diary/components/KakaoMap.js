@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import './KakaoMap.css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -120,8 +121,9 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
     return (
         <div>
             <div
+                className="map"
                 id="map"
-                style={{ width: '100%', height: '500px', borderRadius: '10px' }}
+                style={{ width: '100%', height: '500px', borderRadius: '5px' }}
             ></div>
 
             <style>

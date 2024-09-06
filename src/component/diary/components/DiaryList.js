@@ -6,8 +6,9 @@ import DiaryItem from './DiaryItem';
 
 const DiaryList = ({ data, date }) => {
     return (
-        <div className="DiaryList">
+        <div>
             <div className="menu_wrapper">{date.format('YYYY년 M월 D일')}</div>
+
             <div className="list_wrapper">
                 {data.map((item) => (
                     <DiaryItem
