@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { Rating } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 function Regist() {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -95,16 +96,39 @@ function Regist() {
             })
             .then((res) => {
                 if (res.data.result === 'success') {
-                    alert('정상적으로 저장되었습니다.');
-                    navigate('/board/list');
+                    // 알림 표시
+                    Swal.fire({
+                        icon: 'success',
+                        title: '정상적으로 저장되었습니다',
+                        confirmButtonText: '확인',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // navigate를 사용하여 페이지를 새로 고침
+                            navigate('/board/list');
+                        }
+                    });
+                    // alert('정상적으로 저장되었습니다.');
+                    // navigate('/board/list');
                 }
             });
     };
 
     const save = () => {
-        if (window.confirm('글을 등록하시겠습니까?')) {
-            getApi();
-        }
+        Swal.fire({
+            title: '글을 등록하시겠습니까?',
+            icon: 'question',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '등록', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+        }).then((result) => {
+            // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) {
+                getApi();
+            }
+        });
     };
 
     const fetchDates = () => {
