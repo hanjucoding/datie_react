@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import type1Image from '../../assets/type1-front.png';
 import type2Image from '../../assets/type2-front.png';
 import type3Image from '../../assets/type3-front.png';
+import type4Image from '../../assets/type4-front.png';
+import type5Image from '../../assets/type5-front.png';
 const apiUrl = process.env.REACT_APP_API_URL;
 const ProfileComparison = () => {
     const navigate = useNavigate();
@@ -55,11 +57,15 @@ const ProfileComparison = () => {
         [type1Image, 'TYPE 1. 꽃길만 걷자(Pink)'],
         [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
         [type3Image, 'TYPE 3. 다이노 그린(Green)'],
+        [type4Image, 'TYPE 4. beach나는솔로'],
+        [type5Image, 'TYPE 5. 니 남친 지나간다'],
     ];
     const profileImages2 = [
         [type1Image, 'TYPE 1. 꽃길만 걷자(Pink)'],
         [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
         [type3Image, 'TYPE 3. 다이노 그린(Green)'],
+        [type4Image, 'TYPE 4. beach나는솔로'],
+        [type5Image, 'TYPE 5. 니 남친 지나간다'],
     ];
 
     const [currentImageIndex1, setCurrentImageIndex1] = useState(0);
@@ -132,7 +138,7 @@ const ProfileComparison = () => {
                 <ProfileSection>
                     <ProfileTitle>{userObject1.name}</ProfileTitle>
                     <TypesContainer style={{ display: 'none' }}>
-                        {['1', '2', '3'].map((type) => (
+                        {['1', '2', '3','4','5'].map((type) => (
                             <label key={type}>
                                 <input
                                     type="radio"
@@ -163,7 +169,7 @@ const ProfileComparison = () => {
                 <ProfileSection>
                     <ProfileTitle>{userObject2.name}</ProfileTitle>
                     <TypesContainer style={{ display: 'none' }}>
-                        {['1', '2', '3'].map((type) => (
+                        {['1', '2', '3','4','5'].map((type) => (
                             <label key={type}>
                                 <input
                                     type="radio"
