@@ -205,7 +205,7 @@ function Regist() {
             <div>
                 <RealHeader />
                 <Header title={'커뮤니티'} />
-                <div className="body">
+                <div>
                     <div className="sub">
                         <div className="size">
                             <div className="bbs">

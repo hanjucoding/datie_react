@@ -1,0 +1,39 @@
+.diary-section {
+    position: relative; /* 부모 요소가 기준이 됨 */
+}
+
+.diary-list-container {
+    position: absolute;
+    bottom: 100%; /* 버튼 바로 위에 위치 */
+    left: 0;
+    width: 100%;
+    max-height: 0; /* 리스트가 처음에는 보이지 않도록 설정 */
+    overflow-y: hidden; /* 리스트가 숨겨진 상태일 때 스크롤 숨김 */
+    transition: max-height 0.5s ease-in-out; /* 부드러운 애니메이션 */
+    background-color: rgba(255, 255, 255, 0.95); /* 살짝 투명한 배경색 */
+    z-index: 1000; /* 리스트가 다른 요소들 위에 보이도록 설정 */
+    border-top-left-radius: 15px; /* 왼쪽 상단 모서리를 둥글게 */
+    border-top-right-radius: 15px; /* 오른쪽 상단 모서리를 둥글게 */
+    
+}
+
+.diary-list-container.visible {
+    max-height: 500px; /* 최대 높이를 500px로 제한 */
+    overflow-y: auto; /* 스크롤 가능하게 설정 */
+}
+
+.toggle-button {
+    display: block;
+    padding: 5px 20px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: gray;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: black;
+}

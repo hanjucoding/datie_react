@@ -123,7 +123,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
             <div
                 className="map"
                 id="map"
-                style={{ width: '100%', height: '500px', borderRadius: '5px' }}
+                style={{ width: '100%', height: '800px', borderRadius: '5px' }}
             ></div>
 
             <style>
