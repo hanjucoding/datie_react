@@ -4,6 +4,7 @@
     border-bottom: 1px solid #e2e2e2;
     display: flex;
     justify-content: space-between;
+    margin-left: 10px;
 }
 
 .DiaryItem .img_section {
@@ -19,6 +20,88 @@
 }
 .DiaryItem .img_section_2 {
     background-color: #9dd772;
+    .DiaryItem {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e2e2;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .DiaryItem .img_section {
+        cursor: pointer;
+        min-width: 120px;
+        height: 80px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+    }
+    .DiaryItem .img_section_1 {
+        background-color: #64c964;
+    }
+    .DiaryItem .img_section_2 {
+        background-color: #9dd772;
+    }
+    .DiaryItem .img_section_3 {
+        background-color: #fdce17;
+    }
+    .DiaryItem .img_section_4 {
+        background-color: #fd8446;
+    }
+    .DiaryItem .img_section_5 {
+        background-color: #fd565f;
+    }
+    .DiaryItem .img_section img {
+        width: 100%;
+        border-radius: 3px; /* 모서리를 둥글게 합니다. 값을 조정하여 원하는 둥글기를 설정할 수 있습니다. */
+        border: 1px solid #ddd;
+        object-fit: cover;
+    }
+    .DiaryItem .info_section {
+        flex-grow: 1;
+        margin-left: 20px;
+        cursor: pointer;
+    }
+    .DiaryItem .info_section .date_wrapper {
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    .DiaryItem .info_section .content_wrapper {
+        font-size: 18px;
+    }
+    .DiaryItem .button_section {
+        min-width: 40px;
+    }
+    .image-slider {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-slider img {
+        border-radius: 8px;
+        border: 2px solid #ddd;
+    }
+
+    .slider-button {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 10;
+    }
+
+    .slider-button.prev {
+        left: 10px;
+    }
+
+    .slider-button.next {
+        right: 10px;
+    }
 }
 .DiaryItem .img_section_3 {
     background-color: #fdce17;
@@ -42,7 +125,7 @@
 }
 .DiaryItem .info_section .date_wrapper {
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     margin-bottom: 20px;
 }
 .DiaryItem .info_section .content_wrapper {

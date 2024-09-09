@@ -39,7 +39,7 @@ const showAlert = (type, setDarkOverlay, navigate) => {
         Swal.fire(alerts[type]).then((result) => {
             setDarkOverlay(false);
             if (result.isConfirmed) {
-                navigate('/');
+                navigate('/main');
             }
         });
     } else {
@@ -52,7 +52,7 @@ const showloading = (setDarkOverlay) => {
         Swal.fire({
             title: '결제 처리중입니다',
             html: '좀만 기다려주세요!',
-            timer: 2500,
+            timer: 4500,
             timerProgressBar: true,
             didOpen: () => {
                 Swal.showLoading();
@@ -87,7 +87,7 @@ function Payresult() {
                         icon: 'warning',
                         confirmButtonText: '메인메뉴로 이동',
                     });
-                    navigate('/');
+                    navigate('/main');
                 } else {
                     // Key 상태가 유효할 때만 결제 처리
                     await processPayment();

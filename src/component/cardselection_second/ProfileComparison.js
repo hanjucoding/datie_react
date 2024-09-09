@@ -12,6 +12,7 @@ import type1Image from '../../assets/type1-front.png';
 import type2Image from '../../assets/type2-front.png';
 import type3Image from '../../assets/type3-front.png';
 import type4Image from '../../assets/type4-front.png';
+import type5Image from '../../assets/type5-front.png';
 const apiUrl = process.env.REACT_APP_API_URL;
 const ProfileComparison = () => {
     const navigate = useNavigate();
@@ -57,12 +58,14 @@ const ProfileComparison = () => {
         [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
         [type3Image, 'TYPE 3. 다이노 그린(Green)'],
         [type4Image, 'TYPE 4. beach나는솔로'],
+        [type5Image, 'TYPE 5. 니 남친 지나간다'],
     ];
     const profileImages2 = [
         [type1Image, 'TYPE 1. 꽃길만 걷자(Pink)'],
         [type2Image, 'TYPE 2. 다이노 하트(Orange)'],
         [type3Image, 'TYPE 3. 다이노 그린(Green)'],
         [type4Image, 'TYPE 4. beach나는솔로'],
+        [type5Image, 'TYPE 5. 니 남친 지나간다'],
     ];
 
     const [currentImageIndex1, setCurrentImageIndex1] = useState(0);
@@ -127,15 +130,16 @@ const ProfileComparison = () => {
                     <NavigationButton onClick={handlePreviousImage1}>
                         ◀
                     </NavigationButton>
+                    <MustHaveLabel>{currentImageText1}</MustHaveLabel>
                     <NavigationButton onClick={handleNextImage1}>
                         ▶
                     </NavigationButton>
                 </ButtonContainer>
-                <MustHaveLabel>{currentImageText1}</MustHaveLabel>
+
                 <ProfileSection>
                     <ProfileTitle>{userObject1.name}</ProfileTitle>
                     <TypesContainer style={{ display: 'none' }}>
-                        {['1', '2', '3','4'].map((type) => (
+                        {['1', '2', '3', '4', '5'].map((type) => (
                             <label key={type}>
                                 <input
                                     type="radio"
@@ -158,15 +162,16 @@ const ProfileComparison = () => {
                     <NavigationButton onClick={handlePreviousImage2}>
                         ◀
                     </NavigationButton>
+                    <MustHaveLabel>{currentImageText2}</MustHaveLabel>
                     <NavigationButton onClick={handleNextImage2}>
                         ▶
                     </NavigationButton>
                 </ButtonContainer>
-                <MustHaveLabel>{currentImageText2}</MustHaveLabel>
+
                 <ProfileSection>
                     <ProfileTitle>{userObject2.name}</ProfileTitle>
                     <TypesContainer style={{ display: 'none' }}>
-                        {['1', '2', '3','4'].map((type) => (
+                        {['1', '2', '3', '4', '5'].map((type) => (
                             <label key={type}>
                                 <input
                                     type="radio"
@@ -231,15 +236,16 @@ const ComparisonContainer = styled.main`
 `;
 
 const ProfileImage = styled.img`
-    aspect-ratio: 0.63;
+    aspect-ratio: 1;
     object-fit: contain;
     object-position: center;
-    width: 111px;
+    width: 300px; /* 크기를 조정합니다. */
     max-width: 100%;
 `;
 
 const MustHaveLabel = styled.span`
     display: flex;
+    font-size: 30px;
 `;
 
 const ProfileSection = styled.section``;

@@ -23,7 +23,7 @@ export const StyledCalendarWrapper = styled.div`
         abbr {
             color: black;
             font-family: 'Gamja Flower', cursive;
-            font-size: 20px;
+            font-size: 23px;
         }
     }
 
@@ -108,7 +108,7 @@ export const StyledCalendarWrapper = styled.div`
         margin-inline-end: 5px !important;
         margin-block-end: 10px;
         padding: 20px 6.6667px;
-        font-size: 0.9rem;
+        font-size: 20px;
         font-weight: 600;
         color: ${(props) => props.theme.gray_1};
     }
@@ -159,6 +159,6 @@ export const StyledHeart = styled.div`
     top: 60%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1rem; /* 하트의 크기 조정 */
+    font-size: 23px; /* 하트의 크기 조정 */
     line-height: 1;
 `;
