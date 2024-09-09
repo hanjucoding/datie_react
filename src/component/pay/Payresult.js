@@ -52,7 +52,7 @@ const showloading = (setDarkOverlay) => {
         Swal.fire({
             title: '결제 처리중입니다',
             html: '좀만 기다려주세요!',
-            timer: 2500,
+            timer: 4500,
             timerProgressBar: true,
             didOpen: () => {
                 Swal.showLoading();
