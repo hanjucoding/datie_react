@@ -4,7 +4,6 @@
     border-bottom: 1px solid #e2e2e2;
     display: flex;
     justify-content: space-between;
-    background-color: floralwhite;
 }
 
 .DiaryItem .img_section {
@@ -32,9 +31,9 @@
 }
 .DiaryItem .img_section img {
     width: 100%;
-    border-radius: 8px; /* 모서리를 둥글게 합니다. 값을 조정하여 원하는 둥글기를 설정할 수 있습니다. */
-    border: 2px solid #ddd; /* 테두리를 추가합니다. 색상과 두께를 조정할 수 있습니다. */
-    object-fit: cover; /* 이미지가 요소를 가득 채우도록 설정합니다. */
+    border-radius: 3px; /* 모서리를 둥글게 합니다. 값을 조정하여 원하는 둥글기를 설정할 수 있습니다. */
+    border: 1px solid #ddd;
+    object-fit: cover;
 }
 .DiaryItem .info_section {
     flex-grow: 1;
@@ -43,7 +42,7 @@
 }
 .DiaryItem .info_section .date_wrapper {
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     margin-bottom: 20px;
 }
 .DiaryItem .info_section .content_wrapper {

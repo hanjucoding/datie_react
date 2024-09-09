@@ -8,6 +8,7 @@ import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Swal from 'sweetalert2';
 import './AdminMember.css';
 import RealHeader from '../RealHeader';
 import { useState, useEffect, useLayoutEffect } from 'react';
@@ -141,7 +142,10 @@ const Admin = () => {
                         onClick={function () {
                             // 선택된 행이 없을 경우 경고 메시지 표시
                             if (selectedRows.length === 0) {
-                                alert('선택된 행이 없습니다.');
+                                Swal.fire({
+                                    title: '선택된 행이 없습니다.',
+                                    icon: 'info',
+                                });
                                 return;
                             }
 
@@ -153,7 +157,10 @@ const Admin = () => {
                                 })
                                 .then((res) => {
                                     console.log(res);
-                                    alert('일괄 정지가 완료되었습니다.');
+                                    Swal.fire({
+                                        title: '일괄 정지가 완료되었습니다.',
+                                        icon: 'info',
+                                    });
                                     setParam({
                                         searchType: searchTypeState,
                                         searchWord: searchWordState,
@@ -181,7 +188,10 @@ const Admin = () => {
                         onClick={function () {
                             // 선택된 행이 없을 경우 경고 메시지 표시
                             if (selectedRows.length === 0) {
-                                alert('선택된 행이 없습니다.');
+                                Swal.fire({
+                                    title: '선택된 행이 없습니다.',
+                                    icon: 'info',
+                                });
                                 return;
                             }
 
@@ -193,7 +203,10 @@ const Admin = () => {
                                 })
                                 .then((res) => {
                                     console.log(res);
-                                    alert('일괄 해지가 완료되었습니다.');
+                                    Swal.fire({
+                                        title: '일괄 해지가 완료되었습니다.',
+                                        icon: 'info',
+                                    });
                                     setParam({
                                         searchType: searchTypeState,
                                         searchWord: searchWordState,

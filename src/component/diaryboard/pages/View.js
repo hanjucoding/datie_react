@@ -19,6 +19,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import { colors } from '@mui/material';
+import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function View(props) {
     const navigate = useNavigate();
@@ -137,33 +139,89 @@ function View(props) {
         axios.post(`${apiUrl}/api/comment/regist`, param).then((res) => {
             console.log(res);
             if (res.data.result === 'success') {
-                alert('정상적으로 저장되었습니다.');
-                setParam({
-                    ...param,
-                    content: '',
+                // 알림 표시
+                Swal.fire({
+                    icon: 'success',
+                    title: '댓글이 등록되었습니다',
+                    confirmButtonText: '확인',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setParam({
+                            ...param,
+                            content: '',
+                        });
+                        getCommentList();
+                    }
                 });
-                getCommentList();
+                // alert('정상적으로 저장되었습니다.');
+                // setParam({
+                //     ...param,
+                //     content: '',
+                // });
+                // getCommentList();
             }
         });
     };
 
     const save = () => {
-        if (window.confirm('글을 등록하시겠습니까?')) {
-            saveComment();
-        }
+        Swal.fire({
+            title: '댓글을 등록하시겠습니까?',
+            icon: 'question',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '등록', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+        }).then((result) => {
+            // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) {
+                saveComment();
+            }
+        });
     };
 
     const delComment = (no) => {
         let url = `${apiUrl}/api/comment/delete?no=` + no;
         console.log('commentno: ' + no);
-        if (window.confirm('댓글을 삭제하시겠습니까?')) {
-            axios.get(url).then((res) => {
-                if (res.data.result === 'success') {
-                    alert('정상적으로 삭제되었습니다.');
-                    getCommentList();
-                }
-            });
-        }
+        Swal.fire({
+            title: '댓글을 삭제하시겠습니까?',
+            icon: 'question',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+        }).then((result) => {
+            // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) {
+                axios.get(url).then((res) => {
+                    if (res.data.result === 'success') {
+                        // 알림 표시
+                        Swal.fire({
+                            icon: 'success',
+                            title: '댓글이 삭제되었습니다',
+                            confirmButtonText: '확인',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                getCommentList();
+                            }
+                        });
+                        //  alert('정상적으로 삭제되었습니다.');
+                        //  getCommentList();
+                    }
+                });
+            }
+        });
+        // if (window.confirm('댓글을 삭제하시겠습니까?')) {
+        //     axios.get(url).then((res) => {
+        //         if (res.data.result === 'success') {
+        //             alert('정상적으로 삭제되었습니다.');
+        //             getCommentList();
+        //         }
+        //     });
+        // }
     };
 
     const goEdit = (e) => {
@@ -176,20 +234,40 @@ function View(props) {
     };
     const goDelete = (e) => {
         e.preventDefault();
-        if (window.confirm('삭제하시겠습니까?')) {
-            axios
-                .post(`${apiUrl}/api/diaryboard/delete`, {
-                    no: Number(no),
-                })
-                .then((res) => {
-                    if (res.data.result === 'success') {
-                        alert('정상적으로 삭제되었습니다.');
-                        navigate('/board/list');
-                    }
-                });
-        } else {
-            e.preventDefault();
-        }
+        Swal.fire({
+            title: '글을 삭제하시겠습니까?',
+            icon: 'question',
+
+            showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+            confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+            cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+            confirmButtonText: '삭제', // confirm 버튼 텍스트 지정
+            cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+        }).then((result) => {
+            // 만약 Promise리턴을 받으면,
+            if (result.isConfirmed) {
+                axios
+                    .post(`${apiUrl}/api/diaryboard/delete`, {
+                        no: Number(no),
+                    })
+                    .then((res) => {
+                        if (res.data.result === 'success') {
+                            // 알림 표시
+                            Swal.fire({
+                                icon: 'success',
+                                title: '정상적으로 삭제되었습니다',
+                                confirmButtonText: '확인',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    navigate('/board/list');
+                                }
+                            });
+                        } else {
+                            e.preventDefault();
+                        }
+                    });
+            }
+        });
     };
     const [isLiked, setIsLiked] = useState(false);
     const handleIconClick = () => {
@@ -209,10 +287,22 @@ function View(props) {
                         {data ? data.user.id : ''}
                         <div className="btn">
                             {data && data.user.userno == userNo && (
-                                <EditIcon
-                                    onClick={goEdit}
-                                    style={{ cursor: 'pointer' }}
-                                />
+                                <>
+                                    <EditIcon
+                                        onClick={goEdit}
+                                        style={{
+                                            cursor: 'pointer',
+                                            marginRight: '10px',
+                                        }}
+                                    />
+                                    <DeleteIcon
+                                        onClick={goDelete}
+                                        style={{
+                                            cursor: 'pointer',
+                                            color: 'red',
+                                        }}
+                                    />
+                                </>
                             )}
                             {data && data.user.userno != userNo && (
                                 <div
