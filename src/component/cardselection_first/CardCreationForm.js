@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // useNavigate 사용
 import { Token } from '@mui/icons-material';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 const apiUrl = process.env.REACT_APP_API_URL;
 const CardCreationForm = () => {
     const [token, setToken] = useState('');
@@ -24,14 +25,23 @@ const CardCreationForm = () => {
     }, []);
     const handleSubmit = async () => {
         let userno1;
+        let userId;
         if (token) {
             const decoded = jwtDecode(token); // 수정된 호출
             console.log(decoded); // 디코딩된 정보 출력
-            const userId = decoded.id;
+            userId = decoded.id;
             userno1 = decoded.userno;
         }
 
         console.log(userno1); // 토큰에서 가져오는 userno
+
+        if (userId == loverId) {
+            Swal.fire({
+                title: '이미 로그인한 계정 입니다 상대방의 계정을 입력해 주세요...!',
+                icon: 'info',
+            });
+            return;
+        }
 
         const requestBody = {
             id: loverId,
