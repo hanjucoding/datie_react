@@ -10,11 +10,10 @@
     max-height: 0; /* 리스트가 처음에는 보이지 않도록 설정 */
     overflow-y: hidden; /* 리스트가 숨겨진 상태일 때 스크롤 숨김 */
     transition: max-height 0.5s ease-in-out; /* 부드러운 애니메이션 */
-    background-color: rgba(255, 255, 255, 0.95); /* 살짝 투명한 배경색 */
+    background-color: rgba(255, 255, 255, 0.9); /* 살짝 투명한 배경색 */
     z-index: 1000; /* 리스트가 다른 요소들 위에 보이도록 설정 */
     border-top-left-radius: 15px; /* 왼쪽 상단 모서리를 둥글게 */
     border-top-right-radius: 15px; /* 오른쪽 상단 모서리를 둥글게 */
-    
 }
 
 .diary-list-container.visible {
