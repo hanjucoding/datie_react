@@ -47,7 +47,7 @@ function PasswordInput() {
                         icon: 'warning',
                         confirmButtonText: '메인메뉴로 이동',
                     });
-                    navigate('/');
+                    navigate('/main');
                 }
             } catch (error) {
                 console.error('Key status check failed:', error);
