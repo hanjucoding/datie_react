@@ -6,7 +6,7 @@ import DiaryItem from '../components/DiaryItem';
 
 const DiaryList = ({ data, date }) => {
     return (
-        <div className="DiaryList">
+        <div>
             <div className="list_wrapper">
                 {data.map((item) => (
                     <DiaryItem

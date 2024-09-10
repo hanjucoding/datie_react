@@ -9,7 +9,7 @@ import InitialInput from './InitialInput';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'; // UTC 플러그인
 import timezone from 'dayjs/plugin/timezone'; // 타임존 플러그인
@@ -107,7 +107,10 @@ function CardInfoInput() {
 
     const handleSave = (initialValue) => {
         if (!isMatch1) {
-            alert('비밀번호가 일치하지 않습니다.');
+            Swal.fire({
+                title: '비밀번호가 일치하지 않습니다.',
+                icon: 'info',
+            });
             return;
         }
     };
@@ -152,8 +155,11 @@ function CardInfoInput() {
             .then((response) => {
                 console.log('User1 data sent successfully:', response.data);
                 // 추가적인 처리 (예: 성공 알림 등)
-                alert('성공적으로 카드생성 하였습니다.');
-                navigate('/');
+                Swal.fire({
+                    title: '성공적으로 카드생성 하였습니다.',
+                    icon: 'info',
+                });
+                navigate('/main');
             })
             .catch((error) => {
                 console.error('Error sending user1 data:', error);
@@ -312,7 +318,10 @@ function CardInfoInput() {
                             ) {
                                 handleSubmit();
                             } else {
-                                alert('정보를 모두 입력해 주세요');
+                                Swal.fire({
+                                    title: '정보를 모두 입력해 주세요',
+                                    icon: 'info',
+                                });
                             }
                         }}
                     >

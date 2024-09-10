@@ -6,10 +6,9 @@ import { Rating } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-// 기본 이미지 URL
-const DEFAULT_IMAGE_URL = 'http://localhost:8090/api/diary/image/default.png';
 const apiUrl = process.env.REACT_APP_API_URL;
+// 기본 이미지 URL
+const DEFAULT_IMAGE_URL = `${apiUrl}/api/diary/image/default.png`;
 
 const DiaryItem = ({
     diaryNo,

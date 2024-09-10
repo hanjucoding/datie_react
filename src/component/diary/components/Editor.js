@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Rating } from '@mui/material';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -78,9 +79,16 @@ const Editor = ({ diaryNo, companyName, rate, review, onSubmit }) => {
                     review: reviewText,
                 });
                 // 알림 표시
-                alert('작성이 완료되었습니다');
-                // navigate를 사용하여 페이지를 새로 고침
-                navigate(0); // 페이지를 새로 고침
+                Swal.fire({
+                    icon: 'success',
+                    title: '작성 완료',
+                    confirmButtonText: '확인',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // navigate를 사용하여 페이지를 새로 고침
+                        navigate(0); // 페이지를 새로 고침
+                    }
+                });
             }
         } catch (error) {
             console.error('Error uploading data:', error);

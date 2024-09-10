@@ -81,7 +81,7 @@ function PayInfo() {
                         icon: 'warning',
                         confirmButtonText: '메인메뉴로 이동',
                     });
-                    navigate('/');
+                    navigate('/main');
                 }
             } catch (error) {
                 console.error('Key status check failed:', error);
@@ -380,11 +380,11 @@ const StyledTextField = styled(MuiTextField)`
 `;
 
 const AnimatedTextField1 = styled(StyledTextField)`
-    animation: ${backInDown1} 2.5s ease both;
+    animation: ${backInDown1} 5s ease both;
 `;
 
 const AnimatedTextField2 = styled(StyledTextField)`
-    animation: ${backInDown2} 2.5s ease both;
+    animation: ${backInDown2} 5s ease both;
 `;
 
 export default PayInfo;

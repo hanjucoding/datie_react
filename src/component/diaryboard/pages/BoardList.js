@@ -15,6 +15,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CreateIcon from '@mui/icons-material/Create';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Divider from '@mui/material/Divider';
+import './BoardList.css';
 
 function BoardList() {
     const apiUrl = process.env.REACT_APP_API_URL;

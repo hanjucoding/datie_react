@@ -59,8 +59,18 @@ function Reply() {
             .then((res) => {
                 console.log(res);
                 if (res.data.result === 'success') {
-                    alert('정상적으로 저장되었습니다.');
-                    navigate('/board/list');
+                    // alert('정상적으로 저장되었습니다.');
+                    // 알림 표시
+                    Swal.fire({
+                        icon: 'success',
+                        title: '정상적으로 저장되었습니다',
+                        confirmButtonText: '확인',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // navigate를 사용하여 페이지를 새로 고침
+                            navigate('/board/list');
+                        }
+                    });
                 }
             });
     };
