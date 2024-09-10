@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom'; // useParams 추가
-import RealHeader from '../RealHeader';  // RealHeader로 변경
+import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import RealHeader from '../RealHeader'; // RealHeader로 변경
 import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography, TextField } from '@mui/material';
 import './CardLostReport.css'; // 스타일 시트 필요에 따라 추가
@@ -11,10 +11,13 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 const CardLostReport = () => {
     const { userno } = useParams(); // useParams로 userno 받아오기
+    const navigate = useNavigate(); // useNavigate 훅 사용
     const [isReported, setIsReported] = useState(false); // 카드 분실 신고 상태 (기본값은 신고되지 않은 상태)
     const [isPasswordPrompt, setIsPasswordPrompt] = useState(false); // 비밀번호 입력 폼 표시 여부
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [success, setSuccess] = useState('');
+    const [error, setError] = useState('');
 
     const handleReport = () => {
         setIsPasswordPrompt(true); // 비밀번호 입력 폼을 표시
@@ -22,11 +25,8 @@ const CardLostReport = () => {
 
     const handlePasswordSubmit = async () => {
         if (password !== confirmPassword) {
-            Swal.fire({
-                icon: 'error',
-                title: '오류',
-                text: '비밀번호가 일치하지 않습니다.',
-            });
+            setError('비밀번호가 일치하지 않습니다.');
+            setSuccess('');
             return;
         }
 
@@ -36,29 +36,28 @@ const CardLostReport = () => {
                 currentPassword: password
             });
 
-            Swal.fire({
-                icon: 'success',
-                title: '성공',
-                text: '카드 분실 신고가 성공적으로 접수되었습니다.',
-            });
-
+            setSuccess('카드 분실 신고가 성공적으로 접수되었습니다.');
+            setError('');
             setIsReported(true); // 카드 상태를 신고된 상태로 설정
             setIsPasswordPrompt(false); // 비밀번호 입력 폼 숨김
 
+            // 성공 후 리다이렉트
+            Swal.fire({
+                icon: 'success',
+                title: '성공',
+                text: '카드 분실 신고가 완료되었습니다.',
+                confirmButtonText: '확인'
+            }).then(() => {
+                navigate(`/view-profile/${userno}`); // view-profile/userno 경로로 이동
+            });
+
         } catch (error) {
             if (error.response && error.response.data) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '오류',
-                    text: error.response.data,
-                });
+                setError(error.response.data);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: '오류',
-                    text: '카드 분실 신고에 실패했습니다.',
-                });
+                setError('카드 분실 신고에 실패했습니다.');
             }
+            setSuccess('');
         }
     };
 
@@ -124,6 +123,17 @@ const CardLostReport = () => {
                                 확인
                             </MuiButton>
                         </Box>
+                    )}
+
+                    {success && (
+                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
+                            {success}
+                        </Typography>
+                    )}
+                    {error && (
+                        <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
+                            {error}
+                        </Typography>
                     )}
                 </div>
             </div>
