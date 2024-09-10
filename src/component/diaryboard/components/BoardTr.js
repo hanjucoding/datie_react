@@ -62,12 +62,7 @@ function BoardTr(props) {
                     {props.row.user ? props.row.user.id : ''}
                 </div>
                 <div className="title_wrapper">
-                    <Link to={url}>
-                        <span
-                            dangerouslySetInnerHTML={{ __html: nested }}
-                        ></span>
-                        {props.row.title}
-                    </Link>
+                    <Link to={url}>{props.row.title}</Link>
                 </div>
                 <div className="content_wrapper">
                     {companyNames.map((name, index) => (
