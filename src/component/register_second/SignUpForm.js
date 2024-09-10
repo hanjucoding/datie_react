@@ -232,8 +232,8 @@ const SignUpForm = () => {
                                 '&:hover': {
                                     backgroundColor: 'rgb(120, 140, 200)',
                                 },
-                                width: '100px',
-                                fontFamily: '"Gamja Flower", cursive',
+                                width: '115px',
+                                fontSize: '15px',
                             }}
                             onClick={handleIdCheck}
                         >
@@ -278,13 +278,6 @@ const SignUpForm = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    {/* <Component>주민등록번호</Component>
-                    <InputField
-                        placeholder="-를제외한 주민등록번호 13자리를 기입해주세요"
-                        value={idnumber}
-                        type="idnumber"
-                        onChange={(e) => setIdnumber(e.target.value)}
-                    /> */}
                     <GenderContainer>
                         <label>성별 : </label>
                         <label>
@@ -305,8 +298,8 @@ const SignUpForm = () => {
                             />
                             여
                         </label>
-
-                        <label style={{ marginLeft: '15px' }}>나이 :</label>
+                        <br></br>
+                        <label style={{ marginLeft: '0px' }}>나이 :</label>
                         <input
                             type="number"
                             value={age}
@@ -350,8 +343,8 @@ const SignUpForm = () => {
                                     '&:hover': {
                                         backgroundColor: 'rgb(120, 140, 200)',
                                     },
-                                    width: '100px',
-                                    fontFamily: '"Gamja Flower", cursive',
+                                    width: '125px',
+                                    fontSize: '15px',
                                 }}
                                 onClick={handleAccountno} // 여기에 메서드 추가
                             >
@@ -380,8 +373,8 @@ const SignUpForm = () => {
                                 '&:hover': {
                                     backgroundColor: 'rgb(120, 140, 200)',
                                 },
-                                width: '100px',
-                                fontFamily: '"Gamja Flower", cursive',
+                                width: '115px',
+                                fontSize: '15px',
                             }}
                             onClick={handleAccountCheck} // 계좌 인증 버튼 클릭 시 인증 로직 실행
                         >
@@ -488,8 +481,9 @@ const ButtonGroup = styled.div`
 
 const Component = styled.div`
     margin-top: 15px;
+    margin-bottom: 6px;
     text-align: left;
-    font-size: 16px;
+    font-size: 25px;
 `;
 
 const Middiv = styled.div`
@@ -501,7 +495,7 @@ const Middiv = styled.div`
 
 const GenderContainer = styled.div`
     margin-top: 15px;
-    font-size: 16px;
+    font-size: 20px;
 `;
 
 const BankContainer = styled.div``;

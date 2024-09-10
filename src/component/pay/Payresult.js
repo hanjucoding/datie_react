@@ -39,7 +39,7 @@ const showAlert = (type, setDarkOverlay, navigate) => {
         Swal.fire(alerts[type]).then((result) => {
             setDarkOverlay(false);
             if (result.isConfirmed) {
-                navigate('/');
+                navigate('/main');
             }
         });
     } else {
@@ -87,7 +87,7 @@ function Payresult() {
                         icon: 'warning',
                         confirmButtonText: '메인메뉴로 이동',
                     });
-                    navigate('/');
+                    navigate('/main');
                 } else {
                     // Key 상태가 유효할 때만 결제 처리
                     await processPayment();

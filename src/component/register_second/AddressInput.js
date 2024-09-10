@@ -94,7 +94,7 @@ const AddressInput = ({ setAddress, setDetailAddress }) => {
                         '&:hover': {
                             backgroundColor: 'rgb(120, 140, 200)',
                         },
-                        width: '125px',
+                        width: '100px',
                     }}
                     onClick={handleAddressSearch}
                 >
