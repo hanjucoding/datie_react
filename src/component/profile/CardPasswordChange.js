@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ResponsiveAppBar from '../RealHeader';
 import Footer from '../Footer';
-import { TextField, Button as MuiButton, Box, Typography } from '@mui/material';
+import { TextField, Button as MuiButton, Box } from '@mui/material';
 import axios from 'axios';
 import './CardPasswordChange.css';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -16,13 +17,15 @@ const CardPasswordChange = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     // 비밀번호 변경 처리 함수
     const handlePasswordChange = async () => {
         if (newPassword !== confirmPassword) {
-            setError('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.',
+            });
             return;
         }
 
@@ -33,16 +36,27 @@ const CardPasswordChange = () => {
                 newPassword,
             });
 
-            setSuccess('비밀번호가 성공적으로 변경되었습니다.');
-            setError('');
+            Swal.fire({
+                icon: 'success',
+                title: '성공',
+                text: '비밀번호가 성공적으로 변경되었습니다.',
+            });
 
             // 비밀번호 변경 성공 시, 프로필 페이지로 이동
             navigate(`/view-profile/${userno}`);
         } catch (error) {
             if (error.response && error.response.data) {
-                setError(error.response.data);
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: error.response.data,
+                });
             } else {
-                setError('비밀번호 변경에 실패했습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: '비밀번호 변경에 실패했습니다.',
+                });
             }
         }
     };
@@ -83,16 +97,6 @@ const CardPasswordChange = () => {
                         inputProps={{ maxLength: 4 }} // 입력 길이 제한
                         sx={{ mt: 2, width: '100%' }}
                     />
-                    {error && (
-                        <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
-                            {error}
-                        </Typography>
-                    )}
-                    {success && (
-                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
-                            {success}
-                        </Typography>
-                    )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                         <MuiButton
                             variant="contained"
