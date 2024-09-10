@@ -33,14 +33,14 @@ const CardLostReport = () => {
                 currentPassword: password
             });
 
-            console.log('API call successful'); // 디버깅을 위한 로그
-
+            // 성공 후 Swal을 사용하여 메시지 출력 후 리다이렉트
             Swal.fire({
                 icon: 'success',
                 title: '성공',
                 text: '카드 분실 신고가 완료되었습니다.',
                 confirmButtonText: '확인'
             }).then(() => {
+                setIsReported(true); // 카드 신고 상태를 true로 설정
                 navigate(`/view-profile/${userno}`); // view-profile/userno 경로로 이동
             });
 
@@ -59,62 +59,70 @@ const CardLostReport = () => {
             <div className="content">
                 <h2 style={{ textAlign: 'center', marginTop: '20px' }}>카드 분실 신고</h2>
                 <div className="report_container">
-                    <Typography sx={{ textAlign: 'center', mb: 2 }}>
-                        {isReported ? '카드가 분실 신고된 상태입니다.' : '카드 분실 신고를 접수할 수 있습니다.'}
-                    </Typography>
+                    {!isReported ? (
+                        <>
+                            <Typography sx={{ textAlign: 'center', mb: 2 }}>
+                                카드 분실 신고를 접수할 수 있습니다.
+                            </Typography>
 
-                    {!isReported && !isPasswordPrompt && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <MuiButton
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: "rgb(148, 160, 227)",
-                                    color: "white",
-                                    "&:hover": {
-                                        backgroundColor: "rgb(120, 140, 200)",
-                                    },
-                                    width: "150px"
-                                }}
-                                onClick={handleReport}
-                            >
-                                분실 신고
-                            </MuiButton>
-                        </Box>
-                    )}
+                            {!isPasswordPrompt && (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                                    <MuiButton
+                                        variant="contained"
+                                        sx={{
+                                            backgroundColor: "rgb(148, 160, 227)",
+                                            color: "white",
+                                            "&:hover": {
+                                                backgroundColor: "rgb(120, 140, 200)",
+                                            },
+                                            width: "150px"
+                                        }}
+                                        onClick={handleReport}
+                                    >
+                                        분실 신고
+                                    </MuiButton>
+                                </Box>
+                            )}
 
-                    {isPasswordPrompt && (
-                        <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
-                            <TextField
-                                label="현재 비밀번호"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                sx={{ mb: 2, width: '100%' }}
-                                inputProps={{ maxLength: 4 }} // 비밀번호 최대 길이 4글자 제한
-                            />
-                            <TextField
-                                label="비밀번호 확인"
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                sx={{ mb: 2, width: '100%' }}
-                                inputProps={{ maxLength: 4 }} // 비밀번호 확인 최대 길이 4글자 제한
-                            />
-                            <MuiButton
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: "rgb(148, 160, 227)",
-                                    color: "white",
-                                    "&:hover": {
-                                        backgroundColor: "rgb(120, 140, 200)",
-                                    },
-                                    width: "150px"
-                                }}
-                                onClick={handlePasswordSubmit}
-                            >
-                                확인
-                            </MuiButton>
-                        </Box>
+                            {isPasswordPrompt && (
+                                <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
+                                    <TextField
+                                        label="현재 비밀번호"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        sx={{ mb: 2, width: '100%' }}
+                                        inputProps={{ maxLength: 4 }} // 비밀번호 최대 길이 4글자 제한
+                                    />
+                                    <TextField
+                                        label="비밀번호 확인"
+                                        type="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        sx={{ mb: 2, width: '100%' }}
+                                        inputProps={{ maxLength: 4 }} // 비밀번호 확인 최대 길이 4글자 제한
+                                    />
+                                    <MuiButton
+                                        variant="contained"
+                                        sx={{
+                                            backgroundColor: "rgb(148, 160, 227)",
+                                            color: "white",
+                                            "&:hover": {
+                                                backgroundColor: "rgb(120, 140, 200)",
+                                            },
+                                            width: "150px"
+                                        }}
+                                        onClick={handlePasswordSubmit}
+                                    >
+                                        확인
+                                    </MuiButton>
+                                </Box>
+                            )}
+                        </>
+                    ) : (
+                        <Typography sx={{ textAlign: 'center', mb: 2 }}>
+                            카드가 분실 신고된 상태입니다.
+                        </Typography>
                     )}
 
                     {error && (
