@@ -36,10 +36,6 @@ const CardLostReport = () => {
                 currentPassword: password
             });
 
-            setSuccess('카드 분실 신고가 성공적으로 접수되었습니다.');
-            setError('');
-            setIsReported(true); // 카드 상태를 신고된 상태로 설정
-            setIsPasswordPrompt(false); // 비밀번호 입력 폼 숨김
 
             // 성공 후 리다이렉트
             Swal.fire({
