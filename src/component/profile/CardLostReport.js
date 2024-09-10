@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
-import RealHeader from '../RealHeader'; // RealHeader로 변경
+import { useParams, useNavigate } from 'react-router-dom';
+import RealHeader from '../RealHeader';
 import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography, TextField } from '@mui/material';
-import './CardLostReport.css'; // 스타일 시트 필요에 따라 추가
-import axios from 'axios'; // Axios 추가
-import Swal from 'sweetalert2'; // Swal import
+import './CardLostReport.css';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const CardLostReport = () => {
-    const { userno } = useParams(); // useParams로 userno 받아오기
-    const navigate = useNavigate(); // useNavigate 훅 사용
-    const [isReported, setIsReported] = useState(false); // 카드 분실 신고 상태 (기본값은 신고되지 않은 상태)
-    const [isPasswordPrompt, setIsPasswordPrompt] = useState(false); // 비밀번호 입력 폼 표시 여부
+    const { userno } = useParams();
+    const navigate = useNavigate();
+    const [isReported, setIsReported] = useState(false);
+    const [isPasswordPrompt, setIsPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleReport = () => {
-        setIsPasswordPrompt(true); // 비밀번호 입력 폼을 표시
+        setIsPasswordPrompt(true);
     };
 
     const handlePasswordSubmit = async () => {
@@ -30,20 +30,20 @@ const CardLostReport = () => {
 
         try {
             const response = await axios.post(`${apiUrl}/api/lostcard/${userno}`, {
-                currentPassword: password
+                currentPassword: password,
             });
 
-            // 성공 후 Swal을 사용하여 메시지 출력 후 리다이렉트
+            // Swal 팝업을 띄우고 팝업 확인 후 setIsReported(true) 실행
             Swal.fire({
                 icon: 'success',
                 title: '성공',
                 text: '카드 분실 신고가 완료되었습니다.',
-                confirmButtonText: '확인'
+                confirmButtonText: '확인',
             }).then(() => {
-                setIsReported(true); // 카드 신고 상태를 true로 설정
+                // 팝업 확인 후 분실 신고 상태를 업데이트
+                setIsReported(true);
                 navigate(`/view-profile/${userno}`); // view-profile/userno 경로로 이동
             });
-
         } catch (error) {
             if (error.response && error.response.data) {
                 setError(error.response.data);
@@ -55,7 +55,7 @@ const CardLostReport = () => {
 
     return (
         <div className="CardLostReport">
-            <RealHeader /> {/* RealHeader로 변경 */}
+            <RealHeader />
             <div className="content">
                 <h2 style={{ textAlign: 'center', marginTop: '20px' }}>카드 분실 신고</h2>
                 <div className="report_container">
@@ -70,12 +70,12 @@ const CardLostReport = () => {
                                     <MuiButton
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: "rgb(148, 160, 227)",
-                                            color: "white",
-                                            "&:hover": {
-                                                backgroundColor: "rgb(120, 140, 200)",
+                                            backgroundColor: 'rgb(148, 160, 227)',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'rgb(120, 140, 200)',
                                             },
-                                            width: "150px"
+                                            width: '150px',
                                         }}
                                         onClick={handleReport}
                                     >
@@ -92,7 +92,7 @@ const CardLostReport = () => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         sx={{ mb: 2, width: '100%' }}
-                                        inputProps={{ maxLength: 4 }} // 비밀번호 최대 길이 4글자 제한
+                                        inputProps={{ maxLength: 4 }}
                                     />
                                     <TextField
                                         label="비밀번호 확인"
@@ -100,17 +100,17 @@ const CardLostReport = () => {
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         sx={{ mb: 2, width: '100%' }}
-                                        inputProps={{ maxLength: 4 }} // 비밀번호 확인 최대 길이 4글자 제한
+                                        inputProps={{ maxLength: 4 }}
                                     />
                                     <MuiButton
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: "rgb(148, 160, 227)",
-                                            color: "white",
-                                            "&:hover": {
-                                                backgroundColor: "rgb(120, 140, 200)",
+                                            backgroundColor: 'rgb(148, 160, 227)',
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: 'rgb(120, 140, 200)',
                                             },
-                                            width: "150px"
+                                            width: '150px',
                                         }}
                                         onClick={handlePasswordSubmit}
                                     >
@@ -132,7 +132,7 @@ const CardLostReport = () => {
                     )}
                 </div>
             </div>
-            <Footer /> {/* 푸터를 페이지 하단에 추가 */}
+            <Footer />
         </div>
     );
 };
