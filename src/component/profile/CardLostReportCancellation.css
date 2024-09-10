@@ -1,105 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import RealHeader from '../RealHeader';  // RealHeader로 변경
-import Footer from '../Footer';
-import { Button as MuiButton, Box, Typography } from '@mui/material';
-import axios from 'axios';  // Axios 추가
-import './CardLostReportCancellation.css'; // 스타일 시트 필요에 따라 추가
-import Swal from 'sweetalert2';
+/* CardLostReportCancellation 컴포넌트의 기본 스타일 */
 
-const apiUrl = process.env.REACT_APP_API_URL;
+/* 전체 컨테이너 스타일 */
+.CardLostReportCancellation {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+}
 
-const CardLostReportCancellation = () => {
-    const [isReported, setIsReported] = useState(false); // 카드 분실 신고 상태
-    const [success, setSuccess] = useState('');
-    const [error, setError] = useState('');
-    
-    // 사용자 번호를 URL에서 가져오는 방법
-    const userno = 1; // 예시로 직접 값을 지정 (실제 사용시에는 useParams()로 변경)
+/* 컨텐츠 스타일 */
+.content {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
-    useEffect(() => {
-        const checkReportStatus = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}/api/cardstatus/${userno}`);
-                const cardStatus = response.data; // 카드 상태를 받아오는 예시
-                setIsReported(cardStatus === 2 || cardStatus === 4); // 상태가 2 또는 4면 true
-            } catch (error) {
-                console.error('Error fetching card status:', error);
-            }
-        };
+/* 카드 분실 신고 해지 컨테이너 스타일 */
+.cancellation_container {
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+}
 
-        checkReportStatus();
-    }, [userno]);
+/* 타이포그래피(텍스트) 스타일 */
+h2 {
+    color: #333;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
 
-    const handleCancelReport = async () => {
-        if (!isReported) {
-            setError('카드가 이미 분실 신고 해지되었습니다.');
-            return;
-        }
+.MuiTypography-root {
+    font-size: 1rem;
+    color: #555;
+}
 
-        try {
-            const response = await axios.post(`${apiUrl}/api/cancelcard/${userno}`, {
-                currentPassword: '' // 실제 비밀번호 입력 값을 받아야 함
-            });
+/* 버튼 스타일 */
+.MuiButton-contained {
+    font-size: 1rem;
+    padding: 10px 20px;
+    text-transform: none;
+    width: 150px;
+    background-color: rgb(148, 160, 227);
+    color: white;
+}
 
-            if (response.data) {
-                setIsReported(false); // 상태 업데이트: 신고 해지
-                setSuccess('카드 분실 신고가 성공적으로 해지되었습니다.');
-                setError('');
-            }
-        } catch (error) {
-            if (error.response && error.response.data) {
-                setError(error.response.data);
-            } else {
-                setError('비밀번호가 일치 하지 않습니다.');
-            }
-            setSuccess('');
-        }
-    };
+.MuiButton-contained:hover {
+    background-color: rgb(120, 140, 200);
+}
 
-    return (
-        <div className="CardLostReportCancellation">
-            <RealHeader /> {/* RealHeader로 변경 */}
-            <div className="content">
-                <h2 style={{ textAlign: 'center', marginTop: '20px' }}>카드 분실 신고 해지</h2>
-                <div className="cancellation_container">
-                    <Typography sx={{ textAlign: 'center', mb: 2 }}>
-                        {isReported ? '현재 카드가 분실 신고된 상태입니다.' : '카드 분실 신고가 해지된 상태입니다.'}
-                    </Typography>
+/* 성공 메시지 스타일 */
+.MuiTypography-root[style*="green"] {
+    color: green;
+    font-weight: bold;
+}
 
-                    {isReported && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <MuiButton
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: "rgb(148, 160, 227)",
-                                    color: "white",
-                                    "&:hover": {
-                                        backgroundColor: "rgb(120, 140, 200)",
-                                    },
-                                    width: "150px"
-                                }}
-                                onClick={handleCancelReport}
-                            >
-                                분실 신고 해지
-                            </MuiButton>
-                        </Box>
-                    )}
+/* 에러 메시지 스타일 */
+.MuiTypography-root[style*="red"] {
+    color: red;
+    font-weight: bold;
+}
 
-                    {success && (
-                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
-                            {success}
-                        </Typography>
-                    )}
-                    {error && (
-                        <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
-                            {error}
-                        </Typography>
-                    )}
-                </div>
-            </div>
-            <Footer /> {/* 푸터를 페이지 하단에 추가 */}
-        </div>
-    );
-};
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    .content {
+        width: 90%;
+        padding: 20px;
+    }
 
-export default CardLostReportCancellation;
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .MuiButton-contained {
+        width: 100%;
+    }
+}
