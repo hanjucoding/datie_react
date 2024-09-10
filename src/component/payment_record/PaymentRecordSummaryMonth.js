@@ -157,119 +157,56 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
 
                     return (
                         <Box
+                            key={category}
                             sx={{
-                                padding: '10px',
-                                paddingBottom: '0px',
-                                backgroundColor: '#ffffff',
-                                borderRadius: '8px',
-                                marginBottom: '0px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                marginBottom: '10px',
+                                borderBottom: '1px solid #e0e0e0',
+                                paddingBottom: '10px',
                             }}
                         >
+                            <Box
+                                component="img"
+                                src={getCategoryIcon(category)}
+                                alt={category}
+                                sx={{
+                                    width: 40,
+                                    height: 40,
+                                    marginRight: '15px',
+                                }}
+                            />
+                            <Box sx={{ flexGrow: 1 }}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontFamily: '"Gamja Flower", cursive',
+                                        fontSize: '20px',
+                                    }}
+                                >
+                                    {category}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        fontFamily: '"Gamja Flower", cursive',
+                                        fontSize: '18px',
+                                    }}
+                                >
+                                    이번 달: {currentTotal.toLocaleString()} 원
+                                </Typography>
+                            </Box>
                             <Typography
-                                variant="h4"
+                                variant="body1"
                                 sx={{
                                     fontFamily: '"Gamja Flower", cursive',
-                                    fontSize: '25px',
-                                    fontWeight: 'bold',
-                                    marginBottom: '10px',
+                                    fontSize: '18px',
+                                    color: difference > 0 ? 'red' : 'green',
                                 }}
                             >
-                                {getComparisonMessage()}
+                                {differenceSign}{' '}
+                                {Math.abs(difference).toLocaleString()} 원
                             </Typography>
-                            <Box sx={{ marginTop: '20px' }}>
-                                {sortedCategories.map((category) => {
-                                    const currentTotal =
-                                        currentMonthCategoryTotals[category] ||
-                                        0;
-                                    const previousTotal =
-                                        previousMonthCategoryTotals[category] ||
-                                        0;
-                                    const difference =
-                                        currentTotal - previousTotal;
-
-                                    // 이번 달과 지난 달 모두 지출이 0인 경우, 렌더링하지 않음
-                                    if (
-                                        currentTotal === 0 &&
-                                        previousTotal === 0
-                                    ) {
-                                        return null;
-                                    }
-
-                                    const differenceSign =
-                                        difference > 0
-                                            ? '+'
-                                            : difference < 0
-                                            ? '-'
-                                            : '';
-
-                                    return (
-                                        <Box
-                                            key={category}
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                marginBottom: '10px',
-                                                borderBottom:
-                                                    '1px solid #e0e0e0',
-                                                paddingBottom: '10px',
-                                            }}
-                                        >
-                                            <Box
-                                                component="img"
-                                                src={getCategoryIcon(category)}
-                                                alt={category}
-                                                sx={{
-                                                    width: 40,
-                                                    height: 40,
-                                                    marginRight: '15px',
-                                                }}
-                                            />
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography
-                                                    variant="h6"
-                                                    sx={{
-                                                        fontFamily:
-                                                            '"Gamja Flower", cursive',
-                                                        fontSize: '20px',
-                                                    }}
-                                                >
-                                                    {category}
-                                                </Typography>
-                                                <Typography
-                                                    variant="body1"
-                                                    sx={{
-                                                        fontFamily:
-                                                            '"Gamja Flower", cursive',
-                                                        fontSize: '18px',
-                                                    }}
-                                                >
-                                                    이번 달:{' '}
-                                                    {currentTotal.toLocaleString()}{' '}
-                                                    원
-                                                </Typography>
-                                            </Box>
-                                            <Typography
-                                                variant="body1"
-                                                sx={{
-                                                    fontFamily:
-                                                        '"Gamja Flower", cursive',
-                                                    fontSize: '18px',
-                                                    color:
-                                                        difference > 0
-                                                            ? 'red'
-                                                            : 'green',
-                                                }}
-                                            >
-                                                {differenceSign}{' '}
-                                                {Math.abs(
-                                                    difference,
-                                                ).toLocaleString()}{' '}
-                                                원
-                                            </Typography>
-                                        </Box>
-                                    );
-                                })}
-                            </Box>
                         </Box>
                     );
                 })}
