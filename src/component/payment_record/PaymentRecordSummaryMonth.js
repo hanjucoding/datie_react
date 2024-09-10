@@ -32,24 +32,22 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
                 setCurrentMonthCategoryTotals,
             );
 
-            // 저번 달 데이터 가져오기
-            fetchMonthlyData(
-                previousDate.getFullYear(),
-                previousDate.getMonth() + 1,
-                setPreviousMonthCategoryTotals,
-            );
-        }
-    }, [cardno]);
 
-    const fetchMonthlyData = (year, month, setCategoryTotals) => {
-        axios
-            .post(
-                `${apiUrl}/api/card/${cardno}/payment-records-month?year=${year}&month=${month}`,
-            )
-            .then((response) => {
-                const records = response.data.filter(
-                    (record) => record.paystate === 1,
-                );
+      // 저번 달 데이터 가져오기
+      fetchMonthlyData(
+        previousDate.getFullYear(),
+        previousDate.getMonth() + 1,
+        setPreviousMonthCategoryTotals
+      );
+    }
+  }, [cardno]);
+  
+
+  const fetchMonthlyData = (year, month, setCategoryTotals) => {
+    axios
+      .post(`${apiUrl}/api/card/${cardno}/payment-records-month?year=${year}&month=${month}`)
+      .then((response) => {
+        const records = response.data.filter((record) => record.paystate === 1);
 
                 const categoryTotals = records.reduce((totals, record) => {
                     const category = record.category || '기타';
@@ -94,6 +92,7 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
             );
         } else {
             return '결제내역이 존재하지 않습니다.';
+
         }
     };
 

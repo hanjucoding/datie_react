@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './KakaoMap.css';
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -6,6 +6,12 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
     console.log(placeNames);
     console.log(categorys);
+
+    const markersRef = useRef([]);
+    const infoWindowsRef = useRef([]);
+
+    // 인포윈도우 열림 상태를 저장하는 배열 상태
+    const [infoWindowOpen, setInfoWindowOpen] = useState([]);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -45,7 +51,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
 
                 switch (categorys[index]) {
                     case '식료품':
-                        imageUrl = `${apiUrl}/api/diary/image/food.png`;
+                        imageUrl = `${apiUrl}/api/diary/image/mart.png`;
                         break;
                     case '외식':
                         imageUrl = `${apiUrl}/api/diary/image/restaurant.png`;
@@ -57,7 +63,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
                         imageUrl = `${apiUrl}/api/diary/image/hospital.png`;
                         break;
                     case '쇼핑':
-                        imageUrl = `${apiUrl}/api/diary/image/shopping.png`;
+                        imageUrl = `${apiUrl}/api/diary/image/mart.png`;
                         break;
                     case '문화/여가':
                         imageUrl = `${apiUrl}/api/diary/image/culture.png`;
@@ -69,7 +75,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
 
                 const markerImage = new window.kakao.maps.MarkerImage(
                     imageUrl,
-                    new window.kakao.maps.Size(40, 40),
+                    new window.kakao.maps.Size(50, 50),
                     {
                         offset: new window.kakao.maps.Point(27, 69),
                     },
@@ -80,6 +86,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
                     image: markerImage,
                 });
                 marker.setMap(map);
+                markersRef.current[index] = marker;
 
                 const infowindow = new window.kakao.maps.InfoWindow({
                     content: `
@@ -91,7 +98,7 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
                         </div>
                     `,
                 });
-
+                infoWindowsRef.current[index] = infowindow;
                 let isInfoWindowOpen = false;
 
                 window.kakao.maps.event.addListener(marker, 'click', () => {
@@ -109,6 +116,8 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
             });
 
             map.setBounds(bounds);
+            // 처음에 모든 인포윈도우가 닫힌 상태로 초기화
+            setInfoWindowOpen(Array(placeNames.length).fill(false));
         };
 
         document.head.appendChild(script);
@@ -118,16 +127,94 @@ const KakaoMap = ({ locations = [], placeNames = [], categorys = [] }) => {
         };
     }, [locations, placeNames, categorys]);
 
+    // place-name-item 클릭 시 해당 인덱스의 인포윈도우 열거나 닫기
+    const handlePlaceNameClick = (index) => {
+        const marker = markersRef.current[index];
+        const infowindow = infoWindowsRef.current[index];
+
+        if (marker && infowindow) {
+            const isOpen = infoWindowOpen[index];
+
+            // 모든 인포윈도우 닫기
+            infoWindowsRef.current.forEach((info) => info.close());
+
+            if (isOpen) {
+                // 이미 열려 있으면 닫기
+                infowindow.close();
+            } else {
+                // 닫혀 있으면 열기
+                infowindow.open(marker.getMap(), marker);
+            }
+
+            // 해당 인덱스의 상태를 반대로 토글
+            const updatedInfoWindowOpen = infoWindowOpen.map((state, i) =>
+                i === index ? !state : false,
+            );
+            setInfoWindowOpen(updatedInfoWindowOpen);
+        }
+    };
+
     return (
-        <div>
+        <div style={{ position: 'relative' }}>
+            {/* placeNames를 보여주는 목록 추가 */}
+            <div className="place-names">
+                {placeNames.map((name, index) => (
+                    <div
+                        key={index}
+                        className="place-name-item"
+                        onClick={() => handlePlaceNameClick(index)}
+                    >
+                        # {name}
+                    </div>
+                ))}
+            </div>
+
+            {/* 지도 */}
             <div
                 className="map"
                 id="map"
-                style={{ width: '100%', height: '500px', borderRadius: '5px' }}
+                style={{ width: '100%', height: '800px', borderRadius: '5px' }}
             ></div>
 
             <style>
                 {`
+                    .place-names {
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        z-index: 2;
+                        border-radius: 5px;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+                        width: 95%; /* 제한된 너비로 가로 스크롤 */
+                        overflow-x: auto; /* 가로 스크롤 활성화 */
+                        white-space: nowrap;
+                        padding: 10px;
+                    }
+
+                    .place-names::-webkit-scrollbar {
+                        height: 8px;
+                    }
+
+                    .place-names::-webkit-scrollbar-thumb {
+                        background-color: rgba(0, 0, 0, 0.2);
+                        border-radius: 10px;
+                    }
+
+                    .place-name-item {
+                        padding: 5px;
+                        background-color: white;
+                        border: 1px solid #ffcccc;
+                        border-radius: 5px;
+                        text-align: center;
+                        font-size: 16px;
+                        font-weight: bold;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        flex: 0 0 auto;
+                        min-width: 50px; /* 각 항목의 최소 너비 설정 */
+                        cursor: pointer;
+                    }
                     .info-window {
                         padding: 10px;
                         width: 200px;

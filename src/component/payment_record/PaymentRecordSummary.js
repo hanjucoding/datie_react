@@ -69,7 +69,7 @@ function PaymentRecordSummary() {
   const fetchPaymentRecordsByMonth = (cardno, year, month) => {
     axios
       .post(
-        `http://localhost:8090/api/card/${cardno}/payment-records-month`,
+        `${apiUrl}/api/card/${cardno}/payment-records-month`,
         null, // POST 요청의 본문이 필요 없으면 null로 설정
         {
           params: {

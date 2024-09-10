@@ -5,6 +5,7 @@ import { Button as MuiButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -15,7 +16,7 @@ const LoginForm = () => {
     const [rememberMe, setRememberMe] = useState(false);
 
     const handlesignupclick = () => {
-        navigate('/verify'); // /verify 페이지로 이동
+        navigate('/signup'); // /verify 페이지로 이동
     };
 
     const handleLoginClick = async () => {
@@ -43,8 +44,14 @@ const LoginForm = () => {
                     localStorage.removeItem('savedId'); // 체크박스가 체크되지 않은 경우 아이디 삭제
                 }
 
-                // 로그인 성공 시 경로 이동
-                navigate('/main'); // IndexMain 컴포넌트가 렌더링되는 경로
+                const decoded = jwtDecode(token); // 수정된 호출
+                console.log(decoded); // 디코딩된 정보 출력
+                const role = decoded.role;
+                if (role === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/main');
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {

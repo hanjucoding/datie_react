@@ -6,6 +6,7 @@ import { Button as MuiButton, Typography, Box, TextField } from '@mui/material';
 import axios from 'axios';
 import '../../index.css';
 import './ViewProfile.css';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -47,7 +48,7 @@ const DeleteAccount = () => {
                             status: 0,
                             currentPassword: currentPassword
                         });
-                        alert('회원 탈퇴가 완료되었습니다.');
+                        Swal.fire("회원 탈퇴가 완료되었습니다.");
                         navigate('/login');
                     } catch (error) {
                         console.error('Error deleting account:', error);

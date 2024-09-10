@@ -6,6 +6,7 @@ import { Button as MuiButton, Typography, Box, Avatar } from '@mui/material';
 import axios from 'axios';
 import '../../index.css';
 import './ViewProfile.css';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -93,11 +94,13 @@ const ViewProfile = () => {
                 };
     
                 await axios.post(`${apiUrl}/api/delete/${userno}`, deleteData);
-                alert('회원 탈퇴가 완료되었습니다.');
+                Swal.fire("회원 탈퇴가 완료되었습니다.");
+               
                 navigate('/login');
             } catch (error) {
                 console.error('Error deleting account:', error);
-                alert('회원 탈퇴에 실패했습니다.');
+                Swal.fire("회원 탈퇴에 실패했습니다.");
+                
             }
         }
     };
@@ -108,7 +111,7 @@ const ViewProfile = () => {
 
     const handleProfileUpload = async () => {
         if (!selectedFile) {
-            alert('프로필 사진을 선택하세요.');
+            Swal.fire("프로필 사진을 선택하세요.");
             return;
         }
 
@@ -122,11 +125,11 @@ const ViewProfile = () => {
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } },
             );
-            alert('프로필 사진이 성공적으로 업로드되었습니다.');
+            Swal.fire("프로필 사진이 성공적으로 업로드되었습니다.");
             window.location.reload(); // Refresh the page
         } catch (error) {
             console.error('Error uploading profile picture:', error);
-            alert('프로필 사진 업로드에 실패했습니다.');
+            Swal.fire("프로필 사진 업로드에 실패했습니다.");
         }
     };
 

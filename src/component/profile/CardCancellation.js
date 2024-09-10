@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography, TextField } from '@mui/material';
 import './CardCancellation.css'; // 스타일 시트 필요에 따라 추가
 import axios from 'axios'; // Axios 추가
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -14,8 +15,6 @@ const CardCancellation = () => {
     const [isPasswordPrompt, setIsPasswordPrompt] = useState(false); // 비밀번호 입력 폼 표시 여부
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [success, setSuccess] = useState('');
-    const [error, setError] = useState('');
 
     const handleCancelCard = () => {
         setIsPasswordPrompt(true); // 비밀번호 입력 폼을 표시
@@ -23,8 +22,11 @@ const CardCancellation = () => {
 
     const handlePasswordSubmit = async () => {
         if (password !== confirmPassword) {
-            setError('비밀번호가 일치하지 않습니다.');
-            setSuccess('');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '비밀번호가 일치하지 않습니다.',
+            });
             return;
         }
 
@@ -33,18 +35,29 @@ const CardCancellation = () => {
                 currentPassword: password
             });
 
-            setSuccess(response.data);
-            setError('');
+            Swal.fire({
+                icon: 'success',
+                title: '성공',
+                text: response.data,
+            });
+
             setIsCancelled(true); // 카드 상태를 해지된 상태로 설정
             setIsPasswordPrompt(false); // 비밀번호 입력 폼 숨김
 
         } catch (error) {
             if (error.response && error.response.data) {
-                setError(error.response.data);
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: error.response.data,
+                });
             } else {
-                setError('카드 해지에 실패했습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: '카드 해지에 실패했습니다.',
+                });
             }
-            setSuccess('');
         }
     };
 
@@ -110,17 +123,6 @@ const CardCancellation = () => {
                                 확인
                             </MuiButton>
                         </Box>
-                    )}
-
-                    {success && (
-                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
-                            {success}
-                        </Typography>
-                    )}
-                    {error && (
-                        <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
-                            {error}
-                        </Typography>
                     )}
                 </div>
             </div>

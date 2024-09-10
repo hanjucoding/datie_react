@@ -4,6 +4,7 @@ import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography } from '@mui/material';
 import axios from 'axios';  // Axios 추가
 import './CardLostReportCancellation.css'; // 스타일 시트 필요에 따라 추가
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 

@@ -6,6 +6,7 @@ import { TextField, Button as MuiButton, Box, MenuItem } from '@mui/material';
 import axios from 'axios';
 import './EditProfile.css';
 import '../../index.css';
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -130,11 +131,11 @@ const EditProfile = () => {
                 verificationCode
             });
 
-            alert('수정완료 되었습니다.');
+            Swal.fire("수정완료 되었습니다.");
             navigate(`/view-profile/${userno}`);
         } catch (error) {
             console.error('Error saving profile data:', error);
-            alert('정보 수정 중 오류가 발생했습니다.');
+            Swal.fire("정보 수정 중 오류가 발생했습니다.");
         }
     };
 

@@ -8,12 +8,14 @@ import Header from '../../../component/Header';
 import Footer from '../../../component/Footer';
 import KakaoMap from '../../diary/components/KakaoMap';
 import DiaryList from '../components/DiaryList';
+import './DiaryDetail.css';
 
 function DiaryDetail({ date }) {
     const apiUrl = process.env.REACT_APP_API_URL;
     const formattedDate = moment(date, 'YYYY-MM-DD');
     const [locations, setLocations] = useState([]);
     const [data, setData] = useState([]);
+    const [isListVisible, setIsListVisible] = useState(false);
     let token;
     let userNo = 0;
 
@@ -114,14 +116,30 @@ function DiaryDetail({ date }) {
     );
 
     return (
-        <div>
-            <div className="body">
-                <KakaoMap
-                    locations={locations}
-                    placeNames={diaryData.map((item) => item.companyName)}
-                    categorys={diaryData.map((item) => item.category)}
-                />
-                <DiaryList data={diaryData} date={formattedDate} />
+        <div className="diary-detail-container">
+            <KakaoMap
+                locations={locations}
+                placeNames={diaryData.map((item) => item.companyName)}
+                categorys={diaryData.map((item) => item.category)}
+            />
+
+            <div className="diary-section">
+                {/* 버튼 추가 */}
+                <button
+                    onClick={() => setIsListVisible(!isListVisible)}
+                    className="toggle-button"
+                >
+                    {isListVisible ? '▼' : '▲'}
+                </button>
+
+                {/* DiaryList가 버튼 바로 위에서 아래에서 위로 올라오는 애니메이션 */}
+                <div
+                    className={`diary-list-container ${
+                        isListVisible ? 'visible' : ''
+                    }`}
+                >
+                    <DiaryList data={diaryData} date={formattedDate} />
+                </div>
             </div>
         </div>
     );
