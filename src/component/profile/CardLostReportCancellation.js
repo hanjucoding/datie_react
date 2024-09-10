@@ -4,13 +4,12 @@ import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography } from '@mui/material';
 import axios from 'axios';  // Axios 추가
 import './CardLostReportCancellation.css'; // 스타일 시트 필요에 따라 추가
+import Swal from 'sweetalert2';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const CardLostReportCancellation = () => {
     const [isReported, setIsReported] = useState(false); // 카드 분실 신고 상태
-    const [success, setSuccess] = useState('');
-    const [error, setError] = useState('');
     
     // 사용자 번호를 URL에서 가져오는 방법
     const userno = 1; // 예시로 직접 값을 지정 (실제 사용시에는 useParams()로 변경)
@@ -31,7 +30,11 @@ const CardLostReportCancellation = () => {
 
     const handleCancelReport = async () => {
         if (!isReported) {
-            setError('카드가 이미 분실 신고 해지되었습니다.');
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '카드가 이미 분실 신고 해지되었습니다.',
+            });
             return;
         }
 
@@ -42,16 +45,28 @@ const CardLostReportCancellation = () => {
 
             if (response.data) {
                 setIsReported(false); // 상태 업데이트: 신고 해지
-                setSuccess('카드 분실 신고가 성공적으로 해지되었습니다.');
-                setError('');
+                Swal.fire({
+                    icon: 'success',
+                    title: '성공',
+                    text: '카드 분실 신고가 성공적으로 해지되었습니다.',
+                });
+
+                navigate(`/view-profile/${userno}`);
             }
         } catch (error) {
             if (error.response && error.response.data) {
-                setError(error.response.data);
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: error.response.data,
+                });
             } else {
-                setError('비밀번호가 일치 하지 않습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '오류',
+                    text: '비밀번호가 일치 하지 않습니다.',
+                });
             }
-            setSuccess('');
         }
     };
 
@@ -82,17 +97,6 @@ const CardLostReportCancellation = () => {
                                 분실 신고 해지
                             </MuiButton>
                         </Box>
-                    )}
-
-                    {success && (
-                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
-                            {success}
-                        </Typography>
-                    )}
-                    {error && (
-                        <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
-                            {error}
-                        </Typography>
                     )}
                 </div>
             </div>
