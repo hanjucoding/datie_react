@@ -5,7 +5,7 @@ import Footer from '../Footer';
 import { Button as MuiButton, Box, Typography, TextField } from '@mui/material';
 import './CardLostReport.css'; // 스타일 시트 필요에 따라 추가
 import axios from 'axios'; // Axios 추가
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'; // Swal import
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -16,7 +16,6 @@ const CardLostReport = () => {
     const [isPasswordPrompt, setIsPasswordPrompt] = useState(false); // 비밀번호 입력 폼 표시 여부
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
 
     const handleReport = () => {
@@ -26,18 +25,16 @@ const CardLostReport = () => {
     const handlePasswordSubmit = async () => {
         if (password !== confirmPassword) {
             setError('비밀번호가 일치하지 않습니다.');
-            setSuccess('');
             return;
         }
 
         try {
-            // API 호출 로직을 추가하여 카드 분실 신고를 처리합니다.
             const response = await axios.post(`${apiUrl}/api/lostcard/${userno}`, {
                 currentPassword: password
             });
 
+            console.log('API call successful'); // 디버깅을 위한 로그
 
-            // 성공 후 리다이렉트
             Swal.fire({
                 icon: 'success',
                 title: '성공',
@@ -53,7 +50,6 @@ const CardLostReport = () => {
             } else {
                 setError('카드 분실 신고에 실패했습니다.');
             }
-            setSuccess('');
         }
     };
 
@@ -121,11 +117,6 @@ const CardLostReport = () => {
                         </Box>
                     )}
 
-                    {success && (
-                        <Typography sx={{ mt: 2, color: 'green', textAlign: 'center' }}>
-                            {success}
-                        </Typography>
-                    )}
                     {error && (
                         <Typography sx={{ mt: 2, color: 'red', textAlign: 'center' }}>
                             {error}
