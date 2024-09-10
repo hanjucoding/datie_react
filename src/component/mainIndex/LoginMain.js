@@ -347,6 +347,7 @@ function LoginMain() {
                         margin: '0px',
                         paddingBottom: '20px',
                         marginBottom: '20px',
+                        maxHeight: '400px',
                     }}
                 >
                     <Typography
@@ -468,32 +469,38 @@ function LoginMain() {
                         </Box>
                     </Box>
                 </Box>
-                <Box
-                    sx={{
-                        flex: '3',
-                        backgroundColor: '#ffffff',
-                        borderRadius: '8px',
-                        width: '490px',
-                        margin: '0px',
-                        paddingBottom: '20px',
-                        marginBottom: '20px',
-                    }}
-                >
-                    {cardno && <PaymentRecordSummaryMonth cardno={cardno} />}
-                </Box>
-                <Box
-                    sx={{
-                        flex: '4',
-                        backgroundColor: '#ffffff',
-                        borderRadius: '8px',
-                        width: '490px',
-                        margin: '0px',
-                        paddingBottom: '20px',
-                        marginBottom: '20px',
-                    }}
-                >
-                    {cardno && <GptRecommend cardno={cardno} />}
-                </Box>
+
+                {cardno != 0 && (
+                    <Box
+                        sx={{
+                            flex: '3',
+                            backgroundColor: '#ffffff',
+                            borderRadius: '8px',
+                            width: '490px',
+                            margin: '0px',
+                            paddingBottom: '20px',
+                            marginBottom: '20px',
+                        }}
+                    >
+                        <PaymentRecordSummaryMonth cardno={cardno} />
+                    </Box>
+                )}
+
+                {cardno != 0 && (
+                    <Box
+                        sx={{
+                            flex: '4',
+                            backgroundColor: '#ffffff',
+                            borderRadius: '8px',
+                            width: '490px',
+                            margin: '0px',
+                            paddingBottom: '20px',
+                            marginBottom: '20px',
+                        }}
+                    >
+                        <GptRecommend cardno={cardno} />
+                    </Box>
+                )}
             </Box>
         </div>
     );

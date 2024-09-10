@@ -32,6 +32,7 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
                 setCurrentMonthCategoryTotals,
             );
 
+
       // 저번 달 데이터 가져오기
       fetchMonthlyData(
         previousDate.getFullYear(),
@@ -90,7 +91,8 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
                 </>
             );
         } else {
-            return '지난 달과 이번 달의 지출이 동일합니다.';
+            return '결제내역이 존재하지 않습니다.';
+
         }
     };
 
