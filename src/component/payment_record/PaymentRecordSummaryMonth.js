@@ -38,6 +38,7 @@ const PaymentRecordSummaryMonth = ({ cardno }) => {
       );
     }
   }, [cardno]);
+  
 
   const fetchMonthlyData = (year, month, setCategoryTotals) => {
     axios
