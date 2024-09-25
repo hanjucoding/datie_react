@@ -1,3 +1,24 @@
+<h1 align="center">
+  사랑을 담은 카드, 특별한 데이트의 시작 
+</h1>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f3a3b218-8223-40a8-bcad-1ab61a1eabfc" alt="datie_logo2" width="30%">
+</p>
+<h1 p align="center">
+  데이티 
+</h1>
+
+## Team
+
+| 팀장 | 팀원 | 팀원 | 팀원 | 팀원 | 팀원 |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+| <img src="https://avatars.githubusercontent.com/u/107400911?v=4" width="150" height="150"/> <br> [양재혁](https://github.com/Akkapda) | <img src="https://avatars.githubusercontent.com/u/76528931?v=4" width="150" height="150"/> <br> [이진우](https://github.com/dlehgus97) | <img src="https://avatars.githubusercontent.com/u/39136303?v=4" width="150" height="150"/> <br> [최동규](https://github.com/dongdongchoi) | <img src="https://avatars.githubusercontent.com/u/128129450?v=4" width="150" height="150"/> <br> [김강온](https://github.com/kimgo816) | <img                                                      src="https://avatars.githubusercontent.com/u/79631853?v=4" width="150" height="150"/> <br> [서현오](https://github.com/ohhyeonn) | <img src="https://avatars.githubusercontent.com/u/142489569?v=4" width="150" height="150"/> <br> [전한주](https://github.com/hanjucoding) |
+
+
+
+
+
 
 ### ✔️Frond-end
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
